@@ -23,7 +23,9 @@ const mapSnapshot = (
     openIssuesCount: snapshot.openIssuesCount,
     contributorsCount: snapshot.contributorsCount,
     status: snapshot.status as RepositorySnapshot["status"],
-    warningReasons: reasons.map((reason) => reason.reasonKey as WarningReasonKey),
+    warningReasons: reasons.map(
+      (reason) => reason.reasonKey as WarningReasonKey,
+    ),
     fetchedAt: snapshot.fetchedAt,
   });
 
@@ -34,16 +36,18 @@ export class DrizzleSnapshotAdapter implements SnapshotPort {
     const snapshotId = crypto.randomUUID();
 
     this.db.db.transaction((tx) => {
-      tx.insert(snapshotsTable).values({
-        id: snapshotId,
-        repositoryId: snapshot.repositoryId,
-        lastCommitAt: snapshot.lastCommitAt,
-        lastReleaseAt: snapshot.lastReleaseAt,
-        openIssuesCount: snapshot.openIssuesCount,
-        contributorsCount: snapshot.contributorsCount,
-        status: snapshot.status,
-        fetchedAt: snapshot.fetchedAt,
-      }).run();
+      tx.insert(snapshotsTable)
+        .values({
+          id: snapshotId,
+          repositoryId: snapshot.repositoryId,
+          lastCommitAt: snapshot.lastCommitAt,
+          lastReleaseAt: snapshot.lastReleaseAt,
+          openIssuesCount: snapshot.openIssuesCount,
+          contributorsCount: snapshot.contributorsCount,
+          status: snapshot.status,
+          fetchedAt: snapshot.fetchedAt,
+        })
+        .run();
 
       if (snapshot.warningReasons.length > 0) {
         tx.insert(snapshotWarningReasonsTable)
@@ -121,7 +125,8 @@ export class DrizzleSnapshotAdapter implements SnapshotPort {
 
       const reasonsBySnapshotId = new Map<string, SnapshotReasonRow[]>();
       for (const reason of reasons) {
-        const snapshotReasons = reasonsBySnapshotId.get(reason.snapshotId) ?? [];
+        const snapshotReasons =
+          reasonsBySnapshotId.get(reason.snapshotId) ?? [];
         snapshotReasons.push(reason);
         reasonsBySnapshotId.set(reason.snapshotId, snapshotReasons);
       }

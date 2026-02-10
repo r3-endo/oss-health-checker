@@ -7,7 +7,9 @@ import { asc, count, eq } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
 import { repositoriesTable } from "../db/drizzle/schema";
 
-const mapRepository = (row: typeof repositoriesTable.$inferSelect): Repository =>
+const mapRepository = (
+  row: typeof repositoriesTable.$inferSelect,
+): Repository =>
   Object.freeze({
     id: row.id,
     url: row.url,

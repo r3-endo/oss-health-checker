@@ -61,9 +61,9 @@ export const snapshotWarningReasonsTable = sqliteTable(
       table.snapshotId,
       table.reasonKey,
     ),
-    snapshotWarningReasonsReasonIdx: index("snapshot_warning_reasons_reason_idx").on(
-      table.reasonKey,
-    ),
+    snapshotWarningReasonsReasonIdx: index(
+      "snapshot_warning_reasons_reason_idx",
+    ).on(table.reasonKey),
     snapshotWarningReasonsReasonCheck: check(
       "snapshot_warning_reasons_reason_check",
       sql`${table.reasonKey} IN ('commit_stale', 'release_stale', 'open_issues_high')`,

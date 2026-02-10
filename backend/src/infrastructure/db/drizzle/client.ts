@@ -15,20 +15,19 @@ const resolveSqlitePath = (databaseUrl: string): string =>
 
 export const createDrizzleHandle = (
   env: Pick<AppEnv, "DATABASE_URL">,
-): DrizzleDatabaseHandle =>
-  {
-    const sqlitePath = resolveSqlitePath(env.DATABASE_URL);
-    const sqlite = new Database(sqlitePath);
-    sqlite.pragma("foreign_keys = ON");
-    sqlite.pragma("journal_mode = WAL");
-    sqlite.pragma("busy_timeout = 5000");
+): DrizzleDatabaseHandle => {
+  const sqlitePath = resolveSqlitePath(env.DATABASE_URL);
+  const sqlite = new Database(sqlitePath);
+  sqlite.pragma("foreign_keys = ON");
+  sqlite.pragma("journal_mode = WAL");
+  sqlite.pragma("busy_timeout = 5000");
 
-    const db = drizzle(sqlite, { schema });
+  const db = drizzle(sqlite, { schema });
 
-    return Object.freeze({
-      kind: "drizzle",
-      databaseUrl: env.DATABASE_URL,
-      sqlite,
-      db,
-    });
-  };
+  return Object.freeze({
+    kind: "drizzle",
+    databaseUrl: env.DATABASE_URL,
+    sqlite,
+    db,
+  });
+};
