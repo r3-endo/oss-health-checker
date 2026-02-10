@@ -1,8 +1,8 @@
 ## 1. Quality Gates and TDD Setup
 
-- [ ] 1.1 Configure CI workflow to run `format --check`, `lint`, and `test` on pull requests and main branch pushes
-- [ ] 1.2 Add local scripts/commands for format, lint, and test so CI and local execution use the same entrypoints
-- [ ] 1.3 Add initial failing test placeholders (unit and API integration) to establish Red-Green-Refactor flow
+- [x] 1.1 Configure CI workflow to run `format --check`, `lint`, and `test` on pull requests and main branch pushes
+- [x] 1.2 Add local scripts/commands for format, lint, and test so CI and local execution use the same entrypoints
+- [x] 1.3 Add initial failing test placeholders (unit and API integration) to establish Red-Green-Refactor flow
 
 ## 2. Project Baseline and Shared Types
 
