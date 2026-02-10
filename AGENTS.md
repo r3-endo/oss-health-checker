@@ -26,3 +26,22 @@ LLM（Claude / Codex / Cursor など）を **複数サブエージェント**と
   - ローカル実行コマンドと CI 実行コマンドを一致させる
 - **失敗系を必ず仕様化・テストする**
   - API失敗、外部依存失敗、境界値（null含む）は受け入れ条件に含める
+
+---
+
+## 2. 技術スタック方針
+
+- **パッケージマネージャーは Bun を使用する**
+  - ローカル実行・CIともに `bun install` / `bun run <script>` を使用する
+- **Frontend**
+  - Feature-based 構成
+  - サーバー状態取得: TanStack Query
+  - 状態管理: Jotai（共有UI状態が必要な場合に限定）
+  - バリデーション: Zod
+  - Frontend は API Port/Adapter 経由で Backend と疎結合に保つ
+- **Backend**
+  - Layered Architecture（controller / service(use-case) / repository / infrastructure）
+  - DB/外部依存は Port/Adapter で抽象化し、差し替え可能にする
+  - ORM: Drizzle
+  - API Schema: OpenAPI（zod-openapi）
+  - 変更が発生しやすい境界は immutable なデータ構造を優先する

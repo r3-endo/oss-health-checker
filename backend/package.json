@@ -2,16 +2,26 @@
   "name": "oss-health-checker-backend",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "bun@1.1.43",
   "type": "module",
   "scripts": {
-    "lint": "eslint . --ext .ts",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "vitest run"
+    "typecheck": "bunx tsc --noEmit",
+    "lint": "bunx eslint . --ext .ts",
+    "format": "bunx prettier --write .",
+    "format:check": "bunx prettier --check .",
+    "test": "bunx vitest run"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^0.16.4",
+    "drizzle-orm": "^0.36.4",
+    "hono": "^4.6.12",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "drizzle-kit": "^0.28.0",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",

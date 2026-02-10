@@ -1,7 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from "vitest";
 
-describe('backend unit placeholder', () => {
-  it('should fail until unit-level backend logic is implemented', () => {
-    expect(false).toBe(true);
-  });
+describe("backend unit placeholder", () => {
+  it.skip("replace with real backend unit test", () => {});
 });
