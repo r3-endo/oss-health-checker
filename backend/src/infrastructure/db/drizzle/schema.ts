@@ -1,10 +1,12 @@
 import {
+  check,
   index,
   integer,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
 export const repositoriesTable = sqliteTable(
   "repositories",
@@ -33,12 +35,38 @@ export const snapshotsTable = sqliteTable(
     openIssuesCount: integer("open_issues_count").notNull(),
     contributorsCount: integer("contributors_count").notNull(),
     status: text("status").notNull(),
-    warningReasonsJson: text("warning_reasons_json").notNull(),
     fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }).notNull(),
   },
   (table) => ({
     snapshotsRepositoryFetchedIndex: index(
       "snapshots_repository_fetched_idx",
     ).on(table.repositoryId, table.fetchedAt),
+    snapshotsStatusCheck: check(
+      "snapshots_status_check",
+      sql`${table.status} IN ('Active', 'Stale', 'Risky')`,
+    ),
+  }),
+);
+
+export const snapshotWarningReasonsTable = sqliteTable(
+  "snapshot_warning_reasons",
+  {
+    snapshotId: text("snapshot_id")
+      .notNull()
+      .references(() => snapshotsTable.id, { onDelete: "cascade" }),
+    reasonKey: text("reason_key").notNull(),
+  },
+  (table) => ({
+    snapshotWarningReasonsPk: uniqueIndex("snapshot_warning_reasons_pk").on(
+      table.snapshotId,
+      table.reasonKey,
+    ),
+    snapshotWarningReasonsReasonIdx: index("snapshot_warning_reasons_reason_idx").on(
+      table.reasonKey,
+    ),
+    snapshotWarningReasonsReasonCheck: check(
+      "snapshot_warning_reasons_reason_check",
+      sql`${table.reasonKey} IN ('commit_stale', 'release_stale', 'open_issues_high')`,
+    ),
   }),
 );
