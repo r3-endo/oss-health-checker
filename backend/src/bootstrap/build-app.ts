@@ -12,7 +12,7 @@ export const buildApp = (container: AppContainer): Hono => {
   app.use(
     "/api/*",
     cors({
-      origin: container.corsAllowedOrigins,
+      origin: [...container.corsAllowedOrigins],
       allowMethods: ["GET", "POST", "OPTIONS"],
       allowHeaders: ["Content-Type", "Authorization"],
     }),
