@@ -1,6 +1,7 @@
 import { ListRepositoriesWithLatestSnapshotService } from "../application/use-cases/list-repositories-with-latest-snapshot-use-case";
 import type { AppEnv } from "../infrastructure/config/env";
 import { createDrizzleHandle } from "../infrastructure/db/drizzle/client";
+import { migrateDrizzleDatabase } from "../infrastructure/db/drizzle/migrate";
 import { DrizzleRepositoryReadModelAdapter } from "../infrastructure/repositories/drizzle-repository-read-model-adapter";
 import { RepositoryController } from "../interface/http/controllers/repository-controller";
 
@@ -10,6 +11,7 @@ export type AppContainer = Readonly<{
 
 export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const db = createDrizzleHandle(appEnv);
+  migrateDrizzleDatabase(db);
 
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
 

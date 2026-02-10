@@ -12,10 +12,10 @@
 
 ## 3. Database and Persistence
 
-- [ ] 3.1 Define SQLite schema for `repositories` and `snapshots` tables with required columns
-- [ ] 3.2 Implement DB initialization/migration script to create tables on startup
-- [ ] 3.3 Implement repository persistence functions (create/list/count/find by id)
-- [ ] 3.4 Implement snapshot persistence functions (insert snapshot, fetch latest snapshot per repository)
+- [x] 3.1 Define SQLite schema for `repositories` and `snapshots` tables with required columns
+- [x] 3.2 Implement DB initialization/migration script to create tables on startup
+- [x] 3.3 Implement repository persistence functions (create/list/count/find by id)
+- [x] 3.4 Implement snapshot persistence functions (insert snapshot, fetch latest snapshot per repository)
 
 ## 4. GitHub Signal Ingestion
 
