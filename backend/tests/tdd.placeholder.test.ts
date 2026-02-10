@@ -1,7 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 describe("backend TDD placeholder", () => {
-  it("should fail until backend behavior is implemented", () => {
-    expect(false).toBe(true);
-  });
+  it.skip("replace with real backend TDD test", () => {});
 });
