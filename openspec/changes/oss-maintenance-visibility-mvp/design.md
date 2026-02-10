@@ -2,7 +2,7 @@
 
 本変更は、GitHub 上の OSS リポジトリの保守状態を最小構成で可視化する MVP を対象とする。監視対象は GitHub Repository URL で登録し、認証なしで最大3リポジトリを扱う。バックエンドは Hono、フロントエンドは React、永続化は SQLite を利用し、GitHub REST API v3 から最終 commit 日、最終 release 日、open issues 数、contributors 数を取得する。
 
-MVP の主眼は「一貫した説明可能な判定」であり、高度なスコアリングや AI 推論は行わない。判定はしきい値ベース（6ヶ月 commit 無し、12ヶ月 release 無し、open issues 100超）で `Active` / `Stale` / `Risky` を返す。
+MVP の主眼は「一貫した説明可能な判定」であり、高度なスコアリングや AI 推論は行わない。判定はしきい値ベース（`>= 6ヶ月` commit 無し、`>= 12ヶ月` release 無し、open issues `> 100`）で `Active` / `Stale` / `Risky` を返す。
 
 ## Goals / Non-Goals
 
@@ -55,6 +55,7 @@ MVP の主眼は「一貫した説明可能な判定」であり、高度なス�
 ## Risks / Trade-offs
 
 - [GitHub API rate limit 超過] → Mitigation: 監視対象を最大3件に制限し、取得頻度を手動中心にする。
+- [GitHub API失敗時に表示が不安定になる] → Mitigation: 直近成功スナップショットは保持し、UI には更新失敗を通知する。
 - [release が存在しない repo の扱いが曖昧] → Mitigation: `last_release_at = null` を許容し、判定ロジックで明示的に扱う。
 - [contributors 数取得の API コストが高い] → Mitigation: 上位 contributor 数のみを取得し、必要に応じてページングを打ち切る。
 - [ステータス判定が単純すぎる] → Mitigation: 判定根拠（どの条件に該当したか）を UI で表示し、将来拡張可能な関数境界を維持する。
