@@ -19,11 +19,11 @@
 
 ## 4. GitHub Signal Ingestion
 
-- [ ] 4.1 Write failing tests for GitHub URL parsing/validation and signal normalization behavior
-- [ ] 4.2 Implement GitHub URL parser/validator to extract owner and repository name
-- [ ] 4.3 Implement GitHub REST client methods to fetch last commit date, last release date, open issues count, and contributors count
-- [ ] 4.4 Implement initial fetch flow triggered immediately after repository registration
-- [ ] 4.5 Implement refresh flow that keeps previous successful snapshot when GitHub API returns error/rate limit
+- [x] 4.1 Write failing tests for GitHub URL parsing/validation and signal normalization behavior
+- [x] 4.2 Implement GitHub URL parser/validator to extract owner and repository name
+- [x] 4.3 Implement GitHub REST client methods to fetch last commit date, last release date, open issues count, and contributors count
+- [x] 4.4 Implement initial fetch flow triggered immediately after repository registration
+- [x] 4.5 Implement refresh flow that keeps previous successful snapshot when GitHub API returns error/rate limit
 
 ## 5. Status Classification Logic
 

@@ -10,4 +10,8 @@ export type RefreshErrorCode = (typeof REFRESH_ERROR_CODES)[number];
 export type RefreshError = Readonly<{
   code: RefreshErrorCode;
   message: string;
+  detail?: Readonly<{
+    status?: number;
+    retryAfterSeconds?: number | null;
+  }>;
 }>;
