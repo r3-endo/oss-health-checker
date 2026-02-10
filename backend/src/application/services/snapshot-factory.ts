@@ -46,7 +46,8 @@ const isAtLeastMonthsOld = (
   observedAt: Date,
   evaluatedAt: Date,
   months: number,
-): boolean => addMonthsUtc(observedAt, months).getTime() <= evaluatedAt.getTime();
+): boolean =>
+  addMonthsUtc(observedAt, months).getTime() <= evaluatedAt.getTime();
 
 export const evaluateWarningReasons = (
   signals: RepositorySignals,
@@ -54,7 +55,9 @@ export const evaluateWarningReasons = (
 ): readonly WarningReasonKey[] => {
   const warnings: WarningReasonKey[] = [];
 
-  if (isAtLeastMonthsOld(signals.lastCommitAt, evaluatedAt, COMMIT_STALE_MONTHS)) {
+  if (
+    isAtLeastMonthsOld(signals.lastCommitAt, evaluatedAt, COMMIT_STALE_MONTHS)
+  ) {
     warnings.push("commit_stale");
   }
 

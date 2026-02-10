@@ -133,8 +133,12 @@ describe("snapshot classification", () => {
     lastReleaseAt.setUTCFullYear(2030);
     fetchedAt.setUTCFullYear(2030);
 
-    expect(snapshot.lastCommitAt.toISOString()).toBe("2026-01-10T00:00:00.000Z");
-    expect(snapshot.lastReleaseAt?.toISOString()).toBe("2026-01-11T00:00:00.000Z");
+    expect(snapshot.lastCommitAt.toISOString()).toBe(
+      "2026-01-10T00:00:00.000Z",
+    );
+    expect(snapshot.lastReleaseAt?.toISOString()).toBe(
+      "2026-01-11T00:00:00.000Z",
+    );
     expect(snapshot.fetchedAt.toISOString()).toBe("2026-07-10T00:00:00.000Z");
   });
 });
