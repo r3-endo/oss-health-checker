@@ -5,17 +5,17 @@ import {
 } from "../src/features/repositories/api/repository-api-adapter";
 
 describe("HttpRepositoryApiAdapter", () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
   it("normalizes API error response into RepositoryApiError", async () => {
     const adapter = new HttpRepositoryApiAdapter("");
 
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
           error: { code: "VALIDATION_ERROR", message: "invalid url" },
@@ -27,19 +27,17 @@ describe("HttpRepositoryApiAdapter", () => {
       ),
     ) as typeof fetch;
 
-    await expect(adapter.listRepositories()).rejects.toMatchObject<
-      Partial<RepositoryApiError>
-    >({
+    await expect(adapter.listRepositories()).rejects.toMatchObject({
       name: "RepositoryApiError",
       status: 400,
       code: "VALIDATION_ERROR",
-    });
+    } satisfies Partial<RepositoryApiError>);
   });
 
   it("parses successful repository list response", async () => {
     const adapter = new HttpRepositoryApiAdapter("");
 
-    global.fetch = vi.fn().mockResolvedValue(
+    globalThis.fetch = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
           data: [

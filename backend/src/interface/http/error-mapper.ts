@@ -3,7 +3,10 @@ import { ApplicationError } from "../../application/errors/application-error";
 
 export const mapErrorToHttp = (c: Context, error: unknown): Response => {
   if (error instanceof ApplicationError) {
-    const statusByCode: Record<ApplicationError["code"], number> = {
+    const statusByCode: Record<
+      ApplicationError["code"],
+      400 | 404 | 429 | 500 | 502
+    > = {
       VALIDATION_ERROR: 400,
       NOT_FOUND: 404,
       EXTERNAL_API_ERROR: 502,

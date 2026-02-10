@@ -5,6 +5,7 @@
   "packageManager": "bun@1.1.43",
   "type": "module",
   "scripts": {
+    "typecheck": "bunx tsc --noEmit",
     "lint": "bunx eslint . --ext .ts",
     "format": "bunx prettier --write .",
     "format:check": "bunx prettier --check .",
@@ -17,6 +18,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "drizzle-kit": "^0.28.0",

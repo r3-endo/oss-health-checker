@@ -7,12 +7,14 @@ export class DrizzleSnapshotAdapter implements SnapshotPort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
   async insert(_snapshot: RepositorySnapshot): Promise<void> {
+    void _snapshot;
     throw new Error(`Not implemented: insert snapshot via ${this.db.kind}`);
   }
 
   async findLatestByRepositoryId(
     _repositoryId: RepositoryId,
   ): Promise<RepositorySnapshot | null> {
+    void _repositoryId;
     throw new Error(
       `Not implemented: find latest snapshot via ${this.db.kind}`,
     );
