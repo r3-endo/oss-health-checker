@@ -1,6 +1,14 @@
 # Backend
 
+Architecture:
+
+- Layered: controller, service, repository, infrastructure
+- Ports/Adapters for swappable infrastructure (DB, external APIs)
+- OpenAPI schemas managed via zod-openapi
+- ORM: drizzle (schema-first)
+
 Commands:
-- `npm run format:check`
-- `npm run lint`
-- `npm run test`
+
+- `bun run format:check`
+- `bun run lint`
+- `bun run test`

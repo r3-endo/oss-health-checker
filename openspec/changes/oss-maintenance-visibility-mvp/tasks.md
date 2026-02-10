@@ -6,9 +6,9 @@
 
 ## 2. Project Baseline and Shared Types
 
-- [ ] 2.1 Confirm React + Hono + SQLite project structure and add missing runtime dependencies
-- [ ] 2.2 Add environment configuration for GitHub API access (token optional, base URL, timeout)
-- [ ] 2.3 Add shared types for repository, snapshot, status, warning reasons, and refresh error payload
+- [x] 2.1 Confirm React + Hono + SQLite project structure and add missing runtime dependencies
+- [x] 2.2 Add environment configuration for GitHub API access (token optional, base URL, timeout)
+- [x] 2.3 Add shared types for repository, snapshot, status, warning reasons, and refresh error payload
 
 ## 3. Database and Persistence
 
