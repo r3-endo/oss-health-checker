@@ -1,0 +1,159 @@
+import { describe, expect, it, vi } from "vitest";
+import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port";
+import type { RepositoryPort } from "../../src/application/ports/repository-port";
+import type { SnapshotPort } from "../../src/application/ports/snapshot-port";
+import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port";
+import { RegisterRepositoryService } from "../../src/application/use-cases/register-repository-use-case";
+import { RefreshRepositoryService } from "../../src/application/use-cases/refresh-repository-use-case";
+import type { Repository } from "../../src/domain/models/repository";
+import type { RepositorySnapshot } from "../../src/domain/models/snapshot";
+
+const buildRepository = (): Repository => ({
+  id: "repo-1",
+  url: "https://github.com/octocat/Hello-World",
+  owner: "octocat",
+  name: "Hello-World",
+  createdAt: new Date("2026-01-01T00:00:00Z"),
+  updatedAt: new Date("2026-01-01T00:00:00Z"),
+});
+
+describe("repository signal ingestion use-cases", () => {
+  it("creates initial snapshot immediately after repository registration", async () => {
+    const repository = buildRepository();
+
+    const repositoryPort: RepositoryPort = {
+      create: vi.fn(async () => repository),
+      list: vi.fn(async () => [repository]),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 0),
+    };
+
+    const snapshotInsert = vi.fn<
+      (snapshot: RepositorySnapshot) => Promise<void>
+    >(async () => undefined);
+    const snapshotPort: SnapshotPort = {
+      insert: snapshotInsert,
+      findLatestByRepositoryId: vi.fn(async () => null),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => ({
+        lastCommitAt: new Date("2025-12-31T00:00:00Z"),
+        lastReleaseAt: null,
+        openIssuesCount: 12,
+        contributorsCount: 3,
+      })),
+    };
+
+    const useCase = new RegisterRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositoryGateway,
+    );
+
+    const result = await useCase.execute({
+      url: "https://github.com/octocat/Hello-World",
+    });
+
+    expect(result.repository.id).toBe("repo-1");
+    expect(snapshotInsert).toHaveBeenCalledTimes(1);
+    const snapshot = snapshotInsert.mock.calls[0][0];
+    expect(snapshot.repositoryId).toBe("repo-1");
+    expect(snapshot.status).toBe("Active");
+    expect(snapshot.warningReasons).toEqual([]);
+  });
+
+  it("does not create repository when initial fetch fails", async () => {
+    const repository = buildRepository();
+    const createMock = vi.fn(async () => repository);
+
+    const repositoryPort: RepositoryPort = {
+      create: createMock,
+      list: vi.fn(async () => [repository]),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 0),
+    };
+
+    const snapshotPort: SnapshotPort = {
+      insert: vi.fn(async () => undefined),
+      findLatestByRepositoryId: vi.fn(async () => null),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => {
+        throw new RepositoryGatewayError("API_ERROR", "upstream failed");
+      }),
+    };
+
+    const useCase = new RegisterRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositoryGateway,
+    );
+
+    await expect(
+      useCase.execute({
+        url: "https://github.com/octocat/Hello-World",
+      }),
+    ).rejects.toBeInstanceOf(RepositoryGatewayError);
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps previous successful snapshot when refresh fails by rate limit", async () => {
+    const repository = buildRepository();
+
+    const repositoryPort: RepositoryPort = {
+      create: vi.fn(async () => repository),
+      list: vi.fn(async () => [repository]),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 1),
+    };
+
+    const snapshotInsert = vi.fn<
+      (snapshot: RepositorySnapshot) => Promise<void>
+    >(async () => undefined);
+    const latestSnapshot: RepositorySnapshot = {
+      repositoryId: repository.id,
+      lastCommitAt: new Date("2025-01-01T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 99,
+      contributorsCount: 5,
+      status: "Stale",
+      warningReasons: ["commit_stale"],
+      fetchedAt: new Date("2025-01-02T00:00:00Z"),
+    };
+    const snapshotPort: SnapshotPort = {
+      insert: snapshotInsert,
+      findLatestByRepositoryId: vi.fn(async () => latestSnapshot),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => {
+        throw new RepositoryGatewayError("RATE_LIMIT", "rate limit", {
+          retryAfterSeconds: 60,
+        });
+      }),
+    };
+
+    const useCase = new RefreshRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositoryGateway,
+    );
+
+    const result = await useCase.execute({ repositoryId: repository.id });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe("GITHUB_RATE_LIMIT");
+      expect(result.error.detail).toEqual({
+        status: undefined,
+        retryAfterSeconds: 60,
+      });
+    }
+    expect(snapshotInsert).not.toHaveBeenCalled();
+  });
+});

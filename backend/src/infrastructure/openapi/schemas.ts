@@ -50,4 +50,10 @@ export const RepositorySnapshotSchema = z.object({
 export const RefreshErrorSchema = z.object({
   code: z.enum(refreshErrorCodeValues),
   message: z.string(),
+  detail: z
+    .object({
+      status: z.number().int().optional(),
+      retryAfterSeconds: z.number().int().nonnegative().nullable().optional(),
+    })
+    .optional(),
 });
