@@ -1,6 +1,8 @@
-import type {
-  RepositoryPort,
-  CreateRepositoryInput,
+import {
+  RepositoryAlreadyExistsError,
+  RepositoryLimitExceededError,
+  type RepositoryPort,
+  type CreateRepositoryInput,
 } from "../../application/ports/repository-port";
 import type { Repository, RepositoryId } from "../../domain/models/repository";
 import { asc, count, eq } from "drizzle-orm";
@@ -19,6 +21,10 @@ const mapRepository = (
     updatedAt: row.updatedAt,
   });
 
+const isUniqueConstraintError = (error: unknown): boolean =>
+  error instanceof Error &&
+  /UNIQUE constraint failed: repositories\.url/.test(error.message);
+
 export class DrizzleRepositoryAdapter implements RepositoryPort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
@@ -26,7 +32,23 @@ export class DrizzleRepositoryAdapter implements RepositoryPort {
     const now = new Date();
     const id = crypto.randomUUID();
 
-    await this.db.db.insert(repositoriesTable).values({
+    try {
+      await this.db.db.insert(repositoriesTable).values({
+        id,
+        url: input.url,
+        owner: input.owner,
+        name: input.name,
+        createdAt: now,
+        updatedAt: now,
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new RepositoryAlreadyExistsError();
+      }
+      throw error;
+    }
+
+    return Object.freeze({
       id,
       url: input.url,
       owner: input.owner,
@@ -34,6 +56,46 @@ export class DrizzleRepositoryAdapter implements RepositoryPort {
       createdAt: now,
       updatedAt: now,
     });
+  }
+
+  async createWithLimit(
+    input: CreateRepositoryInput,
+    limit: number,
+  ): Promise<Repository> {
+    const now = new Date();
+    const id = crypto.randomUUID();
+
+    try {
+      this.db.db.transaction((tx) => {
+        const [row] = tx
+          .select({ value: count() })
+          .from(repositoriesTable)
+          .all();
+        const repositoryCount = row?.value ?? 0;
+        if (repositoryCount >= limit) {
+          throw new RepositoryLimitExceededError(limit);
+        }
+
+        tx.insert(repositoriesTable)
+          .values({
+            id,
+            url: input.url,
+            owner: input.owner,
+            name: input.name,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .run();
+      });
+    } catch (error) {
+      if (error instanceof RepositoryLimitExceededError) {
+        throw error;
+      }
+      if (isUniqueConstraintError(error)) {
+        throw new RepositoryAlreadyExistsError();
+      }
+      throw error;
+    }
 
     return Object.freeze({
       id,

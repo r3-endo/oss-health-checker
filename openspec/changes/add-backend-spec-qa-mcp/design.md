@@ -56,6 +56,49 @@
 - Alternative considered: 内部表現を自由形式で受け渡す。
 - Why not: 実装は速いが、拡張時に破壊的変更が発生しやすい。
 
+6. ディレクトリ境界を先に固定する
+- Decision: MVP は単一リポジトリで運用し、`backend/src/mcp_qa` 以下に責務境界を明示する。
+- Rationale: オーバースペックを避けつつ、実装の見通しと保守性を確保できる。
+- Alternative considered: 初期から別リポジトリで MCP サーバーを運用する。
+- Why not: 早期段階では CI、依存、権限管理のオーバーヘッドが大きい。
+
+## Directory Layout (MVP)
+
+MVP 時点の推奨配置:
+
+```text
+backend/
+  src/
+    mcp_qa/
+      application/
+        ask_logic_qa.ts
+        find_logic_evidence.ts
+      domain/
+        models/
+          evidence.ts
+          qa_result.ts
+        policies/
+          scope_policy.ts
+          mismatch_policy.ts
+          confidence_policy.ts
+      adapters/
+        code_search/
+          rg_search_adapter.ts
+        spec_lookup/
+          openspec_spec_adapter.ts
+      interfaces/
+        mcp/
+          tools/
+            ask_logic_qa_tool.ts
+            find_logic_evidence_tool.ts
+          schemas/
+            ask_logic_qa.schema.ts
+            find_logic_evidence.schema.ts
+      tests/
+        contract/
+        integration/
+```
+
 ## Interface Contracts
 
 ### `find_logic_evidence`
@@ -141,6 +184,9 @@
 - [Risk] クライアントが独自解釈で契約外レスポンスを期待する
   → Mitigation: JSON スキーマを公開し、互換性ルール（後方互換のみ）を定義する。
 
+- [Risk] 境界ルールが崩れて `mcp_qa` が他モジュールへ密結合する
+  → Mitigation: `mcp_qa` 配下から他モジュールへの直接参照を禁止し、Port/Adapter 経由で接続する。
+
 ## Migration Plan
 
 1. `find_logic_evidence` を実装し、I/O スキーマ準拠テストを追加する。  
@@ -158,9 +204,9 @@
 5. ロールアウトとロールバック手順を適用する。  
 ロールアウト: ツール名を `v1` で公開。  
 ロールバック: `v1` を disable し、クライアントには `not_available` を返す（破壊的削除はしない）。
-
 ## Open Questions
 
 - `excerpt` の長さ上限を 240 chars から調整する必要があるか。
 - `mismatch` の重大度レベル（warning/error）を導入するか。
 - `confidence` を将来モデル依存スコアへ置き換える際の互換方針をどうするか。
+- 将来スケール時にリポジトリ分離を再評価する条件をどのメトリクスで定義するか。

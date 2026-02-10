@@ -1,6 +1,46 @@
 import type { RepositoryReadModelPort } from "../../application/ports/repository-read-model-port";
 import type { RepositoryWithLatestSnapshot } from "../../application/read-models/repository-with-latest-snapshot";
+import type { Repository } from "../../domain/models/repository";
+import type { RepositorySnapshot } from "../../domain/models/snapshot";
+import type { WarningReasonKey } from "../../domain/models/status";
+import { asc, inArray, sql } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
+import {
+  repositoriesTable,
+  snapshotsTable,
+  snapshotWarningReasonsTable,
+} from "../db/drizzle/schema";
+
+type RepositoryRow = typeof repositoriesTable.$inferSelect;
+type SnapshotRow = typeof snapshotsTable.$inferSelect;
+type SnapshotReasonRow = typeof snapshotWarningReasonsTable.$inferSelect;
+
+const mapRepository = (row: RepositoryRow): Repository =>
+  Object.freeze({
+    id: row.id,
+    url: row.url,
+    owner: row.owner,
+    name: row.name,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  });
+
+const mapSnapshot = (
+  snapshot: SnapshotRow,
+  reasons: readonly SnapshotReasonRow[],
+): RepositorySnapshot =>
+  Object.freeze({
+    repositoryId: snapshot.repositoryId,
+    lastCommitAt: snapshot.lastCommitAt,
+    lastReleaseAt: snapshot.lastReleaseAt,
+    openIssuesCount: snapshot.openIssuesCount,
+    contributorsCount: snapshot.contributorsCount,
+    status: snapshot.status as RepositorySnapshot["status"],
+    warningReasons: reasons.map(
+      (reason) => reason.reasonKey as WarningReasonKey,
+    ),
+    fetchedAt: snapshot.fetchedAt,
+  });
 
 export class DrizzleRepositoryReadModelAdapter implements RepositoryReadModelPort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
@@ -8,8 +48,78 @@ export class DrizzleRepositoryReadModelAdapter implements RepositoryReadModelPor
   async listWithLatestSnapshot(): Promise<
     readonly RepositoryWithLatestSnapshot[]
   > {
-    throw new Error(
-      `Not implemented: list with latest snapshot via ${this.db.kind}`,
-    );
+    return this.db.db.transaction((tx) => {
+      const repositoryRows = tx
+        .select()
+        .from(repositoriesTable)
+        .orderBy(asc(repositoriesTable.createdAt))
+        .all();
+
+      if (repositoryRows.length === 0) {
+        return [];
+      }
+
+      const snapshotRows = tx
+        .select()
+        .from(snapshotsTable)
+        .where(
+          sql`NOT EXISTS (
+            SELECT 1
+            FROM snapshots AS s2
+            WHERE s2.repository_id = ${snapshotsTable.repositoryId}
+              AND (
+                s2.fetched_at > ${snapshotsTable.fetchedAt}
+                OR (
+                  s2.fetched_at = ${snapshotsTable.fetchedAt}
+                  AND s2.id > ${snapshotsTable.id}
+                )
+              )
+          )`,
+        )
+        .all();
+
+      const latestSnapshotByRepository = new Map<string, SnapshotRow>();
+      for (const snapshot of snapshotRows) {
+        if (!latestSnapshotByRepository.has(snapshot.repositoryId)) {
+          latestSnapshotByRepository.set(snapshot.repositoryId, snapshot);
+        }
+      }
+
+      const latestSnapshotIds = [...latestSnapshotByRepository.values()].map(
+        (snapshot) => snapshot.id,
+      );
+
+      const reasonRows =
+        latestSnapshotIds.length > 0
+          ? tx
+              .select()
+              .from(snapshotWarningReasonsTable)
+              .where(
+                inArray(
+                  snapshotWarningReasonsTable.snapshotId,
+                  latestSnapshotIds,
+                ),
+              )
+              .all()
+          : [];
+
+      const reasonsBySnapshotId = new Map<string, SnapshotReasonRow[]>();
+      for (const reasonRow of reasonRows) {
+        const currentReasons =
+          reasonsBySnapshotId.get(reasonRow.snapshotId) ?? [];
+        currentReasons.push(reasonRow);
+        reasonsBySnapshotId.set(reasonRow.snapshotId, currentReasons);
+      }
+
+      return repositoryRows.map((repositoryRow) => {
+        const snapshot = latestSnapshotByRepository.get(repositoryRow.id);
+        return Object.freeze({
+          repository: mapRepository(repositoryRow),
+          snapshot: snapshot
+            ? mapSnapshot(snapshot, reasonsBySnapshotId.get(snapshot.id) ?? [])
+            : null,
+        });
+      });
+    });
   }
 }

@@ -35,11 +35,11 @@
 
 ## 6. Backend API (Hono)
 
-- [ ] 6.1 Write failing integration tests for `POST /repositories`, `GET /repositories`, and `POST /repositories/:id/refresh`
-- [ ] 6.2 Implement `POST /repositories` with URL validation, 3-repository limit check, and initial fetch execution
-- [ ] 6.3 Implement `GET /repositories` to return each repository with latest snapshot fields, status, reasons, `contributors_count`, and fetched timestamp
-- [ ] 6.4 Implement `POST /repositories/:id/refresh` to refetch signals, reclassify status, and return refresh outcome
-- [ ] 6.5 Implement consistent error responses for validation errors, GitHub API failures, and not-found cases
+- [x] 6.1 Write failing integration tests for `POST /repositories`, `GET /repositories`, and `POST /repositories/:id/refresh`
+- [x] 6.2 Implement `POST /repositories` with URL validation, 3-repository limit check, and initial fetch execution
+- [x] 6.3 Implement `GET /repositories` to return each repository with latest snapshot fields, status, reasons, `contributors_count`, and fetched timestamp
+- [x] 6.4 Implement `POST /repositories/:id/refresh` to refetch signals, reclassify status, and return refresh outcome
+- [x] 6.5 Implement consistent error responses for validation errors, GitHub API failures, and not-found cases
 
 ## 7. Dashboard UI (React)
 

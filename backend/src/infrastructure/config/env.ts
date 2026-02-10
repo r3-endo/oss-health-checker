@@ -8,6 +8,15 @@ const EnvSchema = z.object({
   GITHUB_TOKEN: z.string().min(1).optional(),
   GITHUB_API_TIMEOUT_MS: z.coerce.number().int().positive().default(5000),
   DATABASE_URL: z.string().min(1).default("file:./local.db"),
+  CORS_ALLOWED_ORIGINS: z
+    .string()
+    .default("http://localhost:5173")
+    .transform((value) =>
+      value
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter((origin) => origin.length > 0),
+    ),
 });
 
 export type AppEnv = Readonly<z.infer<typeof EnvSchema>>;
