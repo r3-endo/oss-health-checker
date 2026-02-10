@@ -23,6 +23,10 @@ export type RefreshRepositoryResult =
       error: RefreshError;
     }>;
 
+export interface RefreshRepositoryUseCase {
+  execute(input: RefreshRepositoryInput): Promise<RefreshRepositoryResult>;
+}
+
 export class RefreshRepositoryService {
   constructor(
     private readonly repositoryPort: RepositoryPort,

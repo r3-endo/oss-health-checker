@@ -19,7 +19,7 @@ export const mapErrorToHttp = (c: Context, error: unknown): Response => {
         error: {
           code: error.code,
           message: error.message,
-          detail: null,
+          detail: error.detail ?? null,
         },
       },
       statusByCode[error.code],

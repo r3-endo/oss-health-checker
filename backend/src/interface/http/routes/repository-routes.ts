@@ -6,7 +6,9 @@ export const createRepositoryRoutes = (
 ): Hono => {
   const route = new Hono();
 
+  route.post("/repositories", controller.create);
   route.get("/repositories", controller.list);
+  route.post("/repositories/:id/refresh", controller.refresh);
 
   return route;
 };
