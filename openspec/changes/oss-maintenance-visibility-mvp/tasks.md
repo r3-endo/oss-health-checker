@@ -27,11 +27,11 @@
 
 ## 5. Status Classification Logic
 
-- [ ] 5.1 Write failing tests for classification thresholds (`>= 6 months`, `>= 12 months`, `open issues > 100`) before implementation
-- [ ] 5.2 Add explicit unit test for `last_release_at = null` handling in classification
-- [ ] 5.3 Implement warning-condition evaluator with thresholds (`>= 6 months` commit stale, `>= 12 months` release stale, `open issues > 100`)
-- [ ] 5.4 Implement status mapper (`0 warnings = Active`, `1 warning = Stale`, `2+ warnings = Risky`)
-- [ ] 5.5 Implement reason payload builder that returns triggered warning conditions for UI/API
+- [x] 5.1 Write failing tests for classification thresholds (`>= 6 months`, `>= 12 months`, `open issues > 100`) before implementation
+- [x] 5.2 Add explicit unit test for `last_release_at = null` handling in classification
+- [x] 5.3 Implement warning-condition evaluator with thresholds (`>= 6 months` commit stale, `>= 12 months` release stale, `open issues > 100`)
+- [x] 5.4 Implement status mapper (`0 warnings = Active`, `1 warning = Stale`, `2+ warnings = Risky`)
+- [x] 5.5 Implement reason payload builder that returns triggered warning conditions for UI/API
 
 ## 6. Backend API (Hono)
 
