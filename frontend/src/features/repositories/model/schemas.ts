@@ -35,7 +35,7 @@ export const ApiErrorSchema = z.object({
       "INTERNAL_ERROR",
     ]),
     message: z.string(),
-    detail: z.record(z.unknown()).nullable().optional(),
+    detail: z.record(z.string(), z.unknown()).nullable().optional(),
   }),
 });
 
