@@ -12,3 +12,5 @@ Commands:
 - `bun run format:check`
 - `bun run lint`
 - `bun run test`
+- `bun run test:openapi-contract`
+- `bun run check:drizzle-drift`

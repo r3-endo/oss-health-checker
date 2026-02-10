@@ -13,7 +13,7 @@ on:
       - '.github/workflows/backend-ci.yml'
 
 jobs:
-  quality:
+  static-quality:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,5 +26,55 @@ jobs:
       - run: bun install
       - run: bun run format:check
       - run: bun run typecheck
+
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.1.43'
+      - run: bun install
       - run: bun run lint
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.1.43'
+      - run: bun install
       - run: bun run test
+
+  openapi-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.1.43'
+      - run: bun install
+      - run: bun run test:openapi-contract
+
+  drizzle-schema-drift:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.1.43'
+      - run: bun install
+      - run: bun run check:drizzle-drift

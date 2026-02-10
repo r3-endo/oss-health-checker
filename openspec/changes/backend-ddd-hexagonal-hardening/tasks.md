@@ -1,8 +1,8 @@
 ## 1. Quality Gates and TDD Baseline
 
-- [ ] 1.1 `backend` に本変更用の失敗系テスト計画を追加し、各 capability ごとの Red ケースを先に作成する
-- [ ] 1.2 `bun run test` / `bun run lint` を本変更のローカル・CI共通 entrypoint として整理する
-- [ ] 1.3 OpenAPI contract テストジョブと schema/migration drift ジョブを CI 必須化し、ジョブ名と実行スクリプト名を定義する
+- [x] 1.1 `backend` に本変更用の失敗系テスト計画を追加し、各 capability ごとの Red ケースを先に作成する
+- [x] 1.2 `bun run test` / `bun run lint` を本変更のローカル・CI共通 entrypoint として整理する
+- [x] 1.3 OpenAPI contract テストジョブと schema/migration drift ジョブを CI 必須化し、ジョブ名と実行スクリプト名を定義する
 
 ## 2. Application Error Contract Unification
 
