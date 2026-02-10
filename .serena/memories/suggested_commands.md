@@ -1,0 +1,5 @@
+- Repo listing/search: `rg --files`, `rg <pattern>`.
+- OpenSpec: `npx --yes openspec list --json`, `npx --yes openspec status --change <name> --json`, `npx --yes openspec instructions apply --change <name> --json`.
+- Backend quality: `cd backend && bun run typecheck && bun run lint && bun run test`.
+- Frontend quality: `cd frontend && bun run typecheck && bun run lint && bun run test`.
+- Git: `git status --short --branch`, `git checkout -b <branch>`.

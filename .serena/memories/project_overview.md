@@ -1,0 +1,4 @@
+- Purpose: OpenSpec-driven OSS maintenance visibility MVP.
+- Stack: Backend TypeScript + Hono + Drizzle + SQLite, Frontend React + TypeScript.
+- Monorepo-like layout with `backend/`, `frontend/`, `openspec/`, and docs.
+- Development process is spec-driven and task-oriented via OpenSpec artifacts.

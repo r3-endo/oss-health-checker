@@ -1,0 +1,4 @@
+- Follow AGENTS.md: spec is source of truth, plan/execute separation, TDD (Red->Green->Refactor).
+- Backend architecture: layered (controller/use-case/repository/infrastructure), port/adapter boundaries.
+- Prefer immutable/readonly data models and explicit domain types.
+- Package manager and scripts use Bun (`bun install`, `bun run <script>`).
