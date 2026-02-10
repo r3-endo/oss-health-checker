@@ -9,7 +9,10 @@
     "lint": "bunx eslint . --ext .ts",
     "format": "bunx prettier --write .",
     "format:check": "bunx prettier --check .",
-    "test": "bunx vitest run"
+    "test": "bunx vitest run",
+    "test:openapi-contract": "bunx vitest run tests/contracts/openapi-route-binding.contract.test.ts",
+    "db:drizzle:generate": "bunx drizzle-kit generate --config drizzle.config.ts",
+    "check:drizzle-drift": "bun run db:drizzle:generate && bash scripts/check-drizzle-drift.sh"
   },
   "dependencies": {
     "@hono/zod-openapi": "^1.2.1",
