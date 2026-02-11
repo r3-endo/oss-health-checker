@@ -22,4 +22,35 @@ export default [
       "no-undef": "off",
     },
   },
+  {
+    files: [
+      "src/infrastructure/repositories/drizzle-snapshot-adapter.ts",
+      "src/infrastructure/repositories/drizzle-repository-read-model-adapter.ts",
+    ],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "TSAsExpression",
+          message:
+            "Use runtime validation helpers instead of `as` casts for persisted enum-like values.",
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/application/**/*.ts",
+      "src/domain/**/*.ts",
+      "src/interface/**/*.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["**/infrastructure/**"],
+        },
+      ],
+    },
+  },
 ];

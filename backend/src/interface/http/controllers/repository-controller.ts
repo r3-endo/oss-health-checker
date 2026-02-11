@@ -1,17 +1,8 @@
-import type { Context } from "hono";
-import { z } from "zod";
-import { ApplicationError } from "../../../application/errors/application-error";
 import type { ListRepositoriesWithLatestSnapshotUseCase } from "../../../application/use-cases/list-repositories-with-latest-snapshot-use-case";
+import type { RefreshRepositoryInput } from "../../../application/use-cases/refresh-repository-use-case";
 import type { RefreshRepositoryUseCase } from "../../../application/use-cases/refresh-repository-use-case";
+import type { RegisterRepositoryInput } from "../../../application/use-cases/register-repository-use-case";
 import type { RegisterRepositoryUseCase } from "../../../application/use-cases/register-repository-use-case";
-
-const RegisterRepositoryBodySchema = z.object({
-  url: z.string().url(),
-});
-
-const RepositoryParamsSchema = z.object({
-  id: z.string().min(1),
-});
 
 export class RepositoryController {
   constructor(
@@ -20,34 +11,36 @@ export class RepositoryController {
     private readonly refreshRepositoryUseCase: RefreshRepositoryUseCase,
   ) {}
 
-  list = async (c: Context): Promise<Response> => {
+  list = async (): Promise<
+    Readonly<{
+      data: Awaited<
+        ReturnType<ListRepositoriesWithLatestSnapshotUseCase["execute"]>
+      >;
+    }>
+  > => {
     const data = await this.listRepositoriesWithLatestSnapshotUseCase.execute();
-    return c.json({ data });
+    return { data };
   };
 
-  create = async (c: Context): Promise<Response> => {
-    const payload = await c.req.json().catch(() => {
-      throw new ApplicationError("VALIDATION_ERROR", "Invalid JSON body");
-    });
-
-    const parsed = RegisterRepositoryBodySchema.safeParse(payload);
-    if (!parsed.success) {
-      throw new ApplicationError("VALIDATION_ERROR", "Invalid repository URL");
-    }
-
-    const data = await this.registerRepositoryUseCase.execute(parsed.data);
-    return c.json({ data }, 201);
+  create = async (
+    input: RegisterRepositoryInput,
+  ): Promise<
+    Readonly<{
+      data: Awaited<ReturnType<RegisterRepositoryUseCase["execute"]>>;
+    }>
+  > => {
+    const data = await this.registerRepositoryUseCase.execute(input);
+    return { data };
   };
 
-  refresh = async (c: Context): Promise<Response> => {
-    const parsed = RepositoryParamsSchema.safeParse(c.req.param());
-    if (!parsed.success) {
-      throw new ApplicationError("VALIDATION_ERROR", "Invalid repository id");
-    }
-
-    const data = await this.refreshRepositoryUseCase.execute({
-      repositoryId: parsed.data.id,
-    });
-    return c.json({ data });
+  refresh = async (
+    input: RefreshRepositoryInput,
+  ): Promise<
+    Readonly<{
+      data: Awaited<ReturnType<RefreshRepositoryUseCase["execute"]>>;
+    }>
+  > => {
+    const data = await this.refreshRepositoryUseCase.execute(input);
+    return { data };
   };
 }

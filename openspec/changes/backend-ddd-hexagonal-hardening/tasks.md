@@ -23,36 +23,41 @@
 
 ## 4. OpenAPI Runtime Contract Binding
 
-- [ ] 4.1 `repository-routes` を OpenAPI バインディング対応へ移行し、3 endpoint（POST/GET/refresh）を contract 化する
-- [ ] 4.2 register/list/refresh の request/response/error schema を route 定義へ接続する
-- [ ] 4.3 controller 内の重複 Zod 入力検証を削減し、route schema を単一入力契約にする
-- [ ] 4.4 OpenAPI ドキュメント生成を runtime route 定義由来へ統一する
-- [ ] 4.5 OpenAPI 未接続 endpoint が存在した場合に失敗する contract テスト（例: `backend/tests/contracts/openapi-route-binding.test.ts`）を実装する
+- [x] 4.1 `repository-routes` を OpenAPI バインディング対応へ移行し、3 endpoint（POST/GET/refresh）を contract 化する
+- [x] 4.2 register/list/refresh の request/response/error schema を route 定義へ接続する
+- [x] 4.3 controller 内の重複 Zod 入力検証を削減し、route schema を単一入力契約にする
+- [x] 4.4 OpenAPI ドキュメント生成を runtime route 定義由来へ統一する
+- [x] 4.5 OpenAPI 未接続 endpoint が存在した場合に失敗する contract テスト（例: `backend/tests/contracts/openapi-route-binding.test.ts`）を実装する
 
 ## 5. Adapter Runtime Type Safety
 
-- [ ] 5.1 `drizzle-snapshot-adapter` の status / warningReasons 変換で runtime validation（type guard または zod）を実装する
-- [ ] 5.2 `drizzle-repository-read-model-adapter` の同等変換箇所で unsafe cast を除去する
-- [ ] 5.3 未知 status 値・未知 warning reason 値を与えた場合に fail-fast するテストを追加する
-- [ ] 5.4 不正永続化値を検出した際の `ApplicationError("INTERNAL_ERROR")` 変換と detail 付与を実装する
-- [ ] 5.5 enum-like フィールド変換に `as` キャストを再導入できないよう lint かレビューガードを追加する
+- [x] 5.1 `drizzle-snapshot-adapter` の status / warningReasons 変換で runtime validation（type guard または zod）を実装する
+- [x] 5.2 `drizzle-repository-read-model-adapter` の同等変換箇所で unsafe cast を除去する
+- [x] 5.3 未知 status 値・未知 warning reason 値を与えた場合に fail-fast するテストを追加する
+- [x] 5.4 不正永続化値を検出した際の `ApplicationError("INTERNAL_ERROR")` 変換と detail 付与を実装する
+- [x] 5.5 enum-like フィールド変換に `as` キャストを再導入できないよう lint かレビューガードを追加する
 
 ## 6. Drizzle Schema and Migration Governance
 
-- [ ] 6.1 migration 実行経路を Drizzle schema 起点の単一フローへ整理し、`migrate.ts` 手書き SQL 依存を段階的に削減する
-- [ ] 6.2 schema 変更時に migration artifact 更新が必須になるよう開発手順とスクリプトを整備する
-- [ ] 6.3 schema/migration drift 検知コマンド（例: `bun run check:drizzle-drift`）を追加し、CI で差分時に失敗させる
-- [ ] 6.4 drift 失敗ログに再生成用の具体コマンドを表示する
-- [ ] 6.5 ローカルと CI が同一 migration コマンド系を実行することを検証テストまたはジョブで保証する
+- [x] 6.1 migration 実行経路を Drizzle schema 起点の単一フローへ整理し、`migrate.ts` 手書き SQL 依存を段階的に削減する
+- [x] 6.2 schema 変更時に migration artifact 更新が必須になるよう開発手順とスクリプトを整備する
+- [x] 6.3 schema/migration drift 検知コマンド（例: `bun run check:drizzle-drift`）を追加し、CI で差分時に失敗させる
+- [x] 6.4 drift 失敗ログに再生成用の具体コマンドを表示する
+- [x] 6.5 ローカルと CI が同一 migration コマンド系を実行することを検証テストまたはジョブで保証する
 
 ## 7. Regression and Documentation
 
-- [ ] 7.1 `eslint` `no-restricted-imports` でレイヤ境界（application/domain/interface → infrastructure 直接依存禁止）を強制する
-- [ ] 7.2 失敗系（外部依存失敗・境界値・null）を先に書く TDD 手順を backend 開発ドキュメントに明記する
-- [ ] 7.3 本変更の API 契約差分（refresh エラー契約変更）と移行注意点をドキュメント化する
-- [ ] 7.4 最終回帰として `bun run lint` と `bun run test` を実行し、結果を change に記録する
+- [x] 7.1 `eslint` `no-restricted-imports` でレイヤ境界（application/domain/interface → infrastructure 直接依存禁止）を強制する
+- [x] 7.2 失敗系（外部依存失敗・境界値・null）を先に書く TDD 手順を backend 開発ドキュメントに明記する
+- [x] 7.3 本変更の API 契約差分（refresh エラー契約変更）と移行注意点をドキュメント化する
+- [x] 7.4 最終回帰として `bun run lint` と `bun run test` を実行し、結果を change に記録する
 
 ## 8. Optional DDD Purity Improvements
 
-- [ ] 8.1 `snapshot-factory` の業務判定ロジックを domain service/value object へ移す可否を評価し、採用/defer の設計判断と理由を記録する
-- [ ] 8.2 GitHub URL 正規化の value object 化を実施するか defer するかを判断し、理由・影響範囲・移行方針を記録する
+- [x] 8.1 `snapshot-factory` の業務判定ロジックを domain service/value object へ移す可否を評価し、採用/defer の設計判断と理由を記録する
+- [x] 8.2 GitHub URL 正規化の value object 化を実施するか defer するかを判断し、理由・影響範囲・移行方針を記録する
+
+## Regression Log
+
+- 2026-02-11: `cd backend && bun run lint` ✅
+- 2026-02-11: `cd backend && bun run test` ✅ (`10` files passed, `42` tests passed, `4` todo)

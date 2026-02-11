@@ -125,3 +125,15 @@
 - `UnitOfWorkPort` の tx 伝搬をどこまで明示化するか（adapter 内暗黙保持 vs context 引数で明示）。
 - OpenAPI 生成物（JSON/YAML）をリポジトリに commit するか、CI 生成のみで運用するか。
 - runtime validation 実装を zod に統一するか、軽量 type guard を併用するか（性能要件次第）。
+
+## Post-Implementation Decisions
+
+1. `snapshot-factory` の業務判定ロジックは今回は **defer** とする。
+- 理由: 現在の判定は副作用がなく、ドメイン知識の散逸よりも変更コストが上回るため。
+- 影響: 既存の `application/services/snapshot-factory.ts` を維持し、境界条件テストで挙動を固定する。
+- 将来方針: 判定ルールが増えた時点で domain service へ昇格を再評価する。
+
+2. GitHub URL 正規化の value object 化は今回は **defer** とする。
+- 理由: `parseGitHubRepositoryUrl` は既に pure function + テストで安定しており、現時点では導入効果が限定的。
+- 影響: 現行の application service を維持し、入力契約は route schema と use case で担保する。
+- 将来方針: URL 正規化ルールが複数 provider に拡張されるタイミングで value object 化を再検討する。
