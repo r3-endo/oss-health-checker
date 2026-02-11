@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { ApplicationError } from "../../application/errors/application-error";
+import { ApplicationError } from "../../application/errors/application-error.js";
 import {
   REPOSITORY_STATUSES,
   WARNING_REASON_KEYS,
   type RepositoryStatus,
   type WarningReasonKey,
-} from "../../domain/models/status";
+} from "../../domain/models/status.js";
 
 const PersistedStatusSchema = z.enum(REPOSITORY_STATUSES);
 const PersistedWarningReasonSchema = z.enum(WARNING_REASON_KEYS);

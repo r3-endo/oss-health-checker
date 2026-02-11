@@ -1,8 +1,8 @@
-import type { ListRepositoriesWithLatestSnapshotUseCase } from "../../../application/use-cases/list-repositories-with-latest-snapshot-use-case";
-import type { RefreshRepositoryInput } from "../../../application/use-cases/refresh-repository-use-case";
-import type { RefreshRepositoryUseCase } from "../../../application/use-cases/refresh-repository-use-case";
-import type { RegisterRepositoryInput } from "../../../application/use-cases/register-repository-use-case";
-import type { RegisterRepositoryUseCase } from "../../../application/use-cases/register-repository-use-case";
+import type { ListRepositoriesWithLatestSnapshotUseCase } from "../../../application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import type { RefreshRepositoryInput } from "../../../application/use-cases/refresh-repository-use-case.js";
+import type { RefreshRepositoryUseCase } from "../../../application/use-cases/refresh-repository-use-case.js";
+import type { RegisterRepositoryInput } from "../../../application/use-cases/register-repository-use-case.js";
+import type { RegisterRepositoryUseCase } from "../../../application/use-cases/register-repository-use-case.js";
 
 export class RepositoryController {
   constructor(

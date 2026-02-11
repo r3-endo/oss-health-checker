@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { RepositoryController } from "../controllers/repository-controller";
+import { RepositoryController } from "../controllers/repository-controller.js";
 import {
   ExternalApiErrorResponseSchema,
   InternalErrorResponseSchema,
@@ -11,7 +11,7 @@ import {
   RegisterRepositoryRequestSchema,
   RegisterRepositoryResponseSchema,
   ValidationErrorResponseSchema,
-} from "../openapi/schemas";
+} from "../openapi/schemas.js";
 
 const createRepositoryRoute = createRoute({
   method: "post",

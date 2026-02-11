@@ -2,8 +2,8 @@ import {
   RepositoryGatewayError,
   type RepositoryGatewayPort,
   type RepositorySignals,
-} from "../../application/ports/repository-gateway-port";
-import type { AppEnv } from "../config/env";
+} from "../../application/ports/repository-gateway-port.js";
+import type { AppEnv } from "../config/env.js";
 
 type FetchFn = typeof fetch;
 
@@ -88,10 +88,14 @@ const parseLastPageFromLinkHeader = (
   if (!match) {
     return null;
   }
+  const lastUrl = match[1];
+  if (!lastUrl) {
+    return null;
+  }
 
   let parsedUrl: URL;
   try {
-    parsedUrl = new URL(match[1]);
+    parsedUrl = new URL(lastUrl);
   } catch {
     return null;
   }

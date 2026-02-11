@@ -2,14 +2,14 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { ApplicationError } from "../../src/application/errors/application-error";
+import { ApplicationError } from "../../src/application/errors/application-error.js";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/infrastructure/db/drizzle/client";
-import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate";
-import { DrizzleRepositoryReadModelAdapter } from "../../src/infrastructure/repositories/drizzle-repository-read-model-adapter";
-import { DrizzleSnapshotAdapter } from "../../src/infrastructure/repositories/drizzle-snapshot-adapter";
+} from "../../src/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositoryReadModelAdapter } from "../../src/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleSnapshotAdapter } from "../../src/infrastructure/repositories/drizzle-snapshot-adapter.js";
 
 const insertRepository = (db: DrizzleDatabaseHandle, id = "r1"): void => {
   const now = Date.now();

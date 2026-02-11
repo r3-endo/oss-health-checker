@@ -1,9 +1,9 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
-import type { AppContainer } from "./build-container";
-import { createRepositoryRoutes } from "../interface/http/routes/repository-routes";
-import { mapErrorToHttp } from "../interface/http/error-mapper";
+import type { AppContainer } from "./build-container.js";
+import { createRepositoryRoutes } from "../interface/http/routes/repository-routes.js";
+import { mapErrorToHttp } from "../interface/http/error-mapper.js";
 
 export const buildApp = (container: AppContainer): OpenAPIHono => {
   const app = new OpenAPIHono();

@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { ApplicationError } from "../../application/errors/application-error";
+import { ApplicationError } from "../../application/errors/application-error.js";
 
 export const mapErrorToHttp = (c: Context, error: unknown): Response => {
   if (error instanceof ApplicationError) {

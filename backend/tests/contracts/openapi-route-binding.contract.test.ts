@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { createRepositoryRoutes } from "../../src/interface/http/routes/repository-routes";
+import { createRepositoryRoutes } from "../../src/interface/http/routes/repository-routes.js";
 
 const normalizePathParams = (path: string): string =>
   path.replace(/:([^/]+)/g, "{$1}");

@@ -4,11 +4,11 @@ import {
   type RepositoryStatus,
   WARNING_REASON_KEYS,
   type WarningReasonKey,
-} from "../../../domain/models/status";
+} from "../../../domain/models/status.js";
 import {
   APPLICATION_ERROR_CODES,
   type ApplicationErrorCode,
-} from "../../../application/errors/application-error";
+} from "../../../application/errors/application-error.js";
 
 const repositoryStatusValues = [...REPOSITORY_STATUSES] as [
   RepositoryStatus,

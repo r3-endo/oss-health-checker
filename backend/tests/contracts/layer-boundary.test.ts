@@ -23,6 +23,9 @@ describe("layer boundary: application must not depend on infrastructure", () => 
       const lines = content.split("\n");
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        if (!line) {
+          continue;
+        }
         if (
           /(?:from\s+|import\s+|require\().*drizzle/.test(line) ||
           /(?:from\s+|import\s+|require\().*infrastructure/.test(line)

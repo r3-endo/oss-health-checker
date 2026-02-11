@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSnapshotFromSignals } from "../../src/application/services/snapshot-factory";
+import { buildSnapshotFromSignals } from "../../src/application/services/snapshot-factory.js";
 
 describe("snapshot classification", () => {
   it("marks commit warning when last commit is exactly 6 months old", () => {

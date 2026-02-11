@@ -1,6 +1,6 @@
-import type { Repository } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
-import type { CreateRepositoryInput } from "./repository-port";
+import type { Repository } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
+import type { CreateRepositoryInput } from "./repository-port.js";
 
 export interface TransactionRepositoryPort {
   createWithLimit(input: CreateRepositoryInput, limit: number): Repository;

@@ -1,4 +1,4 @@
-import type { RepositoryStatus, WarningReasonKey } from "./status";
+import type { RepositoryStatus, WarningReasonKey } from "./status.js";
 
 export type RepositorySnapshot = Readonly<{
   repositoryId: string;

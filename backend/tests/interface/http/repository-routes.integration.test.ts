@@ -5,19 +5,19 @@ import path from "node:path";
 import {
   RepositoryGatewayError,
   type RepositoryGatewayPort,
-} from "../../../src/application/ports/repository-gateway-port";
-import { ListRepositoriesWithLatestSnapshotService } from "../../../src/application/use-cases/list-repositories-with-latest-snapshot-use-case";
-import { RefreshRepositoryService } from "../../../src/application/use-cases/refresh-repository-use-case";
-import { RegisterRepositoryService } from "../../../src/application/use-cases/register-repository-use-case";
-import { buildApp } from "../../../src/bootstrap/build-app";
-import type { AppEnv } from "../../../src/infrastructure/config/env";
-import { createDrizzleHandle } from "../../../src/infrastructure/db/drizzle/client";
-import { migrateDrizzleDatabase } from "../../../src/infrastructure/db/drizzle/migrate";
-import { DrizzleRepositoryAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-adapter";
-import { DrizzleRepositoryReadModelAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-read-model-adapter";
-import { DrizzleSnapshotAdapter } from "../../../src/infrastructure/repositories/drizzle-snapshot-adapter";
-import { DrizzleUnitOfWorkAdapter } from "../../../src/infrastructure/repositories/drizzle-unit-of-work-adapter";
-import { RepositoryController } from "../../../src/interface/http/controllers/repository-controller";
+} from "../../../src/application/ports/repository-gateway-port.js";
+import { ListRepositoriesWithLatestSnapshotService } from "../../../src/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import { RefreshRepositoryService } from "../../../src/application/use-cases/refresh-repository-use-case.js";
+import { RegisterRepositoryService } from "../../../src/application/use-cases/register-repository-use-case.js";
+import { buildApp } from "../../../src/bootstrap/build-app.js";
+import type { AppEnv } from "../../../src/infrastructure/config/env.js";
+import { createDrizzleHandle } from "../../../src/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../../../src/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositoryAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-adapter.js";
+import { DrizzleRepositoryReadModelAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleSnapshotAdapter } from "../../../src/infrastructure/repositories/drizzle-snapshot-adapter.js";
+import { DrizzleUnitOfWorkAdapter } from "../../../src/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { RepositoryController } from "../../../src/interface/http/controllers/repository-controller.js";
 
 type MutableSignals = {
   lastCommitAt: Date;

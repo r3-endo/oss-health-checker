@@ -2,21 +2,21 @@ import {
   RepositoryAlreadyExistsError,
   RepositoryLimitExceededError,
   type CreateRepositoryInput,
-} from "../../application/ports/repository-port";
+} from "../../application/ports/repository-port.js";
 import type {
   TransactionRepositoryPort,
   TransactionSnapshotPort,
   UnitOfWorkPort,
-} from "../../application/ports/unit-of-work-port";
-import type { Repository } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
+} from "../../application/ports/unit-of-work-port.js";
+import type { Repository } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import { count } from "drizzle-orm";
-import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
+import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import {
   repositoriesTable,
   snapshotsTable,
   snapshotWarningReasonsTable,
-} from "../db/drizzle/schema";
+} from "../db/drizzle/schema.js";
 
 type DrizzleTransaction = Parameters<
   Parameters<DrizzleDatabaseHandle["db"]["transaction"]>[0]

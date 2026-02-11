@@ -1,18 +1,18 @@
-import type { RepositoryReadModelPort } from "../../application/ports/repository-read-model-port";
-import type { RepositoryWithLatestSnapshot } from "../../application/read-models/repository-with-latest-snapshot";
-import type { Repository } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
+import type { RepositoryReadModelPort } from "../../application/ports/repository-read-model-port.js";
+import type { RepositoryWithLatestSnapshot } from "../../application/read-models/repository-with-latest-snapshot.js";
+import type { Repository } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import { asc, inArray, sql } from "drizzle-orm";
-import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
+import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import {
   repositoriesTable,
   snapshotsTable,
   snapshotWarningReasonsTable,
-} from "../db/drizzle/schema";
+} from "../db/drizzle/schema.js";
 import {
   parsePersistedStatus,
   parsePersistedWarningReason,
-} from "./persisted-snapshot-validation";
+} from "./persisted-snapshot-validation.js";
 
 type RepositoryRow = typeof repositoriesTable.$inferSelect;
 type SnapshotRow = typeof snapshotsTable.$inferSelect;

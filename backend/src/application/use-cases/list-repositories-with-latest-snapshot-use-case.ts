@@ -1,6 +1,6 @@
-import { ApplicationError } from "../errors/application-error";
-import type { RepositoryReadModelPort } from "../ports/repository-read-model-port";
-import type { RepositoryWithLatestSnapshot } from "../read-models/repository-with-latest-snapshot";
+import { ApplicationError } from "../errors/application-error.js";
+import type { RepositoryReadModelPort } from "../ports/repository-read-model-port.js";
+import type { RepositoryWithLatestSnapshot } from "../read-models/repository-with-latest-snapshot.js";
 
 export interface ListRepositoriesWithLatestSnapshotUseCase {
   execute(): Promise<readonly RepositoryWithLatestSnapshot[]>;
