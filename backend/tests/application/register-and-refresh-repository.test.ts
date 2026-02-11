@@ -7,6 +7,12 @@ import {
 } from "../../src/application/ports/repository-port";
 import type { SnapshotPort } from "../../src/application/ports/snapshot-port";
 import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port";
+import type {
+  UnitOfWorkPort,
+  TransactionPorts,
+  TransactionRepositoryPort,
+  TransactionSnapshotPort,
+} from "../../src/application/ports/unit-of-work-port";
 import { RegisterRepositoryService } from "../../src/application/use-cases/register-repository-use-case";
 import { RefreshRepositoryService } from "../../src/application/use-cases/refresh-repository-use-case";
 import type { Repository } from "../../src/domain/models/repository";
@@ -21,26 +27,39 @@ const buildRepository = (): Repository => ({
   updatedAt: new Date("2026-01-01T00:00:00Z"),
 });
 
+const buildMockUnitOfWork = (overrides?: {
+  repositoryPort?: Partial<TransactionRepositoryPort>;
+  snapshotPort?: Partial<TransactionSnapshotPort>;
+}): UnitOfWorkPort => {
+  const repository = buildRepository();
+  const txRepositoryPort: TransactionRepositoryPort = {
+    createWithLimit:
+      overrides?.repositoryPort?.createWithLimit ?? (() => repository),
+  };
+  const txSnapshotPort: TransactionSnapshotPort = {
+    insert: overrides?.snapshotPort?.insert ?? (() => undefined),
+  };
+  return {
+    async runInTransaction<T>(
+      work: (ports: TransactionPorts) => T,
+    ): Promise<T> {
+      return work({
+        repositoryPort: txRepositoryPort,
+        snapshotPort: txSnapshotPort,
+      });
+    },
+  };
+};
+
 describe("repository signal ingestion use-cases", () => {
   it("creates initial snapshot immediately after repository registration", async () => {
     const repository = buildRepository();
+    const snapshotInsert = vi.fn<(snapshot: RepositorySnapshot) => void>();
 
-    const repositoryPort: RepositoryPort = {
-      create: vi.fn(async () => repository),
-      createWithLimit: vi.fn(async () => repository),
-      list: vi.fn(async () => [repository]),
-      findById: vi.fn(async () => repository),
-      count: vi.fn(async () => 0),
-    };
-
-    const snapshotInsert = vi.fn<
-      (snapshot: RepositorySnapshot) => Promise<void>
-    >(async () => undefined);
-    const snapshotPort: SnapshotPort = {
-      insert: snapshotInsert,
-      findLatestByRepositoryId: vi.fn(async () => null),
-      findLatestForAllRepositories: vi.fn(async () => []),
-    };
+    const unitOfWork = buildMockUnitOfWork({
+      repositoryPort: { createWithLimit: () => repository },
+      snapshotPort: { insert: snapshotInsert },
+    });
 
     const repositoryGateway: RepositoryGatewayPort = {
       fetchSignals: vi.fn(async () => ({
@@ -52,8 +71,7 @@ describe("repository signal ingestion use-cases", () => {
     };
 
     const useCase = new RegisterRepositoryService(
-      repositoryPort,
-      snapshotPort,
+      unitOfWork,
       repositoryGateway,
     );
 
@@ -70,22 +88,11 @@ describe("repository signal ingestion use-cases", () => {
   });
 
   it("does not create repository when initial fetch fails", async () => {
-    const repository = buildRepository();
-    const createWithLimitMock = vi.fn(async () => repository);
+    const createWithLimit = vi.fn(() => buildRepository());
 
-    const repositoryPort: RepositoryPort = {
-      create: vi.fn(async () => repository),
-      createWithLimit: createWithLimitMock,
-      list: vi.fn(async () => [repository]),
-      findById: vi.fn(async () => repository),
-      count: vi.fn(async () => 0),
-    };
-
-    const snapshotPort: SnapshotPort = {
-      insert: vi.fn(async () => undefined),
-      findLatestByRepositoryId: vi.fn(async () => null),
-      findLatestForAllRepositories: vi.fn(async () => []),
-    };
+    const unitOfWork = buildMockUnitOfWork({
+      repositoryPort: { createWithLimit },
+    });
 
     const repositoryGateway: RepositoryGatewayPort = {
       fetchSignals: vi.fn(async () => {
@@ -94,8 +101,7 @@ describe("repository signal ingestion use-cases", () => {
     };
 
     const useCase = new RegisterRepositoryService(
-      repositoryPort,
-      snapshotPort,
+      unitOfWork,
       repositoryGateway,
     );
 
@@ -108,27 +114,17 @@ describe("repository signal ingestion use-cases", () => {
       code: "EXTERNAL_API_ERROR",
       message: "upstream failed",
     });
-    expect(createWithLimitMock).not.toHaveBeenCalled();
+    expect(createWithLimit).not.toHaveBeenCalled();
   });
 
   it("maps duplicate repository to validation error", async () => {
-    const repository = buildRepository();
-
-    const repositoryPort: RepositoryPort = {
-      create: vi.fn(async () => repository),
-      createWithLimit: vi.fn(async () => {
-        throw new RepositoryAlreadyExistsError();
-      }),
-      list: vi.fn(async () => [repository]),
-      findById: vi.fn(async () => repository),
-      count: vi.fn(async () => 0),
-    };
-
-    const snapshotPort: SnapshotPort = {
-      insert: vi.fn(async () => undefined),
-      findLatestByRepositoryId: vi.fn(async () => null),
-      findLatestForAllRepositories: vi.fn(async () => []),
-    };
+    const unitOfWork = buildMockUnitOfWork({
+      repositoryPort: {
+        createWithLimit: () => {
+          throw new RepositoryAlreadyExistsError();
+        },
+      },
+    });
 
     const repositoryGateway: RepositoryGatewayPort = {
       fetchSignals: vi.fn(async () => ({
@@ -140,8 +136,7 @@ describe("repository signal ingestion use-cases", () => {
     };
 
     const useCase = new RegisterRepositoryService(
-      repositoryPort,
-      snapshotPort,
+      unitOfWork,
       repositoryGateway,
     );
 

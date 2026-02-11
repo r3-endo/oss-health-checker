@@ -15,11 +15,11 @@
 
 ## 3. Transactional Use-Case Boundary
 
-- [ ] 3.1 `application/ports` に `UnitOfWorkPort` と `TransactionPorts`（`repositoryPort` / `snapshotPort`）を追加する
-- [ ] 3.2 Drizzle 用 `DrizzleUnitOfWorkAdapter` を実装し、単一 transaction 内で tx スコープ adapter を提供する
-- [ ] 3.3 `RegisterRepositoryService` を `runInTransaction` ベースへ移行し、repository 作成と snapshot 作成を同一境界で実行する
-- [ ] 3.4 snapshot 書き込み失敗時に repository がロールバックされることを再現テストで保証する
-- [ ] 3.5 application 層から drizzle 型/モジュールに直接依存していないことを静的検査で確認する
+- [x] 3.1 `application/ports` に `UnitOfWorkPort` と `TransactionPorts`（`repositoryPort` / `snapshotPort`）を追加する
+- [x] 3.2 Drizzle 用 `DrizzleUnitOfWorkAdapter` を実装し、単一 transaction 内で tx スコープ adapter を提供する
+- [x] 3.3 `RegisterRepositoryService` を `runInTransaction` ベースへ移行し、repository 作成と snapshot 作成を同一境界で実行する
+- [x] 3.4 snapshot 書き込み失敗時に repository がロールバックされることを再現テストで保証する
+- [x] 3.5 application 層から drizzle 型/モジュールに直接依存していないことを静的検査で確認する
 
 ## 4. OpenAPI Runtime Contract Binding
 
