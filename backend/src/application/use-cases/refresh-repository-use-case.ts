@@ -1,4 +1,3 @@
-import type { RefreshError } from "../../domain/errors/refresh-error";
 import type { RepositorySnapshot } from "../../domain/models/snapshot";
 import { ApplicationError } from "../errors/application-error";
 import {
@@ -13,15 +12,10 @@ export type RefreshRepositoryInput = Readonly<{
   repositoryId: string;
 }>;
 
-export type RefreshRepositoryResult =
-  | Readonly<{
-      ok: true;
-      snapshot: RepositorySnapshot;
-    }>
-  | Readonly<{
-      ok: false;
-      error: RefreshError;
-    }>;
+export type RefreshRepositoryResult = Readonly<{
+  ok: true;
+  snapshot: RepositorySnapshot;
+}>;
 
 export interface RefreshRepositoryUseCase {
   execute(input: RefreshRepositoryInput): Promise<RefreshRepositoryResult>;
@@ -58,31 +52,24 @@ export class RefreshRepositoryService {
     } catch (error: unknown) {
       if (error instanceof RepositoryGatewayError) {
         if (error.code === "RATE_LIMIT") {
-          return this.failureResult("GITHUB_RATE_LIMIT", error.message, {
+          throw new ApplicationError("RATE_LIMIT", error.message, {
             status: error.detail?.status,
             retryAfterSeconds: error.detail?.retryAfterSeconds ?? null,
           });
         }
-        return this.failureResult("GITHUB_API_ERROR", error.message, {
+
+        throw new ApplicationError("EXTERNAL_API_ERROR", error.message, {
           status: error.detail?.status,
         });
       }
-      throw error;
-    }
-  }
 
-  private failureResult(
-    code: RefreshError["code"],
-    message: string,
-    detail?: RefreshError["detail"],
-  ): RefreshRepositoryResult {
-    return Object.freeze({
-      ok: false,
-      error: {
-        code,
-        message,
-        detail,
-      },
-    });
+      if (error instanceof ApplicationError) {
+        throw error;
+      }
+
+      throw new ApplicationError("INTERNAL_ERROR", "Failed to refresh", {
+        cause: error instanceof Error ? error.message : "unknown",
+      });
+    }
   }
 }

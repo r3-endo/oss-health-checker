@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { ApplicationError } from "../../src/application/errors/application-error";
 import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port";
 import {
   RepositoryAlreadyExistsError,
@@ -155,7 +156,7 @@ describe("repository signal ingestion use-cases", () => {
     });
   });
 
-  it("keeps previous successful snapshot when refresh fails by rate limit", async () => {
+  it("throws rate-limit ApplicationError and keeps previous snapshot when refresh fails", async () => {
     const repository = buildRepository();
 
     const repositoryPort: RepositoryPort = {
@@ -199,16 +200,96 @@ describe("repository signal ingestion use-cases", () => {
       repositoryGateway,
     );
 
-    const result = await useCase.execute({ repositoryId: repository.id });
+    const execution = useCase.execute({ repositoryId: repository.id });
 
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.error.code).toBe("GITHUB_RATE_LIMIT");
-      expect(result.error.detail).toEqual({
+    await expect(execution).rejects.toMatchObject({
+      name: "ApplicationError",
+      code: "RATE_LIMIT",
+      message: "rate limit",
+      detail: {
         status: undefined,
         retryAfterSeconds: 60,
-      });
-    }
+      },
+    });
     expect(snapshotInsert).not.toHaveBeenCalled();
+  });
+
+  it("maps non-rate-limit gateway failure to EXTERNAL_API_ERROR", async () => {
+    const repository = buildRepository();
+    const repositoryPort: RepositoryPort = {
+      create: vi.fn(async () => repository),
+      createWithLimit: vi.fn(async () => repository),
+      list: vi.fn(async () => [repository]),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 1),
+    };
+    const snapshotPort: SnapshotPort = {
+      insert: vi.fn(async () => undefined),
+      findLatestByRepositoryId: vi.fn(async () => null),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => {
+        throw new RepositoryGatewayError("API_ERROR", "upstream failed", {
+          status: 502,
+        });
+      }),
+    };
+
+    const useCase = new RefreshRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositoryGateway,
+    );
+
+    await expect(
+      useCase.execute({
+        repositoryId: repository.id,
+      }),
+    ).rejects.toMatchObject({
+      name: "ApplicationError",
+      code: "EXTERNAL_API_ERROR",
+      message: "upstream failed",
+      detail: {
+        status: 502,
+      },
+    });
+  });
+
+  it("maps unexpected refresh failure to INTERNAL_ERROR", async () => {
+    const repository = buildRepository();
+    const repositoryPort: RepositoryPort = {
+      create: vi.fn(async () => repository),
+      createWithLimit: vi.fn(async () => repository),
+      list: vi.fn(async () => [repository]),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 1),
+    };
+    const snapshotPort: SnapshotPort = {
+      insert: vi.fn(async () => undefined),
+      findLatestByRepositoryId: vi.fn(async () => null),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => {
+        throw new Error("boom");
+      }),
+    };
+
+    const useCase = new RefreshRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositoryGateway,
+    );
+
+    await expect(
+      useCase.execute({
+        repositoryId: repository.id,
+      }),
+    ).rejects.toEqual(
+      new ApplicationError("INTERNAL_ERROR", "Failed to refresh", {
+        cause: "boom",
+      }),
+    );
   });
 });

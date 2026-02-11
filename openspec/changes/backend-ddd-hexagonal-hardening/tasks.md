@@ -6,12 +6,12 @@
 
 ## 2. Application Error Contract Unification
 
-- [ ] 2.1 `refresh-repository-use-case` の失敗 union 戻り値を廃止し、失敗時は `ApplicationError` throw に統一する
-- [ ] 2.2 `RepositoryGatewayError` から `ApplicationError`（`RATE_LIMIT` / `EXTERNAL_API_ERROR`）への変換を refresh 側へ実装する
-- [ ] 2.3 `domain/errors/refresh-error.ts` の provider 固有語彙依存を除去し、エラーコード定義を application 側へ集約する
-- [ ] 2.4 `error-mapper.ts` を唯一の HTTP エラー変換経路として固定し、refresh 失敗時の 200 応答を禁止する
-- [ ] 2.5 `ApplicationError.detail` を判別可能 union 型へ更新し、`VALIDATION_ERROR={ reason?: string; limit?: number }`、`RATE_LIMIT={ status?: number; retryAfterSeconds?: number | null }`、`EXTERNAL_API_ERROR={ status?: number }`、`INTERNAL_ERROR={ cause?: string }`、`NOT_FOUND=undefined` を受け入れ条件として固定する
-- [ ] 2.6 refresh の失敗系 API テスト（429/502/404/500）を追加して契約統一を検証する
+- [x] 2.1 `refresh-repository-use-case` の失敗 union 戻り値を廃止し、失敗時は `ApplicationError` throw に統一する
+- [x] 2.2 `RepositoryGatewayError` から `ApplicationError`（`RATE_LIMIT` / `EXTERNAL_API_ERROR`）への変換を refresh 側へ実装する
+- [x] 2.3 `domain/errors/refresh-error.ts` の provider 固有語彙依存を除去し、エラーコード定義を application 側へ集約する
+- [x] 2.4 `error-mapper.ts` を唯一の HTTP エラー変換経路として固定し、refresh 失敗時の 200 応答を禁止する
+- [x] 2.5 `ApplicationError.detail` を判別可能 union 型へ更新し、`VALIDATION_ERROR={ reason?: string; limit?: number }`、`RATE_LIMIT={ status?: number; retryAfterSeconds?: number | null }`、`EXTERNAL_API_ERROR={ status?: number }`、`INTERNAL_ERROR={ cause?: string }`、`NOT_FOUND=undefined` を受け入れ条件として固定する
+- [x] 2.6 refresh の失敗系 API テスト（429/502/404/500）を追加して契約統一を検証する
 
 ## 3. Transactional Use-Case Boundary
 

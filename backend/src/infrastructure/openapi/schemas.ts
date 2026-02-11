@@ -6,9 +6,9 @@ import {
   type WarningReasonKey,
 } from "../../domain/models/status";
 import {
-  REFRESH_ERROR_CODES,
-  type RefreshErrorCode,
-} from "../../domain/errors/refresh-error";
+  APPLICATION_ERROR_CODES,
+  type ApplicationErrorCode,
+} from "../../application/errors/application-error";
 
 const repositoryStatusValues = [...REPOSITORY_STATUSES] as [
   RepositoryStatus,
@@ -18,9 +18,9 @@ const warningReasonValues = [...WARNING_REASON_KEYS] as [
   WarningReasonKey,
   ...WarningReasonKey[],
 ];
-const refreshErrorCodeValues = [...REFRESH_ERROR_CODES] as [
-  RefreshErrorCode,
-  ...RefreshErrorCode[],
+const applicationErrorCodeValues = [...APPLICATION_ERROR_CODES] as [
+  ApplicationErrorCode,
+  ...ApplicationErrorCode[],
 ];
 
 export const WarningReasonSchema = z.enum(warningReasonValues);
@@ -48,12 +48,15 @@ export const RepositorySnapshotSchema = z.object({
 });
 
 export const RefreshErrorSchema = z.object({
-  code: z.enum(refreshErrorCodeValues),
+  code: z.enum(applicationErrorCodeValues),
   message: z.string(),
   detail: z
     .object({
+      reason: z.string().optional(),
+      limit: z.number().int().optional(),
       status: z.number().int().optional(),
       retryAfterSeconds: z.number().int().nonnegative().nullable().optional(),
+      cause: z.string().optional(),
     })
     .optional(),
 });
