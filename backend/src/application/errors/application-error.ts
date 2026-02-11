@@ -54,7 +54,11 @@ export class ApplicationError extends Error {
     message: string,
     detail?: ExternalApiErrorDetail,
   );
-  constructor(code: "RATE_LIMIT", message: string, detail?: RateLimitErrorDetail);
+  constructor(
+    code: "RATE_LIMIT",
+    message: string,
+    detail?: RateLimitErrorDetail,
+  );
   constructor(
     code: "INTERNAL_ERROR",
     message: string,

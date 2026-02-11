@@ -12,11 +12,10 @@ export type RefreshRepositoryInput = Readonly<{
   repositoryId: string;
 }>;
 
-export type RefreshRepositoryResult =
-  | Readonly<{
-      ok: true;
-      snapshot: RepositorySnapshot;
-    }>;
+export type RefreshRepositoryResult = Readonly<{
+  ok: true;
+  snapshot: RepositorySnapshot;
+}>;
 
 export interface RefreshRepositoryUseCase {
   execute(input: RefreshRepositoryInput): Promise<RefreshRepositoryResult>;
