@@ -120,7 +120,17 @@ export class DrizzleUnitOfWorkAdapter implements UnitOfWorkPort {
         repositoryPort: new DrizzleTxRepositoryAdapter(tx),
         snapshotPort: new DrizzleTxSnapshotAdapter(tx),
       } as const;
-      return work(ports);
+      const result = work(ports);
+      if (
+        result != null &&
+        typeof (result as Record<string, unknown>).then === "function"
+      ) {
+        throw new Error(
+          "runInTransaction callback must be synchronous. " +
+            "Async callbacks would escape the transaction boundary.",
+        );
+      }
+      return result;
     });
   }
 }

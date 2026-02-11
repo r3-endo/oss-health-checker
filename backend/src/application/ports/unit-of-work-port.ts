@@ -15,6 +15,15 @@ export type TransactionPorts = Readonly<{
   snapshotPort: TransactionSnapshotPort;
 }>;
 
+/**
+ * Rejects `PromiseLike` at the type level so that `async` callbacks
+ * cause a compile-time error instead of silently escaping the
+ * synchronous transaction boundary.
+ */
+type SyncOnly<T> = T extends PromiseLike<unknown> ? never : T;
+
 export interface UnitOfWorkPort {
-  runInTransaction<T>(work: (ports: TransactionPorts) => T): Promise<T>;
+  runInTransaction<T>(
+    work: (ports: TransactionPorts) => SyncOnly<T>,
+  ): Promise<T>;
 }

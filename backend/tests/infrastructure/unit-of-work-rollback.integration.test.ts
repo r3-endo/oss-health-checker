@@ -100,6 +100,18 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
     expect(snapCount?.value).toBe(0);
   });
 
+  it("rejects async callbacks that would escape the transaction boundary", async () => {
+    await expect(
+      unitOfWork.runInTransaction((() => Promise.resolve("oops")) as never),
+    ).rejects.toThrow("runInTransaction callback must be synchronous");
+
+    // Ensure no side-effects leaked
+    const [repoCount] = await db.db
+      .select({ value: count() })
+      .from(repositoriesTable);
+    expect(repoCount?.value).toBe(0);
+  });
+
   it("rolls back repository when work callback throws after repository creation", async () => {
     await expect(
       unitOfWork.runInTransaction((tx) => {
