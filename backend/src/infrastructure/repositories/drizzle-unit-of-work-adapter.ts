@@ -109,7 +109,12 @@ class DrizzleTxSnapshotAdapter implements TransactionSnapshotPort {
 export class DrizzleUnitOfWorkAdapter implements UnitOfWorkPort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
-  async runInTransaction<T>(work: (ports: { repositoryPort: TransactionRepositoryPort; snapshotPort: TransactionSnapshotPort }) => T): Promise<T> {
+  async runInTransaction<T>(
+    work: (ports: {
+      repositoryPort: TransactionRepositoryPort;
+      snapshotPort: TransactionSnapshotPort;
+    }) => T,
+  ): Promise<T> {
     return this.db.db.transaction((tx) => {
       const ports = {
         repositoryPort: new DrizzleTxRepositoryAdapter(tx),

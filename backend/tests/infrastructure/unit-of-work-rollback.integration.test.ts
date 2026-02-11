@@ -7,7 +7,10 @@ import type { DrizzleDatabaseHandle } from "../../src/infrastructure/db/drizzle/
 import { createDrizzleHandle } from "../../src/infrastructure/db/drizzle/client";
 import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate";
 import { DrizzleUnitOfWorkAdapter } from "../../src/infrastructure/repositories/drizzle-unit-of-work-adapter";
-import { repositoriesTable, snapshotsTable } from "../../src/infrastructure/db/drizzle/schema";
+import {
+  repositoriesTable,
+  snapshotsTable,
+} from "../../src/infrastructure/db/drizzle/schema";
 import { count } from "drizzle-orm";
 
 describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
@@ -30,7 +33,11 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
   it("commits both repository and snapshot when transaction succeeds", async () => {
     await unitOfWork.runInTransaction((tx) => {
       const repository = tx.repositoryPort.createWithLimit(
-        { url: "https://github.com/octocat/Hello-World", owner: "octocat", name: "Hello-World" },
+        {
+          url: "https://github.com/octocat/Hello-World",
+          owner: "octocat",
+          name: "Hello-World",
+        },
         3,
       );
 
@@ -46,8 +53,12 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
       });
     });
 
-    const [repoCount] = await db.db.select({ value: count() }).from(repositoriesTable);
-    const [snapCount] = await db.db.select({ value: count() }).from(snapshotsTable);
+    const [repoCount] = await db.db
+      .select({ value: count() })
+      .from(repositoriesTable);
+    const [snapCount] = await db.db
+      .select({ value: count() })
+      .from(snapshotsTable);
     expect(repoCount?.value).toBe(1);
     expect(snapCount?.value).toBe(1);
   });
@@ -56,7 +67,11 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
     await expect(
       unitOfWork.runInTransaction((tx) => {
         tx.repositoryPort.createWithLimit(
-          { url: "https://github.com/octocat/Hello-World", owner: "octocat", name: "Hello-World" },
+          {
+            url: "https://github.com/octocat/Hello-World",
+            owner: "octocat",
+            name: "Hello-World",
+          },
           3,
         );
 
@@ -75,8 +90,12 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
       }),
     ).rejects.toThrow();
 
-    const [repoCount] = await db.db.select({ value: count() }).from(repositoriesTable);
-    const [snapCount] = await db.db.select({ value: count() }).from(snapshotsTable);
+    const [repoCount] = await db.db
+      .select({ value: count() })
+      .from(repositoriesTable);
+    const [snapCount] = await db.db
+      .select({ value: count() })
+      .from(snapshotsTable);
     expect(repoCount?.value).toBe(0);
     expect(snapCount?.value).toBe(0);
   });
@@ -85,7 +104,11 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
     await expect(
       unitOfWork.runInTransaction((tx) => {
         tx.repositoryPort.createWithLimit(
-          { url: "https://github.com/octocat/Hello-World", owner: "octocat", name: "Hello-World" },
+          {
+            url: "https://github.com/octocat/Hello-World",
+            owner: "octocat",
+            name: "Hello-World",
+          },
           3,
         );
 
@@ -93,7 +116,9 @@ describe("DrizzleUnitOfWorkAdapter transactional rollback", () => {
       }),
     ).rejects.toThrow("Simulated snapshot failure");
 
-    const [repoCount] = await db.db.select({ value: count() }).from(repositoriesTable);
+    const [repoCount] = await db.db
+      .select({ value: count() })
+      .from(repositoriesTable);
     expect(repoCount?.value).toBe(0);
   });
 });

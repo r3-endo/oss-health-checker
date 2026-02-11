@@ -33,13 +33,16 @@ const buildMockUnitOfWork = (overrides?: {
 }): UnitOfWorkPort => {
   const repository = buildRepository();
   const txRepositoryPort: TransactionRepositoryPort = {
-    createWithLimit: overrides?.repositoryPort?.createWithLimit ?? (() => repository),
+    createWithLimit:
+      overrides?.repositoryPort?.createWithLimit ?? (() => repository),
   };
   const txSnapshotPort: TransactionSnapshotPort = {
     insert: overrides?.snapshotPort?.insert ?? (() => undefined),
   };
   return {
-    async runInTransaction<T>(work: (ports: TransactionPorts) => T): Promise<T> {
+    async runInTransaction<T>(
+      work: (ports: TransactionPorts) => T,
+    ): Promise<T> {
       return work({
         repositoryPort: txRepositoryPort,
         snapshotPort: txSnapshotPort,

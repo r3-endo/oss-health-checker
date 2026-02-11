@@ -36,14 +36,20 @@ describe("backend-ddd-hexagonal-hardening red cases by capability", () => {
       await expect(
         unitOfWork.runInTransaction((tx) => {
           tx.repositoryPort.createWithLimit(
-            { url: "https://github.com/octocat/Hello-World", owner: "octocat", name: "Hello-World" },
+            {
+              url: "https://github.com/octocat/Hello-World",
+              owner: "octocat",
+              name: "Hello-World",
+            },
             3,
           );
           throw new Error("Simulated snapshot write failure");
         }),
       ).rejects.toThrow("Simulated snapshot write failure");
 
-      const [repoCount] = await db.db.select({ value: count() }).from(repositoriesTable);
+      const [repoCount] = await db.db
+        .select({ value: count() })
+        .from(repositoriesTable);
       expect(repoCount?.value).toBe(0);
     });
   });
