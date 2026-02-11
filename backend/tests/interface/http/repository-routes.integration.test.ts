@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { RepositoryGatewayPort } from "../../../src/application/ports/repository-gateway-port";
+import {
+  RepositoryGatewayError,
+  type RepositoryGatewayPort,
+} from "../../../src/application/ports/repository-gateway-port";
 import { ListRepositoriesWithLatestSnapshotService } from "../../../src/application/use-cases/list-repositories-with-latest-snapshot-use-case";
 import { RefreshRepositoryService } from "../../../src/application/use-cases/refresh-repository-use-case";
 import { RegisterRepositoryService } from "../../../src/application/use-cases/register-repository-use-case";
@@ -24,12 +27,23 @@ type MutableSignals = {
 
 class InMemoryRepositoryGateway implements RepositoryGatewayPort {
   private readonly signalsByRepo = new Map<string, MutableSignals>();
+  private readonly failureByRepo = new Map<string, unknown>();
 
   setSignals(owner: string, name: string, signals: MutableSignals): void {
     this.signalsByRepo.set(`${owner}/${name}`, signals);
+    this.failureByRepo.delete(`${owner}/${name}`);
+  }
+
+  setFailure(owner: string, name: string, error: unknown): void {
+    this.failureByRepo.set(`${owner}/${name}`, error);
   }
 
   async fetchSignals(owner: string, name: string): Promise<MutableSignals> {
+    const failure = this.failureByRepo.get(`${owner}/${name}`);
+    if (failure) {
+      throw failure;
+    }
+
     const signals = this.signalsByRepo.get(`${owner}/${name}`);
     if (!signals) {
       throw new Error(`Missing fixture for ${owner}/${name}`);
@@ -254,6 +268,100 @@ describe("repository routes integration", () => {
     expect(response.status).toBe(404);
     const body = await response.json();
     expect(body.error.code).toBe("NOT_FOUND");
+  });
+
+  it("returns rate-limit error when refresh gateway is throttled", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 2,
+      contributorsCount: 5,
+    });
+    const created = await (
+      await app.request(
+        "/api/repositories",
+        requestJson({ url: "https://github.com/octocat/Hello-World" }),
+      )
+    ).json();
+
+    gateway.setFailure(
+      "octocat",
+      "Hello-World",
+      new RepositoryGatewayError("RATE_LIMIT", "rate limited", {
+        status: 429,
+        retryAfterSeconds: 120,
+      }),
+    );
+
+    const response = await app.request(
+      `/api/repositories/${created.data.repository.id}/refresh`,
+      { method: "POST" },
+    );
+
+    expect(response.status).toBe(429);
+    const body = await response.json();
+    expect(body.error.code).toBe("RATE_LIMIT");
+    expect(body.error.detail.retryAfterSeconds).toBe(120);
+  });
+
+  it("returns external API error when refresh gateway fails upstream", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 2,
+      contributorsCount: 5,
+    });
+    const created = await (
+      await app.request(
+        "/api/repositories",
+        requestJson({ url: "https://github.com/octocat/Hello-World" }),
+      )
+    ).json();
+
+    gateway.setFailure(
+      "octocat",
+      "Hello-World",
+      new RepositoryGatewayError("API_ERROR", "upstream failed", {
+        status: 502,
+      }),
+    );
+
+    const response = await app.request(
+      `/api/repositories/${created.data.repository.id}/refresh`,
+      { method: "POST" },
+    );
+
+    expect(response.status).toBe(502);
+    const body = await response.json();
+    expect(body.error.code).toBe("EXTERNAL_API_ERROR");
+    expect(body.error.detail.status).toBe(502);
+  });
+
+  it("returns internal error when refresh fails unexpectedly", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 2,
+      contributorsCount: 5,
+    });
+    const created = await (
+      await app.request(
+        "/api/repositories",
+        requestJson({ url: "https://github.com/octocat/Hello-World" }),
+      )
+    ).json();
+
+    gateway.setFailure("octocat", "Hello-World", new Error("unexpected"));
+
+    const response = await app.request(
+      `/api/repositories/${created.data.repository.id}/refresh`,
+      { method: "POST" },
+    );
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body.error.code).toBe("INTERNAL_ERROR");
+    expect(body.error.message).toBe("Failed to refresh");
   });
 
   it("returns validation error when repository URL is duplicated", async () => {
