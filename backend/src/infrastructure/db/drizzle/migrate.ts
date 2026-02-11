@@ -1,46 +1,80 @@
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import type { DrizzleDatabaseHandle } from "./client";
 
-export const migrateDrizzleDatabase = (handle: DrizzleDatabaseHandle): void => {
+const migrationFolder = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../../drizzle",
+);
+
+const domainTables = [
+  "repositories",
+  "snapshots",
+  "snapshot_warning_reasons",
+] as const;
+const migrationTableName = "__drizzle_migrations";
+
+type MigrationMeta = Readonly<{
+  tag: string;
+  when: number;
+}>;
+
+const hasTable = (
+  handle: DrizzleDatabaseHandle,
+  tableName: string,
+): boolean => {
+  const row = handle.sqlite
+    .prepare(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1",
+    )
+    .get(tableName);
+  return row !== undefined;
+};
+
+const hasAnyDomainTable = (handle: DrizzleDatabaseHandle): boolean =>
+  domainTables.some((tableName) => hasTable(handle, tableName));
+
+const readMigrationJournal = (): readonly MigrationMeta[] => {
+  const journalPath = path.join(migrationFolder, "meta", "_journal.json");
+  const parsed = JSON.parse(fs.readFileSync(journalPath, "utf-8")) as Readonly<{
+    entries: readonly MigrationMeta[];
+  }>;
+  return parsed.entries;
+};
+
+const resolveMigrationHash = (tag: string): string => {
+  const sqlPath = path.join(migrationFolder, `${tag}.sql`);
+  const sql = fs.readFileSync(sqlPath, "utf-8");
+  return crypto.createHash("sha256").update(sql).digest("hex");
+};
+
+const ensureLegacyMigrationBaseline = (handle: DrizzleDatabaseHandle): void => {
+  const migrationTableExists = hasTable(handle, migrationTableName);
+  if (migrationTableExists || !hasAnyDomainTable(handle)) {
+    return;
+  }
+
   handle.sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS repositories (
-      id TEXT PRIMARY KEY NOT NULL,
-      url TEXT NOT NULL,
-      owner TEXT NOT NULL,
-      name TEXT NOT NULL,
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL
+    CREATE TABLE IF NOT EXISTS ${migrationTableName} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      hash TEXT NOT NULL,
+      created_at NUMERIC
     );
-
-    CREATE UNIQUE INDEX IF NOT EXISTS repositories_url_unique
-      ON repositories (url);
-
-    CREATE TABLE IF NOT EXISTS snapshots (
-      id TEXT PRIMARY KEY NOT NULL,
-      repository_id TEXT NOT NULL,
-      last_commit_at INTEGER NOT NULL,
-      last_release_at INTEGER,
-      open_issues_count INTEGER NOT NULL,
-      contributors_count INTEGER NOT NULL,
-      status TEXT NOT NULL CHECK (status IN ('Active', 'Stale', 'Risky')),
-      fetched_at INTEGER NOT NULL,
-      FOREIGN KEY (repository_id)
-        REFERENCES repositories(id)
-        ON DELETE CASCADE
-    );
-
-    CREATE INDEX IF NOT EXISTS snapshots_repository_fetched_idx
-      ON snapshots (repository_id, fetched_at);
-
-    CREATE TABLE IF NOT EXISTS snapshot_warning_reasons (
-      snapshot_id TEXT NOT NULL,
-      reason_key TEXT NOT NULL CHECK (reason_key IN ('commit_stale', 'release_stale', 'open_issues_high')),
-      PRIMARY KEY (snapshot_id, reason_key),
-      FOREIGN KEY (snapshot_id)
-        REFERENCES snapshots(id)
-        ON DELETE CASCADE
-    );
-
-    CREATE INDEX IF NOT EXISTS snapshot_warning_reasons_reason_idx
-      ON snapshot_warning_reasons (reason_key);
   `);
+
+  const insert = handle.sqlite.prepare(
+    `INSERT INTO ${migrationTableName} (hash, created_at) VALUES (?, ?)`,
+  );
+  const entries = readMigrationJournal();
+  for (const entry of entries) {
+    insert.run(resolveMigrationHash(entry.tag), entry.when);
+  }
+};
+
+export const migrateDrizzleDatabase = (handle: DrizzleDatabaseHandle): void => {
+  ensureLegacyMigrationBaseline(handle);
+  migrate(handle.db, { migrationsFolder: migrationFolder });
 };

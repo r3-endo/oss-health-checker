@@ -1,12 +1,12 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import type { AppContainer } from "./build-container";
 import { createRepositoryRoutes } from "../interface/http/routes/repository-routes";
 import { mapErrorToHttp } from "../interface/http/error-mapper";
 
-export const buildApp = (container: AppContainer): Hono => {
-  const app = new Hono();
+export const buildApp = (container: AppContainer): OpenAPIHono => {
+  const app = new OpenAPIHono();
 
   app.use("/api/*", secureHeaders());
   app.use(
@@ -34,6 +34,13 @@ export const buildApp = (container: AppContainer): Hono => {
 
   app.get("/health", (c) => c.json({ ok: true }));
   app.route("/api", createRepositoryRoutes(container.repositoryController));
+  app.doc("/api/openapi.json", {
+    openapi: "3.0.0",
+    info: {
+      title: "OSS Health Checker Backend API",
+      version: "0.1.0",
+    },
+  });
 
   return app;
 };

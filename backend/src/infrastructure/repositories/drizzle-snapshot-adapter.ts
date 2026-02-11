@@ -1,13 +1,16 @@
 import type { SnapshotPort } from "../../application/ports/snapshot-port";
 import type { RepositoryId } from "../../domain/models/repository";
 import type { RepositorySnapshot } from "../../domain/models/snapshot";
-import type { WarningReasonKey } from "../../domain/models/status";
 import { asc, desc, eq, inArray } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
 import {
   snapshotsTable,
   snapshotWarningReasonsTable,
 } from "../db/drizzle/schema";
+import {
+  parsePersistedStatus,
+  parsePersistedWarningReason,
+} from "./persisted-snapshot-validation";
 
 type SnapshotRow = typeof snapshotsTable.$inferSelect;
 type SnapshotReasonRow = typeof snapshotWarningReasonsTable.$inferSelect;
@@ -22,9 +25,9 @@ const mapSnapshot = (
     lastReleaseAt: snapshot.lastReleaseAt,
     openIssuesCount: snapshot.openIssuesCount,
     contributorsCount: snapshot.contributorsCount,
-    status: snapshot.status as RepositorySnapshot["status"],
-    warningReasons: reasons.map(
-      (reason) => reason.reasonKey as WarningReasonKey,
+    status: parsePersistedStatus(snapshot.status),
+    warningReasons: reasons.map((reason) =>
+      parsePersistedWarningReason(reason.reasonKey),
     ),
     fetchedAt: snapshot.fetchedAt,
   });

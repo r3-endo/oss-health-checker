@@ -2,7 +2,6 @@ import type { RepositoryReadModelPort } from "../../application/ports/repository
 import type { RepositoryWithLatestSnapshot } from "../../application/read-models/repository-with-latest-snapshot";
 import type { Repository } from "../../domain/models/repository";
 import type { RepositorySnapshot } from "../../domain/models/snapshot";
-import type { WarningReasonKey } from "../../domain/models/status";
 import { asc, inArray, sql } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
 import {
@@ -10,6 +9,10 @@ import {
   snapshotsTable,
   snapshotWarningReasonsTable,
 } from "../db/drizzle/schema";
+import {
+  parsePersistedStatus,
+  parsePersistedWarningReason,
+} from "./persisted-snapshot-validation";
 
 type RepositoryRow = typeof repositoriesTable.$inferSelect;
 type SnapshotRow = typeof snapshotsTable.$inferSelect;
@@ -35,9 +38,9 @@ const mapSnapshot = (
     lastReleaseAt: snapshot.lastReleaseAt,
     openIssuesCount: snapshot.openIssuesCount,
     contributorsCount: snapshot.contributorsCount,
-    status: snapshot.status as RepositorySnapshot["status"],
-    warningReasons: reasons.map(
-      (reason) => reason.reasonKey as WarningReasonKey,
+    status: parsePersistedStatus(snapshot.status),
+    warningReasons: reasons.map((reason) =>
+      parsePersistedWarningReason(reason.reasonKey),
     ),
     fetchedAt: snapshot.fetchedAt,
   });
