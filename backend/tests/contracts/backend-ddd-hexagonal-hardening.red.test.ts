@@ -1,12 +1,53 @@
-import { describe, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { mkdtempSync, rmSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import type { UnitOfWorkPort } from "../../src/application/ports/unit-of-work-port";
+import { createDrizzleHandle } from "../../src/infrastructure/db/drizzle/client";
+import type { DrizzleDatabaseHandle } from "../../src/infrastructure/db/drizzle/client";
+import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate";
+import { DrizzleUnitOfWorkAdapter } from "../../src/infrastructure/repositories/drizzle-unit-of-work-adapter";
+import { repositoriesTable } from "../../src/infrastructure/db/drizzle/schema";
+import { count } from "drizzle-orm";
 
 describe("backend-ddd-hexagonal-hardening red cases by capability", () => {
   it.todo(
     "[RED][application-error-contract] refresh failure returns ApplicationError-based HTTP status (429/502/404/500), never 200 error payload",
   );
-  it.todo(
-    "[RED][transactional-use-case-boundary] register repository and snapshot are rolled back atomically on snapshot write failure",
-  );
+
+  describe("[transactional-use-case-boundary]", () => {
+    let tempDir: string;
+    let db: DrizzleDatabaseHandle;
+    let unitOfWork: UnitOfWorkPort;
+
+    beforeEach(() => {
+      tempDir = mkdtempSync(path.join(os.tmpdir(), "red-uow-"));
+      const databasePath = path.join(tempDir, "test.sqlite");
+      db = createDrizzleHandle({ DATABASE_URL: `file:${databasePath}` });
+      migrateDrizzleDatabase(db);
+      unitOfWork = new DrizzleUnitOfWorkAdapter(db);
+    });
+
+    afterEach(() => {
+      rmSync(tempDir, { recursive: true, force: true });
+    });
+
+    it("register repository and snapshot are rolled back atomically on snapshot write failure", async () => {
+      await expect(
+        unitOfWork.runInTransaction((tx) => {
+          tx.repositoryPort.createWithLimit(
+            { url: "https://github.com/octocat/Hello-World", owner: "octocat", name: "Hello-World" },
+            3,
+          );
+          throw new Error("Simulated snapshot write failure");
+        }),
+      ).rejects.toThrow("Simulated snapshot write failure");
+
+      const [repoCount] = await db.db.select({ value: count() }).from(repositoriesTable);
+      expect(repoCount?.value).toBe(0);
+    });
+  });
+
   it.todo(
     "[RED][openapi-runtime-contract-binding] repository endpoints fail contract verification when request/response/error schema is not route-bound",
   );

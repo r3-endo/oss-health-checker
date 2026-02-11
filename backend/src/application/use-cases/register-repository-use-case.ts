@@ -6,9 +6,8 @@ import { RepositoryGatewayError } from "../ports/repository-gateway-port";
 import {
   RepositoryAlreadyExistsError,
   RepositoryLimitExceededError,
-  type RepositoryPort,
 } from "../ports/repository-port";
-import type { SnapshotPort } from "../ports/snapshot-port";
+import type { UnitOfWorkPort } from "../ports/unit-of-work-port";
 import {
   GitHubRepositoryUrlError,
   parseGitHubRepositoryUrl,
@@ -32,8 +31,7 @@ const MAX_REPOSITORY_COUNT = 3;
 
 export class RegisterRepositoryService {
   constructor(
-    private readonly repositoryPort: RepositoryPort,
-    private readonly snapshotPort: SnapshotPort,
+    private readonly unitOfWorkPort: UnitOfWorkPort,
     private readonly repositoryGatewayPort: RepositoryGatewayPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
@@ -49,26 +47,27 @@ export class RegisterRepositoryService {
         parsed.name,
       );
 
-      const repository = await this.repositoryPort.createWithLimit(
-        {
-          url: parsed.normalizedUrl,
-          owner: parsed.owner,
-          name: parsed.name,
-        },
-        MAX_REPOSITORY_COUNT,
-      );
+      const result = await this.unitOfWorkPort.runInTransaction((tx) => {
+        const repository = tx.repositoryPort.createWithLimit(
+          {
+            url: parsed.normalizedUrl,
+            owner: parsed.owner,
+            name: parsed.name,
+          },
+          MAX_REPOSITORY_COUNT,
+        );
 
-      const snapshot = buildSnapshotFromSignals(
-        repository.id,
-        signals,
-        this.now(),
-      );
-      await this.snapshotPort.insert(snapshot);
+        const snapshot = buildSnapshotFromSignals(
+          repository.id,
+          signals,
+          this.now(),
+        );
+        tx.snapshotPort.insert(snapshot);
 
-      return Object.freeze({
-        repository,
-        snapshot,
+        return Object.freeze({ repository, snapshot });
       });
+
+      return result;
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw error;

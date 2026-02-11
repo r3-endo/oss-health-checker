@@ -16,6 +16,7 @@ import { migrateDrizzleDatabase } from "../../../src/infrastructure/db/drizzle/m
 import { DrizzleRepositoryAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-adapter";
 import { DrizzleRepositoryReadModelAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-read-model-adapter";
 import { DrizzleSnapshotAdapter } from "../../../src/infrastructure/repositories/drizzle-snapshot-adapter";
+import { DrizzleUnitOfWorkAdapter } from "../../../src/infrastructure/repositories/drizzle-unit-of-work-adapter";
 import { RepositoryController } from "../../../src/interface/http/controllers/repository-controller";
 
 type MutableSignals = {
@@ -84,12 +85,12 @@ describe("repository routes integration", () => {
     const repositoryPort = new DrizzleRepositoryAdapter(db);
     const snapshotPort = new DrizzleSnapshotAdapter(db);
     const repositoryReadModelPort = new DrizzleRepositoryReadModelAdapter(db);
+    const unitOfWork = new DrizzleUnitOfWorkAdapter(db);
 
     gateway = new InMemoryRepositoryGateway();
 
     const registerRepositoryUseCase = new RegisterRepositoryService(
-      repositoryPort,
-      snapshotPort,
+      unitOfWork,
       gateway,
     );
     const listRepositoriesUseCase =

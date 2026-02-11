@@ -8,6 +8,7 @@ import { GitHubRestRepositoryGateway } from "../infrastructure/gateways/github-r
 import { DrizzleRepositoryAdapter } from "../infrastructure/repositories/drizzle-repository-adapter";
 import { DrizzleRepositoryReadModelAdapter } from "../infrastructure/repositories/drizzle-repository-read-model-adapter";
 import { DrizzleSnapshotAdapter } from "../infrastructure/repositories/drizzle-snapshot-adapter";
+import { DrizzleUnitOfWorkAdapter } from "../infrastructure/repositories/drizzle-unit-of-work-adapter";
 import { RepositoryController } from "../interface/http/controllers/repository-controller";
 
 export type AppContainer = Readonly<{
@@ -22,13 +23,13 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const repositoryAdapter = new DrizzleRepositoryAdapter(db);
   const snapshotAdapter = new DrizzleSnapshotAdapter(db);
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
+  const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
   const repositoryGateway = new GitHubRestRepositoryGateway(appEnv);
 
   const listRepositoriesWithLatestSnapshotUseCase =
     new ListRepositoriesWithLatestSnapshotService(repositoryReadModelAdapter);
   const registerRepositoryUseCase = new RegisterRepositoryService(
-    repositoryAdapter,
-    snapshotAdapter,
+    unitOfWorkAdapter,
     repositoryGateway,
   );
   const refreshRepositoryUseCase = new RefreshRepositoryService(
