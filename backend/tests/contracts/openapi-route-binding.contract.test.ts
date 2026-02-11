@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { createRepositoryRoutes } from "../../src/interface/http/routes/repository-routes";
 
+const normalizePathParams = (path: string): string =>
+  path.replace(/:([^/]+)/g, "{$1}");
+
 const createContractApp = (): OpenAPIHono => {
   const app = new OpenAPIHono();
   const controller = {
@@ -90,11 +93,15 @@ describe("openapi route binding contract baseline", () => {
     const runtimePaths = new Set(
       app.routes
         .filter((route) => route.path.startsWith("/api/"))
-        .map((route) => route.path),
+        .filter((route) => route.path !== "/api/openapi.json")
+        .filter((route) => route.method !== "OPTIONS")
+        .map((route) => normalizePathParams(route.path)),
     );
     const openApiPaths = new Set(Object.keys(openApiDocument.paths));
 
-    const missing = [...runtimePaths].filter((path) => !openApiPaths.has(path));
-    expect(missing).toContain("/api/runtime-only");
+    const missing = [...runtimePaths]
+      .filter((path) => !openApiPaths.has(path))
+      .sort();
+    expect(missing).toEqual(["/api/runtime-only"]);
   });
 });
