@@ -2,11 +2,20 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
+  /** Called before clearing the error state. Use to reset external state (e.g. React Query cache). */
+  onReset?: () => void;
   fallback?: (props: { error: Error; reset: () => void }) => ReactNode;
 };
 
 type State = { error: Error | null };
 
+/**
+ * Error boundary that integrates with React Query's error reset mechanism.
+ *
+ * Wrap with `<QueryErrorResetBoundary>` and pass its `reset` as `onReset`
+ * so that "Try again" clears both the boundary state and the query cache,
+ * allowing a fresh refetch.
+ */
 export class QueryErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
@@ -19,6 +28,7 @@ export class QueryErrorBoundary extends Component<Props, State> {
   }
 
   private reset = () => {
+    this.props.onReset?.();
     this.setState({ error: null });
   };
 
