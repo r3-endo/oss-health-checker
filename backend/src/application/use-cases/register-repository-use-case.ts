@@ -108,7 +108,9 @@ export class RegisterRepositoryService {
         throw new ApplicationError(
           "EXTERNAL_API_ERROR",
           error.message,
-          RegisterRepositoryService.buildExternalApiDetail(error.detail?.status),
+          RegisterRepositoryService.buildExternalApiDetail(
+            error.detail?.status,
+          ),
         );
       }
 

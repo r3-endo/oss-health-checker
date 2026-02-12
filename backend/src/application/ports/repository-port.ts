@@ -1,4 +1,7 @@
-import type { Repository, RepositoryId } from "../../domain/models/repository.js";
+import type {
+  Repository,
+  RepositoryId,
+} from "../../domain/models/repository.js";
 
 export type CreateRepositoryInput = Readonly<{
   url: string;

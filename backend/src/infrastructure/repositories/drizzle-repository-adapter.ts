@@ -4,7 +4,10 @@ import {
   type RepositoryPort,
   type CreateRepositoryInput,
 } from "../../application/ports/repository-port.js";
-import type { Repository, RepositoryId } from "../../domain/models/repository.js";
+import type {
+  Repository,
+  RepositoryId,
+} from "../../domain/models/repository.js";
 import { asc, count, eq } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import { repositoriesTable } from "../db/drizzle/schema.js";
