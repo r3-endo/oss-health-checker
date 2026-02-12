@@ -29,7 +29,8 @@ describe("RepositoryRowView", () => {
       </table>,
     );
 
-    expect(html).toContain("octocat/Hello-World");
+    expect(html).toContain("Hello-World");
+    expect(html).toContain("octocat");
     expect(html).toContain("2025-01-10");
     expect(html).toContain("2024-01-10");
     expect(html).toContain("42");

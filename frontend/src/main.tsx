@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "./index.css";
 import { AppProviders } from "./app/providers";
 import { RepositoriesPage } from "./features/repositories";
 
