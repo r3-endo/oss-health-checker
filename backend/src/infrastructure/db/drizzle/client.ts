@@ -1,7 +1,7 @@
-import type { AppEnv } from "../../config/env";
+import type { AppEnv } from "../../config/env.js";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import * as schema from "./schema";
+import * as schema from "./schema.js";
 
 export type DrizzleDatabaseHandle = Readonly<{
   kind: "drizzle";

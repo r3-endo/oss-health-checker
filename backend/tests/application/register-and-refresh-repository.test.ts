@@ -1,22 +1,22 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApplicationError } from "../../src/application/errors/application-error";
-import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port";
+import { ApplicationError } from "../../src/application/errors/application-error.js";
+import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port.js";
 import {
   RepositoryAlreadyExistsError,
   type RepositoryPort,
-} from "../../src/application/ports/repository-port";
-import type { SnapshotPort } from "../../src/application/ports/snapshot-port";
-import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port";
+} from "../../src/application/ports/repository-port.js";
+import type { SnapshotPort } from "../../src/application/ports/snapshot-port.js";
+import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port.js";
 import type {
   UnitOfWorkPort,
   TransactionPorts,
   TransactionRepositoryPort,
   TransactionSnapshotPort,
-} from "../../src/application/ports/unit-of-work-port";
-import { RegisterRepositoryService } from "../../src/application/use-cases/register-repository-use-case";
-import { RefreshRepositoryService } from "../../src/application/use-cases/refresh-repository-use-case";
-import type { Repository } from "../../src/domain/models/repository";
-import type { RepositorySnapshot } from "../../src/domain/models/snapshot";
+} from "../../src/application/ports/unit-of-work-port.js";
+import { RegisterRepositoryService } from "../../src/application/use-cases/register-repository-use-case.js";
+import { RefreshRepositoryService } from "../../src/application/use-cases/refresh-repository-use-case.js";
+import type { Repository } from "../../src/domain/models/repository.js";
+import type { RepositorySnapshot } from "../../src/domain/models/snapshot.js";
 
 const buildRepository = (): Repository => ({
   id: "repo-1",
@@ -81,7 +81,12 @@ describe("repository signal ingestion use-cases", () => {
 
     expect(result.repository.id).toBe("repo-1");
     expect(snapshotInsert).toHaveBeenCalledTimes(1);
-    const snapshot = snapshotInsert.mock.calls[0][0];
+    const firstCall = snapshotInsert.mock.calls.at(0);
+    expect(firstCall).toBeDefined();
+    if (!firstCall) {
+      throw new Error("snapshot insert call is missing");
+    }
+    const snapshot = firstCall[0];
     expect(snapshot.repositoryId).toBe("repo-1");
     expect(snapshot.status).toBe("Active");
     expect(snapshot.warningReasons).toEqual([]);
@@ -202,7 +207,6 @@ describe("repository signal ingestion use-cases", () => {
       code: "RATE_LIMIT",
       message: "rate limit",
       detail: {
-        status: undefined,
         retryAfterSeconds: 60,
       },
     });

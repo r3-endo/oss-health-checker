@@ -1,16 +1,16 @@
-import type { SnapshotPort } from "../../application/ports/snapshot-port";
-import type { RepositoryId } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
+import type { SnapshotPort } from "../../application/ports/snapshot-port.js";
+import type { RepositoryId } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import { asc, desc, eq, inArray } from "drizzle-orm";
-import type { DrizzleDatabaseHandle } from "../db/drizzle/client";
+import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import {
   snapshotsTable,
   snapshotWarningReasonsTable,
-} from "../db/drizzle/schema";
+} from "../db/drizzle/schema.js";
 import {
   parsePersistedStatus,
   parsePersistedWarningReason,
-} from "./persisted-snapshot-validation";
+} from "./persisted-snapshot-validation.js";
 
 type SnapshotRow = typeof snapshotsTable.$inferSelect;
 type SnapshotReasonRow = typeof snapshotWarningReasonsTable.$inferSelect;

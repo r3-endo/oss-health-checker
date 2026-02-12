@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import type { DrizzleDatabaseHandle } from "./client";
+import type { DrizzleDatabaseHandle } from "./client.js";
 
 const migrationFolder = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

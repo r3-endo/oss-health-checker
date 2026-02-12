@@ -1,12 +1,12 @@
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
-import { ApplicationError } from "../errors/application-error";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
+import { ApplicationError } from "../errors/application-error.js";
 import {
   RepositoryGatewayError,
   type RepositoryGatewayPort,
-} from "../ports/repository-gateway-port";
-import type { RepositoryPort } from "../ports/repository-port";
-import type { SnapshotPort } from "../ports/snapshot-port";
-import { buildSnapshotFromSignals } from "../services/snapshot-factory";
+} from "../ports/repository-gateway-port.js";
+import type { RepositoryPort } from "../ports/repository-port.js";
+import type { SnapshotPort } from "../ports/snapshot-port.js";
+import { buildSnapshotFromSignals } from "../services/snapshot-factory.js";
 
 export type RefreshRepositoryInput = Readonly<{
   repositoryId: string;
@@ -28,6 +28,22 @@ export class RefreshRepositoryService {
     private readonly repositoryGatewayPort: RepositoryGatewayPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
+
+  private static buildRateLimitDetail(
+    status: number | undefined,
+    retryAfterSeconds: number | null | undefined,
+  ): Readonly<{ status?: number; retryAfterSeconds?: number | null }> {
+    return {
+      ...(status !== undefined ? { status } : {}),
+      ...(retryAfterSeconds !== undefined ? { retryAfterSeconds } : {}),
+    };
+  }
+
+  private static buildExternalApiDetail(
+    status: number | undefined,
+  ): Readonly<{ status?: number }> {
+    return status !== undefined ? { status } : {};
+  }
 
   async execute(
     input: RefreshRepositoryInput,
@@ -53,14 +69,18 @@ export class RefreshRepositoryService {
       if (error instanceof RepositoryGatewayError) {
         if (error.code === "RATE_LIMIT") {
           throw new ApplicationError("RATE_LIMIT", error.message, {
-            status: error.detail?.status,
-            retryAfterSeconds: error.detail?.retryAfterSeconds ?? null,
+            ...RefreshRepositoryService.buildRateLimitDetail(
+              error.detail?.status,
+              error.detail?.retryAfterSeconds ?? null,
+            ),
           });
         }
 
-        throw new ApplicationError("EXTERNAL_API_ERROR", error.message, {
-          status: error.detail?.status,
-        });
+        throw new ApplicationError(
+          "EXTERNAL_API_ERROR",
+          error.message,
+          RefreshRepositoryService.buildExternalApiDetail(error.detail?.status),
+        );
       }
 
       if (error instanceof ApplicationError) {

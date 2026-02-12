@@ -1,18 +1,18 @@
-import type { Repository } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
-import { ApplicationError } from "../errors/application-error";
-import type { RepositoryGatewayPort } from "../ports/repository-gateway-port";
-import { RepositoryGatewayError } from "../ports/repository-gateway-port";
+import type { Repository } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
+import { ApplicationError } from "../errors/application-error.js";
+import type { RepositoryGatewayPort } from "../ports/repository-gateway-port.js";
+import { RepositoryGatewayError } from "../ports/repository-gateway-port.js";
 import {
   RepositoryAlreadyExistsError,
   RepositoryLimitExceededError,
-} from "../ports/repository-port";
-import type { UnitOfWorkPort } from "../ports/unit-of-work-port";
+} from "../ports/repository-port.js";
+import type { UnitOfWorkPort } from "../ports/unit-of-work-port.js";
 import {
   GitHubRepositoryUrlError,
   parseGitHubRepositoryUrl,
-} from "../services/github-repository-url";
-import { buildSnapshotFromSignals } from "../services/snapshot-factory";
+} from "../services/github-repository-url.js";
+import { buildSnapshotFromSignals } from "../services/snapshot-factory.js";
 
 export type RegisterRepositoryInput = Readonly<{
   url: string;
@@ -35,6 +35,22 @@ export class RegisterRepositoryService {
     private readonly repositoryGatewayPort: RepositoryGatewayPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
+
+  private static buildRateLimitDetail(
+    status: number | undefined,
+    retryAfterSeconds: number | null | undefined,
+  ): Readonly<{ status?: number; retryAfterSeconds?: number | null }> {
+    return {
+      ...(status !== undefined ? { status } : {}),
+      ...(retryAfterSeconds !== undefined ? { retryAfterSeconds } : {}),
+    };
+  }
+
+  private static buildExternalApiDetail(
+    status: number | undefined,
+  ): Readonly<{ status?: number }> {
+    return status !== undefined ? { status } : {};
+  }
 
   async execute(
     input: RegisterRepositoryInput,
@@ -79,15 +95,23 @@ export class RegisterRepositoryService {
 
       if (error instanceof RepositoryGatewayError) {
         if (error.code === "RATE_LIMIT") {
-          throw new ApplicationError("RATE_LIMIT", error.message, {
-            status: error.detail?.status,
-            retryAfterSeconds: error.detail?.retryAfterSeconds ?? null,
-          });
+          throw new ApplicationError(
+            "RATE_LIMIT",
+            error.message,
+            RegisterRepositoryService.buildRateLimitDetail(
+              error.detail?.status,
+              error.detail?.retryAfterSeconds ?? null,
+            ),
+          );
         }
 
-        throw new ApplicationError("EXTERNAL_API_ERROR", error.message, {
-          status: error.detail?.status,
-        });
+        throw new ApplicationError(
+          "EXTERNAL_API_ERROR",
+          error.message,
+          RegisterRepositoryService.buildExternalApiDetail(
+            error.detail?.status,
+          ),
+        );
       }
 
       if (error instanceof RepositoryLimitExceededError) {

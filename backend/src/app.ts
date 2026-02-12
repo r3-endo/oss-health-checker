@@ -1,2 +1,2 @@
-export { buildApp } from "./bootstrap/build-app";
-export { buildContainer } from "./bootstrap/build-container";
+export { buildApp } from "./bootstrap/build-app.js";
+export { buildContainer } from "./bootstrap/build-container.js";

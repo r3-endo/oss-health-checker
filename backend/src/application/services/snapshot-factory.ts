@@ -1,9 +1,9 @@
-import type { RepositorySignals } from "../ports/repository-gateway-port";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
+import type { RepositorySignals } from "../ports/repository-gateway-port.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import type {
   RepositoryStatus,
   WarningReasonKey,
-} from "../../domain/models/status";
+} from "../../domain/models/status.js";
 
 const COMMIT_STALE_MONTHS = 6;
 const RELEASE_STALE_MONTHS = 12;

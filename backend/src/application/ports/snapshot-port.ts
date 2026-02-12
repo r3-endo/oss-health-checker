@@ -1,5 +1,5 @@
-import type { RepositoryId } from "../../domain/models/repository";
-import type { RepositorySnapshot } from "../../domain/models/snapshot";
+import type { RepositoryId } from "../../domain/models/repository.js";
+import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 
 export interface SnapshotPort {
   insert(snapshot: RepositorySnapshot): Promise<void>;
