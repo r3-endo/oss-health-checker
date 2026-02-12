@@ -1,10 +1,10 @@
 ## 1. 品質ゲートとテスト骨子（Red 先行）
 
-- [ ] 1.1 `GET /api/categories` と `GET /api/categories/:slug` のレスポンス契約（nullable 含む）に対する失敗する contract test を追加する
-- [ ] 1.2 scoreVersion `1` の health score 計算（境界値・clamp）に対する失敗する unit test を追加する
-- [ ] 1.3 30日計算（基準あり/なし、UTC 日付境界）に対する失敗する unit test を追加する
-- [ ] 1.4 snapshot 冪等性（同一 repo・同一 UTC 日で upsert）に対する失敗する integration test を追加する
-- [ ] 1.5 spec -> OpenAPI -> 実レスポンス整合（`CATEGORY_NOT_FOUND` 含む）に対する失敗する contract test を追加する
+- [x] 1.1 `GET /api/categories` と `GET /api/categories/:slug` のレスポンス契約（nullable 含む）に対する失敗する contract test を追加する
+- [x] 1.2 scoreVersion `1` の health score 計算（境界値・clamp）に対する失敗する unit test を追加する
+- [x] 1.3 30日計算（基準あり/なし、UTC 日付境界）に対する失敗する unit test を追加する
+- [x] 1.4 snapshot 冪等性（同一 repo・同一 UTC 日で upsert）に対する失敗する integration test を追加する
+- [x] 1.5 spec -> OpenAPI -> 実レスポンス整合（`CATEGORY_NOT_FOUND` 含む）に対する失敗する contract test を追加する
 
 ## 2. DB スキーマとマイグレーション
 
