@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { useRegisterRepositoryMutation } from "../hooks/use-register-repository-mutation";
 import { useRepositoriesQuery } from "../hooks/use-repositories-query";
-import { RepositoryApiError } from "../api/repository-api-adapter";
 import { QueryErrorBoundary } from "../../../app/error-boundary";
 import { RepositoryList } from "./components/RepositoryList";
 import { RepositoryListSkeleton } from "./components/RepositoryListSkeleton";
@@ -25,12 +24,6 @@ const SuspendedRepositoryList = () => {
  */
 export const RepositoriesPage = () => {
   const registerMutation = useRegisterRepositoryMutation();
-  const registerErrorMessage =
-    registerMutation.error instanceof RepositoryApiError
-      ? registerMutation.error.message
-      : registerMutation.isError
-        ? "Failed to register repository."
-        : undefined;
 
   return (
     <main className="min-h-screen px-6 py-12 sm:px-8 lg:px-12">
@@ -48,7 +41,7 @@ export const RepositoriesPage = () => {
           <RepositoryRegisterForm
             isSubmitting={registerMutation.isPending}
             onSubmit={(input) => registerMutation.mutate(input)}
-            errorMessage={registerErrorMessage}
+            errorMessage={registerMutation.errorMessage}
           />
         </section>
 

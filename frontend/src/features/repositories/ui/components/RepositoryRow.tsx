@@ -1,5 +1,4 @@
 import type { RepositoryView, RepositoryStatus } from "../../model/types";
-import { RepositoryApiError } from "../../api/repository-api-adapter";
 import { useRefreshRepositoryMutation } from "../../hooks/use-refresh-repository-mutation";
 
 export const formatTimestamp = (value: string | null): string => {
@@ -133,18 +132,12 @@ export const RepositoryRow = ({
   repository: RepositoryView;
 }) => {
   const refreshMutation = useRefreshRepositoryMutation();
-  const refreshErrorMessage =
-    refreshMutation.error instanceof RepositoryApiError
-      ? refreshMutation.error.message
-      : refreshMutation.isError
-        ? "Failed to refresh repository."
-        : undefined;
 
   return (
     <RepositoryRowView
       repository={repository}
       isRefreshing={refreshMutation.isPending}
-      refreshErrorMessage={refreshErrorMessage}
+      refreshErrorMessage={refreshMutation.errorMessage}
       onRefresh={() => refreshMutation.mutate(repository.id)}
     />
   );

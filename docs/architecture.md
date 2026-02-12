@@ -73,6 +73,7 @@
 - アプリ全体のProviderと依存注入を管理する。
 - 例:
   - `providers.tsx`: QueryClient + API Provider の配線
+  - `repository-api-factory.ts`: `RepositoryApiPort` の concrete を組み立てる composition root
   - `repository-api-provider.tsx`: `RepositoryApiPort` の注入境界
   - `query-client.ts`: query/mutation の共通ポリシー
 
@@ -86,7 +87,8 @@
 
 #### `frontend/src/features/repositories/hooks`
 - React Query の query/mutation hook を配置する。
-- UI描画ロジックは持たず、データ取得・キャッシュ無効化に集中する。
+- UI描画ロジックは持たず、データ取得・キャッシュ無効化・エラー表示用メッセージの解決に集中する。
+- UI層が adapter の具体エラー型に依存しないよう、表示に必要なエラー情報は hooks が吸収して返す。
 
 #### `frontend/src/features/repositories/ui`
 - `RepositoriesPage`: 画面の組み立て（composition）のみ担当。
@@ -95,4 +97,5 @@
 ### Frontend 実装ルール
 - `new HttpRepositoryApiAdapter(...)` を `ui` で直接生成しない。`app` 層のProvider経由で注入する。
 - APIレスポンスの parse とエラー判定は adapter で完了させ、UIは成功/失敗状態を表示するだけにする。
+- UIコンポーネント/ページから adapter 具象 (`RepositoryApiError` など) を直接参照しない。必要な表示文言は hooks 経由で受け取る。
 - 機能追加時は `Page` に直接ロジックを足さず、まず `hooks` と `components` の責務分割を維持する。
