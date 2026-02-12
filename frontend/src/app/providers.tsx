@@ -15,6 +15,8 @@ export const AppProviders = ({
   repositoryApi?: RepositoryApiPort;
 }) => (
   <QueryClientProvider client={queryClient}>
-    <RepositoryApiProvider api={repositoryApi}>{children}</RepositoryApiProvider>
+    <RepositoryApiProvider api={repositoryApi}>
+      {children}
+    </RepositoryApiProvider>
   </QueryClientProvider>
 );
