@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { ApplicationError } from "../../src/application/errors/application-error.js";
 import { createCategoryRoutes } from "../../src/interface/http/routes/category-routes.js";
 import {
   CategorySummarySchema,
@@ -99,7 +100,7 @@ const createContractApp = (): OpenAPIHono => {
         };
       }
 
-      throw new Error("Category not found");
+      throw new ApplicationError("NOT_FOUND", "Category not found");
     },
   };
 

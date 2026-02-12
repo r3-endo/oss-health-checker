@@ -1,4 +1,5 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { ApplicationError } from "../../../application/errors/application-error.js";
 import {
   CategoryDetailResponseSchema,
   CategoryNotFoundErrorResponseSchema,
@@ -83,16 +84,20 @@ export const createCategoryRoutes = (
       const params = c.req.valid("param");
       const payload = await controller.getCategoryDetail({ slug: params.slug });
       return c.json(payload as never, 200);
-    } catch {
-      return c.json(
-        {
-          error: {
-            code: "CATEGORY_NOT_FOUND",
-            message: "Category not found",
+    } catch (error) {
+      if (error instanceof ApplicationError && error.code === "NOT_FOUND") {
+        return c.json(
+          {
+            error: {
+              code: "CATEGORY_NOT_FOUND",
+              message: "Category not found",
+            },
           },
-        },
-        404,
-      );
+          404,
+        );
+      }
+
+      throw error;
     }
   });
 
