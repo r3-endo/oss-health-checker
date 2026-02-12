@@ -3,9 +3,11 @@ import { useState } from "react";
 export const RepositoryRegisterForm = ({
   onSubmit,
   isSubmitting,
+  errorMessage,
 }: {
   onSubmit: (input: { url: string }) => void;
   isSubmitting: boolean;
+  errorMessage?: string;
 }) => {
   const [url, setUrl] = useState("");
 
@@ -13,7 +15,7 @@ export const RepositoryRegisterForm = ({
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit({ url });
+        onSubmit({ url: url.trim() });
       }}
     >
       <input
@@ -26,6 +28,7 @@ export const RepositoryRegisterForm = ({
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Adding..." : "Add"}
       </button>
+      {errorMessage ? <p role="alert">{errorMessage}</p> : null}
     </form>
   );
 };

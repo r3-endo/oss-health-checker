@@ -24,9 +24,25 @@ export const RepositoryList = ({
 
   return (
     <section>
-      {data.map((repository) => (
-        <RepositoryRow key={repository.id} repository={repository} />
-      ))}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Reasons</th>
+            <th>Last Commit</th>
+            <th>Last Release</th>
+            <th>Open Issues</th>
+            <th>Contributors</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((repository) => (
+            <RepositoryRow key={repository.id} repository={repository} />
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 };

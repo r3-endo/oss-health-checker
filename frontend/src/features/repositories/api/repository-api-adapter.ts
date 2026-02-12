@@ -1,11 +1,18 @@
 import {
   ApiErrorSchema,
+  RefreshRepositoryResponseSchema,
   RegisterRepositoryInputSchema,
+  RegisterRepositoryResponseSchema,
   RepositoryListResponseSchema,
-  RepositoryViewSchema,
 } from "../model/schemas";
 import type { RepositoryApiPort } from "./repository-api-port";
-import type { RegisterRepositoryInput, RepositoryView } from "../model/types";
+import type {
+  RepositoryApiRepository,
+  RepositoryApiSnapshot,
+  RegisterRepositoryInput,
+  RefreshRepositoryResponse,
+  RepositoryView,
+} from "../model/types";
 
 export class RepositoryApiError extends Error {
   constructor(
@@ -43,6 +50,24 @@ const expectJson = async (response: Response): Promise<unknown> => {
   }
 };
 
+const toRepositoryView = (
+  repository: RepositoryApiRepository,
+  snapshot: RepositoryApiSnapshot,
+): RepositoryView =>
+  Object.freeze({
+    id: repository.id,
+    url: repository.url,
+    owner: repository.owner,
+    name: repository.name,
+    status: snapshot.status,
+    warningReasons: snapshot.warningReasons,
+    lastCommitAt: snapshot.lastCommitAt,
+    lastReleaseAt: snapshot.lastReleaseAt,
+    openIssuesCount: snapshot.openIssuesCount,
+    contributorsCount: snapshot.contributorsCount,
+    fetchedAt: snapshot.fetchedAt,
+  });
+
 export class HttpRepositoryApiAdapter implements RepositoryApiPort {
   constructor(private readonly baseUrl: string) {}
 
@@ -54,7 +79,18 @@ export class HttpRepositoryApiAdapter implements RepositoryApiPort {
       throw parseErrorResponse(response.status, json);
     }
 
-    return RepositoryListResponseSchema.parse(json).data;
+    const parsed = RepositoryListResponseSchema.parse(json);
+
+    return parsed.data.map(({ repository, snapshot }) => {
+      if (!snapshot) {
+        throw new RepositoryApiError(
+          500,
+          "INTERNAL_ERROR",
+          "Missing snapshot data",
+        );
+      }
+      return toRepositoryView(repository, snapshot);
+    });
   }
 
   async registerRepository(
@@ -72,10 +108,13 @@ export class HttpRepositoryApiAdapter implements RepositoryApiPort {
       throw parseErrorResponse(response.status, json);
     }
 
-    return RepositoryViewSchema.parse((json as { data: unknown }).data);
+    const parsed = RegisterRepositoryResponseSchema.parse(json);
+    return toRepositoryView(parsed.data.repository, parsed.data.snapshot);
   }
 
-  async refreshRepository(repositoryId: string): Promise<RepositoryView> {
+  async refreshRepository(
+    repositoryId: string,
+  ): Promise<RefreshRepositoryResponse["data"]> {
     const response = await fetch(
       `${this.baseUrl}/api/repositories/${repositoryId}/refresh`,
       {
@@ -88,6 +127,6 @@ export class HttpRepositoryApiAdapter implements RepositoryApiPort {
       throw parseErrorResponse(response.status, json);
     }
 
-    return RepositoryViewSchema.parse((json as { data: unknown }).data);
+    return RefreshRepositoryResponseSchema.parse(json).data;
   }
 }

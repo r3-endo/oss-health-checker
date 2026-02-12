@@ -305,6 +305,51 @@ describe("repository routes integration", () => {
     expect(body.error.detail.retryAfterSeconds).toBe(120);
   });
 
+  it("keeps previous snapshot after refresh failure and returns failure result", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 2,
+      contributorsCount: 5,
+    });
+    const created = await (
+      await app.request(
+        "/api/repositories",
+        requestJson({ url: "https://github.com/octocat/Hello-World" }),
+      )
+    ).json();
+
+    const beforeRefreshList = await (
+      await app.request("/api/repositories")
+    ).json();
+    const beforeSnapshot = beforeRefreshList.data[0].snapshot;
+
+    gateway.setFailure(
+      "octocat",
+      "Hello-World",
+      new RepositoryGatewayError("RATE_LIMIT", "rate limited", {
+        status: 429,
+        retryAfterSeconds: 60,
+      }),
+    );
+
+    const refreshResponse = await app.request(
+      `/api/repositories/${created.data.repository.id}/refresh`,
+      { method: "POST" },
+    );
+
+    expect(refreshResponse.status).toBe(429);
+    const refreshBody = await refreshResponse.json();
+    expect(refreshBody.error.code).toBe("RATE_LIMIT");
+
+    const afterRefreshList = await (
+      await app.request("/api/repositories")
+    ).json();
+    const afterSnapshot = afterRefreshList.data[0].snapshot;
+
+    expect(afterSnapshot).toEqual(beforeSnapshot);
+  });
+
   it("returns external API error when refresh gateway fails upstream", async () => {
     gateway.setSignals("octocat", "Hello-World", {
       lastCommitAt: new Date("2026-01-10T00:00:00Z"),
