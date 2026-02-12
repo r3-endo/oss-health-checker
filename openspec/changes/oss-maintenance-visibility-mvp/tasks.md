@@ -43,14 +43,14 @@
 
 ## 7. Dashboard UI (React)
 
-- [ ] 7.1 Build one-page layout with repository URL input form at top and repository table below
-- [ ] 7.2 Connect registration form to `POST /repositories` and display validation/limit errors
-- [ ] 7.3 Build repository table columns (name, status, last commit date, last release date, open issues count, contributors count)
-- [ ] 7.4 Display classification reasons per repository alongside status
-- [ ] 7.5 Add per-repository refresh action and keep previous snapshot visible when refresh fails
+- [x] 7.1 Build one-page layout with repository URL input form at top and repository table below
+- [x] 7.2 Connect registration form to `POST /repositories` and display validation/limit errors
+- [x] 7.3 Build repository table columns (name, status, last commit date, last release date, open issues count, contributors count)
+- [x] 7.4 Display classification reasons per repository alongside status
+- [x] 7.5 Add per-repository refresh action and keep previous snapshot visible when refresh fails
 
 ## 8. Failure-Path Verification and Documentation
 
-- [ ] 8.1 Add integration test for refresh failure path to verify previous snapshot is preserved and failure result is returned
-- [ ] 8.2 Add UI test for refresh failure feedback while keeping previously displayed snapshot values
-- [ ] 8.3 Add README with minimal setup/run instructions, quality-gate commands, and MVP constraints
+- [x] 8.1 Add integration test for refresh failure path to verify previous snapshot is preserved and failure result is returned
+- [x] 8.2 Add UI test for refresh failure feedback while keeping previously displayed snapshot values
+- [x] 8.3 Add README with minimal setup/run instructions, quality-gate commands, and MVP constraints

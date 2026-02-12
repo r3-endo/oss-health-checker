@@ -5,22 +5,23 @@
     "": {
       "name": "oss-health-checker-backend",
       "dependencies": {
-        "@hono/zod-openapi": "latest",
-        "better-sqlite3": "latest",
-        "drizzle-orm": "latest",
-        "hono": "latest",
-        "zod": "latest",
+        "@hono/node-server": "^1.19.9",
+        "@hono/zod-openapi": "^1.2.1",
+        "better-sqlite3": "^12.6.2",
+        "drizzle-orm": "^0.45.1",
+        "hono": "^4.11.9",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
-        "@types/better-sqlite3": "latest",
-        "@types/node": "latest",
-        "@typescript-eslint/eslint-plugin": "latest",
-        "@typescript-eslint/parser": "latest",
-        "drizzle-kit": "latest",
-        "eslint": "latest",
-        "prettier": "latest",
-        "typescript": "latest",
-        "vitest": "latest",
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/node": "^25.2.3",
+        "@typescript-eslint/eslint-plugin": "^8.55.0",
+        "@typescript-eslint/parser": "^8.55.0",
+        "drizzle-kit": "^0.31.9",
+        "eslint": "^10.0.0",
+        "prettier": "^3.8.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18",
       },
     },
   },
@@ -98,6 +99,8 @@
     "@eslint/object-schema": ["@eslint/object-schema@3.0.1", "", {}, "sha512-P9cq2dpr+LU8j3qbLygLcSZrl2/ds/pUpfnHNNuk5HW7mnngHs+6WSq5C9mO3rqRX8A1poxqLTC9cu0KOyJlBg=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.6.0", "", { "dependencies": { "@eslint/core": "^1.1.0", "levn": "^0.4.1" } }, "sha512-bIZEUzOI1jkhviX2cp5vNyXQc6olzb2ohewQubuYlMXZ2Q/XjBO0x0XhGPvc9fjSIiUN0vw+0hq53BJ4eQSJKQ=="],
+
+    "@hono/node-server": ["@hono/node-server@1.19.9", "", { "peerDependencies": { "hono": "^4" } }, "sha512-vHL6w3ecZsky+8P5MD+eFfaGTyCeOHUIFYMGpQGbrBTSmNNoxv0if69rEZ5giu36weC5saFuznL411gRX7bJDw=="],
 
     "@hono/zod-openapi": ["@hono/zod-openapi@1.2.1", "", { "dependencies": { "@asteasolutions/zod-to-openapi": "^8.1.0", "@hono/zod-validator": "^0.7.6", "openapi3-ts": "^4.5.0" }, "peerDependencies": { "hono": ">=4.3.6", "zod": "^4.0.0" } }, "sha512-aZza4V8wkqpdHBWFNPiCeWd0cGOXbYuQW9AyezHs/jwQm5p67GkUyXwfthAooAwnG7thTpvOJkThZpCoY6us8w=="],
 

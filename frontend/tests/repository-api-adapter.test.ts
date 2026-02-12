@@ -42,17 +42,24 @@ describe("HttpRepositoryApiAdapter", () => {
         JSON.stringify({
           data: [
             {
-              id: "repo-1",
-              url: "https://github.com/o/r",
-              owner: "o",
-              name: "r",
-              status: "Active",
-              warningReasons: [],
-              lastCommitAt: "2026-02-10T00:00:00.000Z",
-              lastReleaseAt: null,
-              openIssuesCount: 1,
-              contributorsCount: 1,
-              fetchedAt: "2026-02-10T00:00:00.000Z",
+              repository: {
+                id: "repo-1",
+                url: "https://github.com/o/r",
+                owner: "o",
+                name: "r",
+                createdAt: "2026-02-10T00:00:00.000Z",
+                updatedAt: "2026-02-10T00:00:00.000Z",
+              },
+              snapshot: {
+                repositoryId: "repo-1",
+                status: "Active",
+                warningReasons: [],
+                lastCommitAt: "2026-02-10T00:00:00.000Z",
+                lastReleaseAt: null,
+                openIssuesCount: 1,
+                contributorsCount: 1,
+                fetchedAt: "2026-02-10T00:00:00.000Z",
+              },
             },
           ],
         }),
@@ -65,6 +72,29 @@ describe("HttpRepositoryApiAdapter", () => {
 
     const repositories = await adapter.listRepositories();
     expect(repositories).toHaveLength(1);
+    expect(repositories[0]?.owner).toBe("o");
     expect(repositories[0]?.status).toBe("Active");
+  });
+
+  it("normalizes refresh API error response into RepositoryApiError", async () => {
+    const adapter = new HttpRepositoryApiAdapter("");
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: { code: "RATE_LIMIT", message: "rate limited" },
+        }),
+        {
+          status: 429,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    ) as typeof fetch;
+
+    await expect(adapter.refreshRepository("repo-1")).rejects.toMatchObject({
+      name: "RepositoryApiError",
+      status: 429,
+      code: "RATE_LIMIT",
+    } satisfies Partial<RepositoryApiError>);
   });
 });
