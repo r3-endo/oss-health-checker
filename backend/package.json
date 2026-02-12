@@ -5,8 +5,8 @@
   "packageManager": "bun@1.1.43",
   "type": "module",
   "scripts": {
-    "dev": "bunx tsx src/server.ts",
-    "start": "bunx tsx src/server.ts",
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts",
     "typecheck": "bunx tsc --noEmit",
     "lint": "bunx eslint . --ext .ts",
     "format": "bunx prettier --write .",
@@ -33,6 +33,7 @@
     "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.0",
     "prettier": "^3.8.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }
