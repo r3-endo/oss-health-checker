@@ -1,12 +1,6 @@
 import { z } from "@hono/zod-openapi";
-import {
-  CATEGORY_SLUGS,
-  type CategorySlug,
-} from "../../../domain/models/category.js";
-import {
-  HEALTH_STATUSES,
-  type HealthStatus,
-} from "../../../domain/models/health-status.js";
+import { CATEGORY_SLUGS } from "../../../domain/models/category.js";
+import { HEALTH_STATUSES } from "../../../domain/models/health-status.js";
 
 export const CategorySlugSchema = z.enum(CATEGORY_SLUGS);
 
