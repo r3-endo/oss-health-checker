@@ -5,20 +5,20 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate.js";
-import { seedCategoryBase } from "../../src/infrastructure/db/drizzle/seed-category-base.js";
+} from "../../src/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
+import { seedCategoryBase } from "../../src/shared/infrastructure/db/drizzle/seed-category-base.js";
 import {
   categoriesTable,
   repositoriesTable,
   repositoryCategoriesTable,
-} from "../../src/infrastructure/db/drizzle/schema.js";
-import { RegisterRepositoryService } from "../../src/application/use-cases/register-repository-use-case.js";
-import { DrizzleUnitOfWorkAdapter } from "../../src/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+} from "../../src/shared/infrastructure/db/drizzle/schema.js";
+import { RegisterRepositoryService } from "../../src/features/development-health/application/use-cases/register-repository-use-case.js";
+import { DrizzleUnitOfWorkAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import { eq } from "drizzle-orm";
-import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port.js";
-import { ListRepositoriesWithLatestSnapshotService } from "../../src/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import { DrizzleRepositoryReadModelAdapter } from "../../src/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import type { RepositoryGatewayPort } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
+import { ListRepositoriesWithLatestSnapshotService } from "../../src/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import { DrizzleRepositoryReadModelAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 
 const createGateway = (): RepositoryGatewayPort => ({
   fetchSignals: async () => ({

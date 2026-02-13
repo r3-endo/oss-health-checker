@@ -31,6 +31,8 @@ LLM（Claude / Codex / Cursor など）を **複数サブエージェント**と
 
 ## 2. 技術スタック方針
 
+- 設計思想は以下に記載。実装の際には必ず参照すること
+  - docs/architecture.md
 - **パッケージマネージャーは Bun を使用する**
   - ローカル実行・CIともに `bun install` / `bun run <script>` を使用する
 - **Frontend**

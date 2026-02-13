@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateIssueGrowth30d,
   resolveCommitLast30d,
-} from "../../src/domain/models/thirty-day-metrics.js";
+} from "../../src/features/development-health/domain/models/thirty-day-metrics.js";
 
 describe("calculateIssueGrowth30d", () => {
   const currentDate = new Date("2026-02-13T00:00:00Z");

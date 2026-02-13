@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   calculateHealthScore,
   generateDeductionReasons,
-} from "../../src/domain/models/health-score.js";
-import { mapScoreToStatus } from "../../src/domain/models/health-status.js";
+} from "../../src/features/development-health/domain/models/health-score.js";
+import { mapScoreToStatus } from "../../src/features/development-health/domain/models/health-status.js";
 
 describe("calculateHealthScore", () => {
   const baseDate = new Date("2026-02-13T00:00:00Z");

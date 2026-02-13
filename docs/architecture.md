@@ -2,62 +2,46 @@
 
 ## 設計思想
 - **MVPで小さく保つ**: 実装は最小限、ただし将来の変更点が局所化される境界を先に作る。
-- **依存方向を固定する**: `interface -> application -> domain`。`infrastructure` は `application` の `port` を実装する。
-- **Composition Rootを1箇所に集約する**: `new` は `bootstrap` に集め、差し替えやテストを容易にする。
+- **Feature単位で分割する**: バックエンドは `development-health` と `ecosystem-adoption` を対等な機能軸として扱う。
+- **依存方向を固定する**: 各 feature で `interface -> application -> domain`。`infrastructure` は `application` の `port` を実装する。
+- **Composition Rootを集約する**: `new` は `shared/bootstrap` に集め、差し替えやテストを容易にする。
 - **契約の単一ソース化**: status / warning reason / error code は domain/application の定義をAPIスキーマから再利用する。
 
-## レイヤ責務
+## Backend 構成
 
-### `backend/src/domain`
-- エンティティ・値オブジェクト・業務上の列挙定義を置く。
-- 外部I/Oに依存しない純粋な型/ルールを保持する。
-- 例:
-  - `models/status.ts`: ステータスと警告理由の単一ソース
-  - `models/repository.ts`, `models/snapshot.ts`: ドメインモデル
-  - `errors/refresh-error.ts`: リフレッシュ失敗コード定義
+### `backend/src/features/development-health`
+- GitHub由来の「開発健全性シグナル」を扱う feature。
+- 主な責務:
+  - `domain/models/*`: health score / status / snapshot などのドメインルール
+  - `application/use-cases/*`: register / refresh / list / category detail のユースケース
+  - `application/ports/*`: GitHub・DB・read model への境界
+  - `infrastructure/gateways/*`: GitHub API アダプタ
+  - `infrastructure/repositories/*`: Drizzle経由の永続化アダプタ
+  - `interface/http/*`: route / controller / openapi / error mapping
 
-### `backend/src/application`
-- ユースケースと入力/出力境界（Port）を置く。
-- ビジネスフローを記述し、技術詳細は知らない。
-- 例:
-  - `use-cases/list-repositories-with-latest-snapshot-use-case.ts`
-  - `ports/repository-read-model-port.ts`
-  - `errors/application-error.ts`
-  - `read-models/repository-with-latest-snapshot.ts`
+### `backend/src/features/ecosystem-adoption`
+- npm, Maven Central, PyPI, Homebrew, Docker由来の「採用実態シグナル」を扱う feature。
+- `application/ports/registry-provider-port.ts` を中心に provider plugin を拡張する。
+- 各データ源の実装は `infrastructure/providers/<source>/` に閉じ込める。
 
-### `backend/src/interface/http`
-- HTTP入出力の責務を持つ（routing/controller/error mapping）。
-- ユースケース呼び出しとレスポンス整形のみを行う。
-- 例:
-  - `routes/repository-routes.ts`
-  - `controllers/repository-controller.ts`
-  - `error-mapper.ts`
-
-### `backend/src/infrastructure`
-- 技術実装を配置する（DB, 外部API, 設定, OpenAPI schema）。
-- Portの実装詳細を閉じ込める。
-- 例:
-  - `db/drizzle/*`: DBハンドルとスキーマ
-  - `repositories/*-adapter.ts`: Port実装
-  - `config/env.ts`: 環境変数解決
-  - `openapi/schemas.ts`: APIスキーマ
-
-### `backend/src/bootstrap`
-- 依存注入の組み立て専用。
-- どの実装を使うかを決める唯一の場所。
-- 例:
-  - `build-container.ts`: use case / adapter / controller を組み立てる
-  - `build-app.ts`: Hono app に route を配線する
+### `backend/src/shared`
+- feature横断の基盤を置く。
+- `config/env.ts`: 環境変数解決
+- `infrastructure/db/drizzle/*`: DBハンドル・schema・migration・seed
+- `bootstrap/build-container.ts`: feature実装を組み立てる composition root
+- `bootstrap/build-app.ts`: Hono app に HTTP route を配線
 
 ## エントリポイント
 - `index.ts`: 実行時の `env` を使って `buildContainer` + `buildApp` を実行。
-- `app.ts`: `buildApp`, `buildContainer` を再エクスポート（テスト/起動の境界を明確化）。
+- `app.ts`: `shared/bootstrap` の組み立て関数を再エクスポート（テスト/起動の境界を明確化）。
+- `jobs/collect-daily-snapshots.ts`: development-health 用のバッチジョブを実行。
 
 ## 変更に強くするためのルール
-- 新しい機能はまず `application/use-cases` と `application/ports` を追加してから実装する。
+- 新機能は `features/<feature>/application/use-cases` と `ports` から追加する。
+- `ports` は feature 内に閉じる。全体共通 `ports` ディレクトリは作らない。
 - `interface/http` には業務ルールを置かない。
-- `infrastructure` の型は直接UI/Controllerに露出させない。
-- エラーは `ApplicationError` に正規化し、HTTP変換は `error-mapper.ts` に集約する。
+- `infrastructure` の型は controller に露出させない。
+- エラーは `ApplicationError` に正規化し、HTTP変換は feature の `error-mapper.ts` に集約する。
 
 ## Frontend 設計
 
