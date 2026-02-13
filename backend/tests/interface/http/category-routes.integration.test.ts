@@ -46,7 +46,7 @@ describe("category routes integration", () => {
     );
 
     const factsPort: CategoryRepositoryFactsPort = {
-      fetchCategoryRepositoryFacts: async (owner, name) => ({
+      fetchCategoryRepositoryFacts: async (owner) => ({
         owner: {
           login: owner,
           type: owner.includes("-") ? "Organization" : "User",

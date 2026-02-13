@@ -122,7 +122,10 @@ describe("GitHubRestRepositoryGateway", () => {
       .mockResolvedValueOnce(createJsonResponse({ total_count: 11 }))
       .mockResolvedValueOnce(createJsonResponse({ total_count: 22 }))
       .mockResolvedValueOnce(
-        createJsonResponse({ message: "You have exceeded a secondary rate limit." }, { status: 429 }),
+        createJsonResponse(
+          { message: "You have exceeded a secondary rate limit." },
+          { status: 429 },
+        ),
       );
 
     let now = new Date("2026-02-13T00:00:00.000Z").getTime();

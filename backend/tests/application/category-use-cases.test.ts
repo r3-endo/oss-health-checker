@@ -36,7 +36,7 @@ describe("category use-cases", () => {
     };
 
     const categoryRepositoryFactsPort: CategoryRepositoryFactsPort = {
-      fetchCategoryRepositoryFacts: async (owner, name) =>
+      fetchCategoryRepositoryFacts: async (owner) =>
         owner === "octocat"
           ? {
               owner: { login: "octocat", type: "User" },

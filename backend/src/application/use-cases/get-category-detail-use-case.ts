@@ -29,10 +29,11 @@ export class GetCategoryDetailService implements GetCategoryDetailUseCase {
 
     const repositories = await Promise.all(
       repositoryRefs.map(async (repositoryRef) => {
-        const facts = await this.categoryRepositoryFactsPort.fetchCategoryRepositoryFacts(
-          repositoryRef.owner,
-          repositoryRef.name,
-        );
+        const facts =
+          await this.categoryRepositoryFactsPort.fetchCategoryRepositoryFacts(
+            repositoryRef.owner,
+            repositoryRef.name,
+          );
 
         return Object.freeze({
           owner: facts.owner,

@@ -249,7 +249,10 @@ export class GitHubRestRepositoryGateway
     string,
     Readonly<{ value: CategoryRepositoryFacts; expiresAtMs: number }>
   >();
-  private readonly inFlightFacts = new Map<string, Promise<CategoryRepositoryFacts>>();
+  private readonly inFlightFacts = new Map<
+    string,
+    Promise<CategoryRepositoryFacts>
+  >();
 
   constructor(env: GatewayEnv, dependencies?: Partial<GatewayDependencies>) {
     this.baseUrl = validateApiBaseUrl(env.GITHUB_API_BASE_URL);
@@ -424,7 +427,10 @@ export class GitHubRestRepositoryGateway
       default_branch?: unknown;
     }>(repoPath);
     const ownerInfo = parseRepositoryOwner(repository.body.owner);
-    const stars = normalizeCount(repository.body.stargazers_count, "stargazers_count");
+    const stars = normalizeCount(
+      repository.body.stargazers_count,
+      "stargazers_count",
+    );
     const defaultBranch = parseNonEmptyString(
       repository.body.default_branch,
       "default_branch",
@@ -444,10 +450,16 @@ export class GitHubRestRepositoryGateway
     const issueQuery = encodeURIComponent(
       `repo:${owner}/${name} type:issue state:open`,
     );
-    const prQuery = encodeURIComponent(`repo:${owner}/${name} type:pr state:open`);
+    const prQuery = encodeURIComponent(
+      `repo:${owner}/${name} type:pr state:open`,
+    );
     const [openIssues, openPRs] = await Promise.all([
-      this.requestJson<{ total_count?: unknown }>(`/search/issues?q=${issueQuery}`),
-      this.requestJson<{ total_count?: unknown }>(`/search/issues?q=${prQuery}`),
+      this.requestJson<{ total_count?: unknown }>(
+        `/search/issues?q=${issueQuery}`,
+      ),
+      this.requestJson<{ total_count?: unknown }>(
+        `/search/issues?q=${prQuery}`,
+      ),
     ]);
 
     return Object.freeze({
