@@ -17,6 +17,24 @@ const EnvSchema = z.object({
         .map((origin) => origin.trim())
         .filter((origin) => origin.length > 0),
     ),
+  NPM_REGISTRY_API_BASE_URL: z
+    .string()
+    .url()
+    .default("https://registry.npmjs.org"),
+  NPM_DOWNLOADS_API_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.npmjs.org/downloads"),
+  NPM_REGISTRY_TIMEOUT_MS: z.coerce.number().int().positive().default(5000),
+  ADOPTION_ENABLED_SOURCES: z
+    .string()
+    .default("npm")
+    .transform((value) =>
+      value
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0),
+    ),
 });
 
 export type AppEnv = Readonly<z.infer<typeof EnvSchema>>;

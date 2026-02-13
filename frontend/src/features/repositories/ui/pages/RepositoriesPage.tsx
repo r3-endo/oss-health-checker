@@ -16,13 +16,18 @@ export const RepositoriesPage = () => {
   return (
     <main className="min-h-screen px-6 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-5xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-text-primary">
-            OSS Maintenance Health
-          </h1>
-          <p className="mt-2 text-sm text-text-secondary">
-            Compare repository maintenance signals by category.
-          </p>
+        <header className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+              GitHub Health
+            </h1>
+            <p className="mt-2 text-sm text-text-secondary">
+              Compare repository maintenance signals by category.
+            </p>
+          </div>
+          <a href="/" className="text-sm text-text-secondary hover:underline">
+            Back to Dashboard
+          </a>
         </header>
 
         {categoriesQuery.isPending ? <RepositoryListSkeleton /> : null}

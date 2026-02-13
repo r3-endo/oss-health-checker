@@ -7,7 +7,7 @@
 ## Goals / Non-Goals
 
 **Goals:**
-- Dev Health と独立した `ecosystem-adoption` レイヤを追加し、同一ダッシュボード上で参照可能にする。
+- Dev Health と独立した `ecosystem-adoption` レイヤを追加し、`Dashboard` ハブ経由で各画面（GitHub / Registry）から参照可能にする。
 - npm を最初の provider として実装し、将来 provider（Maven Central/PyPI/Homebrew/Docker）追加時に application 層を変更しない設計にする。
 - API 契約で未マッピングと外部依存失敗を区別可能にし、UI が安定して表示できるようにする。
 - 生データ表示を維持し、欠損値/null を明示的に扱う。
@@ -70,12 +70,33 @@
 - Alternatives considered:
   - ページに直接 HTTP 呼び出しを追加: 実装は速いがテスト性と再利用性を損なうため不採用。
 
+### 7. 変更影響を局所化するため、集約境界を `dashboard-overview` へ分離する
+- Decision: `development-health` と `ecosystem-adoption` は独立 read model を返す feature とし、テーブル表示用の join は backend `features/dashboard-overview` に集約する。frontend も `features/dashboard` を新設し、統合表示はこの feature だけが担う。
+- Rationale: 今回のような adoption 拡張時に `development-health` / `repositories` の既存契約へ波及しないようにし、変更点を集約 feature に閉じ込める。
+- API policy:
+  - 既存 `/api/repositories` は後方互換のため当面維持（管理用途）
+  - 新規 `/api/dashboard/repositories` を統合 read model の正規 endpoint とする
+  - frontend のダッシュボード表示は段階的に `/api/dashboard/repositories` へ移行する
+- Alternatives considered:
+  - 現行の `/api/repositories` に統合を継続: 実装は早いが feature 境界を跨ぐ差分が継続し、今後の機能追加でも同じ問題を繰り返すため不採用。
+
+### 8. 画面設計: 1ページ統合をやめ、ハブ + 機能別ページに分離する
+- Decision: frontend は以下 3 画面に分離する。
+  - `Dashboard`（ハブ）: GitHub Health / Registry Adoption への導線とサマリのみ
+  - `GitHub Health`（既存）: `LLM / backend / frontend` のカテゴリ表示を維持
+  - `Registry Adoption`（新規）: package adoption の一覧と状態表示を集約
+- Rationale: 情報密度を適正化し、閲覧目的ごとの認知負荷を下げる。feature 境界と画面責務を一致させ、UI 変更時の影響を局所化する。
+- Alternatives considered:
+  - 1ページに Dev Health + Adoption を同居: 一覧視認性が低下し、列追加に伴う可読性悪化が大きいため不採用。
+
 ## Risks / Trade-offs
 
 - [Risk] npm API のレート制限や一時障害で取得失敗が増える → Mitigation: タイムアウト/リトライ方針を adapter に閉じ、失敗時は前回成功 snapshot を返す。
 - [Risk] mapping 未設定が多いと adoption 列の有用性が低下する → Mitigation: `Not Mapped` を明示し、後続タスクで mapping 登録導線を追加可能な API 契約にする。
 - [Risk] provider 追加時にレスポンス互換性が崩れる → Mitigation: provider 非依存の共通 adoption DTO を先に固定し、provider 固有項目は拡張フィールドに隔離する。
 - [Risk] Dev Health と Adoption の取得タイミング差で情報鮮度がずれる → Mitigation: 各レイヤの `fetchedAt` を独立表示し、同時刻性を前提にしない。
+- [Risk] 集約境界の移行中に endpoint が二重化し、利用側が混在する → Mitigation: `/api/dashboard/repositories` を段階導入し、切替完了後に旧経路の adoption 参照を削除する（移行期間は contract test で両者差分を監視）。
+- [Risk] 画面分離により導線が増え、利用者が目的画面へ迷う可能性 → Mitigation: `Dashboard` を単一入口にし、各画面への明示的ナビゲーションを固定配置する。
 
 ## Migration Plan
 
@@ -87,6 +108,11 @@
 6. frontend model(zod) と API adapter を更新し、truth table に従った表示分岐と adoption 列を追加する。
 7. 失敗系テスト（not mapped / provider failure / null field）を追加して CI を通す。
 8. 段階的に有効化し、問題時は adoption 取得を feature flag または provider 無効化で切り戻す（Dev Health 機能は維持）。
+9. backend に `features/dashboard-overview` を追加し、`development-health` / `ecosystem-adoption` の read model を join する統合 use-case + endpoint `/api/dashboard/repositories` を導入する。
+10. frontend に `features/dashboard`（ハブ）と `features/registry-adoption`（新規画面）を追加し、`features/repositories` は GitHub Health 画面として維持する。
+11. ルーティングを導入し、`Dashboard` から `GitHub Health` と `Registry Adoption` へ遷移可能にする。
+12. `Registry Adoption` 画面は `/api/dashboard/repositories`（または将来 `/api/registry/repositories`）を利用し、adoption 列と失敗状態表示を担う。
+13. 移行完了後、`development-health` の repository list read model から adoption 統合責務を削除し、独立性を回復する。
 
 ## Open Questions
 

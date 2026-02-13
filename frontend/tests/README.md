@@ -16,5 +16,6 @@
   - Temporary placeholders; replace with real tests when implementing new tasks.
 
 Guideline:
+
 - Add tests next to the boundary they validate, not by file type only.
 - Keep test names scoped by behavior, and mirror feature names from `src/features`.

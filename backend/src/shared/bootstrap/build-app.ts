@@ -5,6 +5,8 @@ import type { AppContainer } from "./build-container.js";
 import { createCategoryRoutes } from "../../features/development-health/interface/http/routes/category-routes.js";
 import { createRepositoryRoutes } from "../../features/development-health/interface/http/routes/repository-routes.js";
 import { mapErrorToHttp } from "../../features/development-health/interface/http/error-mapper.js";
+import { createAdoptionRoutes } from "../../features/ecosystem-adoption/interface/http/routes/adoption-routes.js";
+import { createDashboardRoutes } from "../../features/dashboard-overview/interface/http/routes/dashboard-routes.js";
 
 export const buildApp = (container: AppContainer): OpenAPIHono => {
   const app = new OpenAPIHono();
@@ -36,6 +38,8 @@ export const buildApp = (container: AppContainer): OpenAPIHono => {
   app.get("/health", (c) => c.json({ ok: true }));
   app.route("/api", createCategoryRoutes(container.categoryController));
   app.route("/api", createRepositoryRoutes(container.repositoryController));
+  app.route("/api", createAdoptionRoutes(container.adoptionController));
+  app.route("/api", createDashboardRoutes(container.dashboardController));
   app.doc("/api/openapi.json", {
     openapi: "3.0.0",
     info: {
