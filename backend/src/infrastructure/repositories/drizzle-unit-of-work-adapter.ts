@@ -1,5 +1,4 @@
 import {
-  RepositoryAlreadyExistsError,
   RepositoryLimitExceededError,
   type CreateRepositoryInput,
 } from "../../application/ports/repository-port.js";
@@ -10,10 +9,11 @@ import type {
 } from "../../application/ports/unit-of-work-port.js";
 import type { Repository } from "../../domain/models/repository.js";
 import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
-import { count } from "drizzle-orm";
+import { count, eq, notExists } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import {
   repositoriesTable,
+  repositoryCategoriesTable,
   snapshotsTable,
   snapshotWarningReasonsTable,
 } from "../db/drizzle/schema.js";
@@ -29,6 +29,26 @@ const isUniqueConstraintError = (error: unknown): boolean =>
 class DrizzleTxRepositoryAdapter implements TransactionRepositoryPort {
   constructor(private readonly tx: DrizzleTransaction) {}
 
+  findByUrl(url: string): Repository | null {
+    const row = this.tx
+      .select()
+      .from(repositoriesTable)
+      .where(eq(repositoriesTable.url, url))
+      .limit(1)
+      .get();
+    if (!row) {
+      return null;
+    }
+    return Object.freeze({
+      id: row.id,
+      url: row.url,
+      owner: row.owner,
+      name: row.name,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    });
+  }
+
   createWithLimit(input: CreateRepositoryInput, limit: number): Repository {
     const now = new Date();
     const id = crypto.randomUUID();
@@ -36,6 +56,16 @@ class DrizzleTxRepositoryAdapter implements TransactionRepositoryPort {
     const [row] = this.tx
       .select({ value: count() })
       .from(repositoriesTable)
+      .where(
+        notExists(
+          this.tx
+            .select({ repositoryId: repositoryCategoriesTable.repositoryId })
+            .from(repositoryCategoriesTable)
+            .where(
+              eq(repositoryCategoriesTable.repositoryId, repositoriesTable.id),
+            ),
+        ),
+      )
       .all();
     const repositoryCount = row?.value ?? 0;
     if (repositoryCount >= limit) {
@@ -56,7 +86,10 @@ class DrizzleTxRepositoryAdapter implements TransactionRepositoryPort {
         .run();
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new RepositoryAlreadyExistsError();
+        const existing = this.findByUrl(input.url);
+        if (existing) {
+          return existing;
+        }
       }
       throw error;
     }

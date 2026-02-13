@@ -30,6 +30,7 @@ export interface RepositoryPort {
     limit: number,
   ): Promise<Repository>;
   list(): Promise<readonly Repository[]>;
+  findByUrl(url: string): Promise<Repository | null>;
   findById(id: RepositoryId): Promise<Repository | null>;
   count(): Promise<number>;
 }

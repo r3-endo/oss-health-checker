@@ -4,6 +4,7 @@ import { RegisterRepositoryService } from "../application/use-cases/register-rep
 import type { AppEnv } from "../infrastructure/config/env.js";
 import { createDrizzleHandle } from "../infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "../infrastructure/db/drizzle/migrate.js";
+import { seedCategoryBase } from "../infrastructure/db/drizzle/seed-category-base.js";
 import { GitHubRestRepositoryGateway } from "../infrastructure/gateways/github-rest-repository-gateway.js";
 import { DrizzleRepositoryAdapter } from "../infrastructure/repositories/drizzle-repository-adapter.js";
 import { DrizzleRepositoryReadModelAdapter } from "../infrastructure/repositories/drizzle-repository-read-model-adapter.js";
@@ -19,6 +20,7 @@ export type AppContainer = Readonly<{
 export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const db = createDrizzleHandle(appEnv);
   migrateDrizzleDatabase(db);
+  seedCategoryBase(db);
 
   const repositoryAdapter = new DrizzleRepositoryAdapter(db);
   const snapshotAdapter = new DrizzleSnapshotAdapter(db);
