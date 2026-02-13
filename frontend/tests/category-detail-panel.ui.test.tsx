@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { RepositoryApiError } from "../src/features/repositories/api/repository-api-adapter";
 import { CategoryDetailPanel } from "../src/features/repositories/ui/components/CategoryDetailPanel";
 
 describe("CategoryDetailPanel", () => {
@@ -8,8 +7,7 @@ describe("CategoryDetailPanel", () => {
     const html = renderToStaticMarkup(
       <CategoryDetailPanel
         isPending
-        isError={false}
-        error={null}
+        errorMessage={undefined}
         isFetching={false}
         updatedAt={null}
         repositories={null}
@@ -20,12 +18,11 @@ describe("CategoryDetailPanel", () => {
     expect(html).toContain("Open PRs");
   });
 
-  it("shows API error message when detail request fails", () => {
+  it("shows error message when detail request fails", () => {
     const html = renderToStaticMarkup(
       <CategoryDetailPanel
         isPending={false}
-        isError
-        error={new RepositoryApiError(404, "CATEGORY_NOT_FOUND", "not found")}
+        errorMessage="not found"
         isFetching={false}
         updatedAt={null}
         repositories={null}
@@ -42,8 +39,7 @@ describe("CategoryDetailPanel", () => {
     const html = renderToStaticMarkup(
       <CategoryDetailPanel
         isPending={false}
-        isError={false}
-        error={null}
+        errorMessage={undefined}
         isFetching
         updatedAt="2026-02-13T00:00:00.000Z"
         repositories={[
