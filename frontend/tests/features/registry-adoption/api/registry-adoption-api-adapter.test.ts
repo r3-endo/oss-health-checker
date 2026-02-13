@@ -55,16 +55,14 @@ describe("HttpRegistryAdoptionApiAdapter", () => {
   it("normalizes error response", async () => {
     const adapter = new HttpRegistryAdoptionApiAdapter("");
 
-    globalThis.fetch = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            error: { code: "INTERNAL_ERROR", message: "boom" },
-          }),
-          { status: 500 },
-        ),
-      ) as typeof fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: { code: "INTERNAL_ERROR", message: "boom" },
+        }),
+        { status: 500 },
+      ),
+    ) as typeof fetch;
 
     await expect(adapter.listRepositories()).rejects.toMatchObject({
       name: "RegistryAdoptionApiError",
