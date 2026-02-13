@@ -82,7 +82,9 @@ export const CategoryRepositoryTable = ({
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-medium text-text-secondary">Repositories</h2>
+        <h2 className="text-sm font-medium text-text-secondary">
+          Repositories
+        </h2>
         <span className="text-xs text-text-tertiary">
           {sorted.length} {sorted.length === 1 ? "repository" : "repositories"}
         </span>
@@ -113,7 +115,8 @@ export const CategoryRepositoryTable = ({
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {sorted.map((repository) => {
-              const statusStyle = dataStatusStyles[repository.github.dataStatus];
+              const statusStyle =
+                dataStatusStyles[repository.github.dataStatus];
 
               return (
                 <tr key={`${repository.owner.login}/${repository.name}`}>
@@ -131,7 +134,9 @@ export const CategoryRepositoryTable = ({
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-text-primary">{repository.owner.login}</span>
+                      <span className="text-sm text-text-primary">
+                        {repository.owner.login}
+                      </span>
                       <span
                         className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium ${statusStyle}`}
                       >
@@ -155,7 +160,9 @@ export const CategoryRepositoryTable = ({
                     {formatNullableNumber(repository.github.openPRs)}
                   </td>
                   <td className="px-5 py-4 text-sm text-text-secondary">
-                    {formatTimestamp(repository.github.lastCommitToDefaultBranchAt)}
+                    {formatTimestamp(
+                      repository.github.lastCommitToDefaultBranchAt,
+                    )}
                   </td>
                 </tr>
               );

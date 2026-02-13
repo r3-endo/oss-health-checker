@@ -58,7 +58,9 @@ export const CategoryDetailPanel = ({
     <>
       <div className="flex items-center justify-between">
         {isFetching ? (
-          <p className="text-xs text-text-tertiary">Updating category data...</p>
+          <p className="text-xs text-text-tertiary">
+            Updating category data...
+          </p>
         ) : (
           <span />
         )}
