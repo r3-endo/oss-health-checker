@@ -5,9 +5,7 @@ export interface ListCategorySummariesUseCase {
   execute(): Promise<readonly CategorySummary[]>;
 }
 
-export class ListCategorySummariesService
-  implements ListCategorySummariesUseCase
-{
+export class ListCategorySummariesService implements ListCategorySummariesUseCase {
   constructor(private readonly categoryReadPort: CategoryReadPort) {}
 
   async execute(): Promise<readonly CategorySummary[]> {

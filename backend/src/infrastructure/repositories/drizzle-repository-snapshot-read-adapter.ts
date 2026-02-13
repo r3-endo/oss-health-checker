@@ -20,9 +20,7 @@ const mapSnapshot = (
     healthScoreVersion: row.healthScoreVersion,
   });
 
-export class DrizzleRepositorySnapshotReadAdapter
-  implements RepositorySnapshotReadPort
-{
+export class DrizzleRepositorySnapshotReadAdapter implements RepositorySnapshotReadPort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
   async findLatestByRepositoryIds(

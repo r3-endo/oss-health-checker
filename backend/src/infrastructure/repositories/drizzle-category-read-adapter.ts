@@ -39,9 +39,9 @@ export class DrizzleCategoryReadAdapter implements CategoryReadPort {
     return row ? mapSummary(row) : null;
   }
 
-  async listRepositoriesByCategorySlug(slug: string): Promise<
-    readonly { repositoryId: string; owner: string; name: string }[]
-  > {
+  async listRepositoriesByCategorySlug(
+    slug: string,
+  ): Promise<readonly { repositoryId: string; owner: string; name: string }[]> {
     const rows = await this.db.db
       .select({
         repositoryId: repositoriesTable.id,

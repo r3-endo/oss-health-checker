@@ -31,7 +31,9 @@ describe("CollectDailySnapshotsService", () => {
       createWithLimit: vi.fn(async () => repositories[0]!),
       list: vi.fn(async () => repositories),
       findByUrl: vi.fn(async () => repositories[0]!),
-      findById: vi.fn(async (id: string) => repositories.find((r) => r.id === id) ?? null),
+      findById: vi.fn(
+        async (id: string) => repositories.find((r) => r.id === id) ?? null,
+      ),
       count: vi.fn(async () => repositories.length),
     };
     const repositoryGatewayPort: RepositoryGatewayPort = {

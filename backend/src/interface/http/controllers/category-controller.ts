@@ -16,7 +16,9 @@ export class CategoryController {
 
   getCategoryDetail = async (params: {
     slug: string;
-  }): Promise<{ data: Awaited<ReturnType<GetCategoryDetailUseCase["execute"]>> }> => {
+  }): Promise<{
+    data: Awaited<ReturnType<GetCategoryDetailUseCase["execute"]>>;
+  }> => {
     const data = await this.getCategoryDetailUseCase.execute(params);
     return { data };
   };

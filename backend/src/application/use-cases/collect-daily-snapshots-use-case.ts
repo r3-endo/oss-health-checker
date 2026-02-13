@@ -88,9 +88,13 @@ export class CollectDailySnapshotsService
       );
     }
 
-    return new ApplicationError("INTERNAL_ERROR", "Failed to collect snapshot", {
-      cause: error instanceof Error ? error.message : "unknown",
-    });
+    return new ApplicationError(
+      "INTERNAL_ERROR",
+      "Failed to collect snapshot",
+      {
+        cause: error instanceof Error ? error.message : "unknown",
+      },
+    );
   }
 
   private async collectForRepository(
@@ -117,7 +121,9 @@ export class CollectDailySnapshotsService
     });
   }
 
-  async executeByRepositoryId(repositoryId: string): Promise<SignalUpdateResult> {
+  async executeByRepositoryId(
+    repositoryId: string,
+  ): Promise<SignalUpdateResult> {
     const repository = await this.repositoryPort.findById(repositoryId);
     if (!repository) {
       throw new ApplicationError("NOT_FOUND", "Repository not found");
@@ -168,7 +174,9 @@ export class CollectDailySnapshotsService
     });
   }
 
-  async refreshByRepositoryId(repositoryId: string): Promise<SignalUpdateResult> {
+  async refreshByRepositoryId(
+    repositoryId: string,
+  ): Promise<SignalUpdateResult> {
     return this.executeByRepositoryId(repositoryId);
   }
 

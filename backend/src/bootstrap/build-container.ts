@@ -34,9 +34,8 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
   const repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
   const categoryReadAdapter = new DrizzleCategoryReadAdapter(db);
-  const repositorySnapshotReadAdapter = new DrizzleRepositorySnapshotReadAdapter(
-    db,
-  );
+  const repositorySnapshotReadAdapter =
+    new DrizzleRepositorySnapshotReadAdapter(db);
   const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
   const repositoryGateway = new GitHubRestRepositoryGateway(appEnv);
 

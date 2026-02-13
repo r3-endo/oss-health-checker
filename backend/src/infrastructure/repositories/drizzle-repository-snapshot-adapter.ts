@@ -3,9 +3,7 @@ import { and, count, eq } from "drizzle-orm";
 import { repositorySnapshotsTable } from "../db/drizzle/schema.js";
 import type { RepositorySnapshotWritePort } from "../../application/ports/repository-snapshot-write-port.js";
 
-export class DrizzleRepositorySnapshotAdapter
-  implements RepositorySnapshotWritePort
-{
+export class DrizzleRepositorySnapshotAdapter implements RepositorySnapshotWritePort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
   async upsertSnapshot(params: {

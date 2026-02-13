@@ -53,10 +53,7 @@ export const mapErrorToHttp = (
   );
 };
 
-export const mapCategoryErrorToHttp = (
-  c: Context,
-  error: unknown,
-): Response =>
+export const mapCategoryErrorToHttp = (c: Context, error: unknown): Response =>
   mapErrorToHttp(c, error, {
     notFoundCodeOverride: "CATEGORY_NOT_FOUND",
     includeDetail: false,

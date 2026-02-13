@@ -120,7 +120,11 @@ describe("repository routes integration", () => {
       categoryController: {
         listCategories: async () => ({ data: [] }),
         getCategoryDetail: async () => ({
-          data: { slug: "llm", name: "Large Language Models", repositories: [] },
+          data: {
+            slug: "llm",
+            name: "Large Language Models",
+            repositories: [],
+          },
         }),
       } as never,
       repositoryController,
@@ -252,9 +256,9 @@ describe("repository routes integration", () => {
     });
 
     const recordedAt = toUtcDayStartIso(new Date());
-    await expect(repositorySnapshotAdapter.countSnapshots(repositoryId)).resolves.toBe(
-      1,
-    );
+    await expect(
+      repositorySnapshotAdapter.countSnapshots(repositoryId),
+    ).resolves.toBe(1);
     await expect(
       repositorySnapshotAdapter.getSnapshot(repositoryId, recordedAt),
     ).resolves.toEqual({
@@ -305,9 +309,9 @@ describe("repository routes integration", () => {
     expect(failedRefreshResponse.status).toBe(429);
 
     const recordedAt = toUtcDayStartIso(new Date());
-    await expect(repositorySnapshotAdapter.countSnapshots(repositoryId)).resolves.toBe(
-      1,
-    );
+    await expect(
+      repositorySnapshotAdapter.countSnapshots(repositoryId),
+    ).resolves.toBe(1);
     await expect(
       repositorySnapshotAdapter.getSnapshot(repositoryId, recordedAt),
     ).resolves.toEqual({

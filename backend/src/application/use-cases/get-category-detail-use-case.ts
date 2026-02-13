@@ -48,7 +48,9 @@ export class GetCategoryDetailService implements GetCategoryDetailUseCase {
 
     const repositoryRefs =
       await this.categoryReadPort.listRepositoriesByCategorySlug(input.slug);
-    const repositoryIds = repositoryRefs.map((repository) => repository.repositoryId);
+    const repositoryIds = repositoryRefs.map(
+      (repository) => repository.repositoryId,
+    );
     const latestSnapshots =
       await this.repositorySnapshotReadPort.findLatestByRepositoryIds(
         repositoryIds,
