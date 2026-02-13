@@ -68,10 +68,11 @@ const ensureLegacyMigrationBaseline = (handle: DrizzleDatabaseHandle): void => {
   const insert = handle.sqlite.prepare(
     `INSERT INTO ${migrationTableName} (hash, created_at) VALUES (?, ?)`,
   );
-  const entries = readMigrationJournal();
-  for (const entry of entries) {
-    insert.run(resolveMigrationHash(entry.tag), entry.when);
+  const [legacyBaseline] = readMigrationJournal();
+  if (!legacyBaseline) {
+    return;
   }
+  insert.run(resolveMigrationHash(legacyBaseline.tag), legacyBaseline.when);
 };
 
 export const migrateDrizzleDatabase = (handle: DrizzleDatabaseHandle): void => {

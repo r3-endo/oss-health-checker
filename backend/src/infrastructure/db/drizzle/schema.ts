@@ -70,3 +70,75 @@ export const snapshotWarningReasonsTable = sqliteTable(
     ),
   }),
 );
+
+export const categoriesTable = sqliteTable(
+  "categories",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    displayOrder: integer("display_order").notNull().default(0),
+    isSystem: integer("is_system", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => ({
+    categoriesSlugUnique: uniqueIndex("categories_slug_unique").on(table.slug),
+  }),
+);
+
+export const repositoryCategoriesTable = sqliteTable(
+  "repository_categories",
+  {
+    repositoryId: text("repository_id")
+      .notNull()
+      .references(() => repositoriesTable.id, { onDelete: "cascade" }),
+    categoryId: text("category_id")
+      .notNull()
+      .references(() => categoriesTable.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => ({
+    repositoryCategoriesPk: uniqueIndex("repository_categories_pk").on(
+      table.repositoryId,
+      table.categoryId,
+    ),
+    repositoryCategoriesRepositoryIdx: index(
+      "repository_categories_repository_idx",
+    ).on(table.repositoryId),
+    repositoryCategoriesCategoryIdx: index(
+      "repository_categories_category_idx",
+    ).on(table.categoryId),
+  }),
+);
+
+export const repositorySnapshotsTable = sqliteTable(
+  "repository_snapshots",
+  {
+    repositoryId: text("repository_id")
+      .notNull()
+      .references(() => repositoriesTable.id, { onDelete: "cascade" }),
+    recordedAt: text("recorded_at").notNull(),
+    openIssues: integer("open_issues").notNull(),
+    commitCount30d: integer("commit_count_30d"),
+    commitCountTotal: integer("commit_count_total"),
+    contributorCount: integer("contributor_count"),
+    lastCommitAt: text("last_commit_at"),
+    lastReleaseAt: text("last_release_at"),
+    releaseCount: integer("release_count"),
+    starCount: integer("star_count"),
+    forkCount: integer("fork_count"),
+    distinctCommitters90d: integer("distinct_committers_90d"),
+    topContributorRatio90d: integer("top_contributor_ratio_90d"),
+    healthScoreVersion: integer("health_score_version"),
+  },
+  (table) => ({
+    repositorySnapshotsPk: uniqueIndex("repository_snapshots_pk").on(
+      table.repositoryId,
+      table.recordedAt,
+    ),
+    repositorySnapshotsRecordedAtIdx: index(
+      "repository_snapshots_recorded_idx",
+    ).on(table.recordedAt),
+  }),
+);
