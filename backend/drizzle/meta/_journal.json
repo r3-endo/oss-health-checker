@@ -15,6 +15,13 @@
       "when": 1770940876158,
       "tag": "0001_absent_the_liberteens",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1770961218024,
+      "tag": "0002_parched_shotgun",
+      "breakpoints": true
     }
   ]
 }

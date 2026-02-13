@@ -1,14 +1,14 @@
-import type { RegistryAdoptionSignal } from "../ports/registry-provider-port.js";
+import type { RegistryAdoptionFetchResult } from "../ports/registry-provider-port.js";
 
 export const calculateAdoptionScore = (
-  signals: readonly RegistryAdoptionSignal[],
+  signals: readonly RegistryAdoptionFetchResult[],
 ): number => {
   if (signals.length === 0) {
     return 0;
   }
 
   const knownDownloads = signals
-    .map((signal) => signal.downloads30d)
+    .map((signal) => signal.weeklyDownloads)
     .filter((value): value is number => value !== null);
 
   if (knownDownloads.length === 0) {

@@ -6,6 +6,9 @@
 
 - npm を初期対象として、Repository ごとの Adoption 情報（Package Name、Weekly Downloads、Downloads Δ 7d、Downloads Δ 30d、Last Published Date、Latest Version）を表示する。
 - Dev Health レイヤとは独立した ecosystem-adoption レイヤを UI と API 契約に追加する。
+- 集約境界を `dashboard-overview` に分離し、既存 `/api/repositories` への adoption 混在を段階的に解消する。
+- 画面は 1 ページ統合ではなく、`Dashboard`（ハブ）/ `GitHub Health`（既存カテゴリ維持）/ `Registry Adoption`（新規）の 3 画面構成にする。
+- `Dashboard` から `GitHub Health` と `Registry Adoption` へ遷移できる導線を提供する。
 - 初期版は一次情報をそのまま表示し、スコアリングや加工ロジックは導入しない。
 - パッケージ未対応時は "Not Mapped" を返却・表示する。
 - 将来の Maven / PyPI / crates.io / Homebrew 追加を前提に、Registry 依存を拡張可能な境界（Port/Adapter）で設計する。
@@ -21,7 +24,8 @@
 ## Impact
 
 - Backend: Registry Adoption 用の API schema、controller/service/repository/infrastructure（npm adapter）を追加し、外部失敗時のエラーハンドリング契約を定義する。
-- Frontend: ecosystem-adoption テーブル列追加、未マッピング表示、Dev Health との同居レイアウト調整。
+- Frontend: ハブ画面追加、GitHub Health 画面の維持、Registry Adoption 画面の新設、画面間導線の追加。
+- API evolution: `/api/dashboard/repositories` を正規の統合 endpoint とし、`/api/repositories` は管理用途として維持しつつ adoption 統合は deprecate する。
 - Data model: Repository と package mapping を扱うための永続化モデル/取得フローを追加または拡張。
 - External dependency: npm Registry API（downloads と latest metadata）連携が追加される。
 - Test/CI: 正常系に加えて、未マッピング・外部API失敗・null/欠損値の失敗系を受け入れ条件に含める。

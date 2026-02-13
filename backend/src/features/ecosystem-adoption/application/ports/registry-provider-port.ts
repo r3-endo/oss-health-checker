@@ -1,27 +1,31 @@
-export type RegistrySource =
-  | "npm"
-  | "maven-central"
-  | "pypi"
-  | "homebrew"
-  | "docker";
+import type { RegistrySource } from "../../domain/models/adoption.js";
 
-export type RegistryPackageCoordinate = Readonly<{
-  ecosystem: RegistrySource;
-  packageName: string;
-}>;
+export class RegistryProviderError extends Error {
+  constructor(
+    public readonly code: "RATE_LIMIT" | "API_ERROR",
+    message: string,
+    public readonly detail?: Readonly<{
+      status?: number;
+      retryAfterSeconds?: number | null;
+    }>,
+  ) {
+    super(message);
+    this.name = "RegistryProviderError";
+  }
+}
 
-export type RegistryAdoptionSignal = Readonly<{
-  source: RegistrySource;
+export type RegistryAdoptionFetchResult = Readonly<{
   packageName: string;
-  downloads30d: number | null;
-  stars: number | null;
+  weeklyDownloads: number | null;
+  downloadsDelta7d: number | null;
+  downloadsDelta30d: number | null;
+  lastPublishedAt: string | null;
   latestVersion: string | null;
-  observedAt: string;
 }>;
 
 export interface RegistryProviderPort {
   readonly source: RegistrySource;
-  fetchSignals(
-    coordinate: RegistryPackageCoordinate,
-  ): Promise<readonly RegistryAdoptionSignal[]>;
+  fetchPackageAdoption(
+    packageName: string,
+  ): Promise<RegistryAdoptionFetchResult>;
 }

@@ -131,3 +131,57 @@ export const repositorySnapshotsTable = sqliteTable(
     index("repository_snapshots_recorded_idx").on(table.recordedAt),
   ],
 );
+
+export const repositoryPackageMappingsTable = sqliteTable(
+  "repository_package_mappings",
+  {
+    repositoryId: text("repository_id")
+      .primaryKey()
+      .references(() => repositoriesTable.id, { onDelete: "cascade" }),
+    source: text("source").notNull(),
+    packageName: text("package_name").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    index("repository_package_mappings_source_idx").on(table.source),
+    check(
+      "repository_package_mappings_source_check",
+      sql`${table.source} IN ('npm', 'maven-central', 'pypi', 'homebrew', 'docker')`,
+    ),
+  ],
+);
+
+export const adoptionSnapshotsTable = sqliteTable(
+  "adoption_snapshots",
+  {
+    id: text("id").primaryKey(),
+    repositoryId: text("repository_id")
+      .notNull()
+      .references(() => repositoriesTable.id, { onDelete: "cascade" }),
+    source: text("source").notNull(),
+    packageName: text("package_name").notNull(),
+    weeklyDownloads: integer("weekly_downloads"),
+    downloadsDelta7d: integer("downloads_delta_7d"),
+    downloadsDelta30d: integer("downloads_delta_30d"),
+    lastPublishedAt: text("last_published_at"),
+    latestVersion: text("latest_version"),
+    fetchStatus: text("fetch_status").notNull(),
+    fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    index("adoption_snapshots_repository_fetched_idx").on(
+      table.repositoryId,
+      table.fetchedAt,
+    ),
+    index("adoption_snapshots_source_idx").on(table.source),
+    check(
+      "adoption_snapshots_source_check",
+      sql`${table.source} IN ('npm', 'maven-central', 'pypi', 'homebrew', 'docker')`,
+    ),
+    check(
+      "adoption_snapshots_fetch_status_check",
+      sql`${table.fetchStatus} IN ('succeeded', 'failed')`,
+    ),
+  ],
+);
