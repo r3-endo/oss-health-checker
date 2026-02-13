@@ -13,6 +13,7 @@
     "format:check": "bunx prettier --check .",
     "test": "bunx vitest run",
     "test:openapi-contract": "bunx vitest run tests/contracts/openapi-route-binding.contract.test.ts",
+    "snapshots:collect": "tsx src/jobs/collect-daily-snapshots.ts",
     "db:drizzle:generate": "bunx drizzle-kit generate --config drizzle.config.ts",
     "db:drizzle:migrate": "bunx drizzle-kit migrate --config drizzle.config.ts",
     "check:drizzle-drift": "bun run db:drizzle:generate && bash scripts/check-drizzle-drift.sh"

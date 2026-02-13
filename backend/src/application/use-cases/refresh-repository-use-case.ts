@@ -5,6 +5,7 @@ import {
   type RepositoryGatewayPort,
 } from "../ports/repository-gateway-port.js";
 import type { RepositoryPort } from "../ports/repository-port.js";
+import type { RepositorySnapshotWritePort } from "../ports/repository-snapshot-write-port.js";
 import type { SnapshotPort } from "../ports/snapshot-port.js";
 import { buildSnapshotFromSignals } from "../services/snapshot-factory.js";
 
@@ -22,12 +23,22 @@ export interface RefreshRepositoryUseCase {
 }
 
 export class RefreshRepositoryService {
+  private static readonly HEALTH_SCORE_VERSION = 1;
+
   constructor(
     private readonly repositoryPort: RepositoryPort,
     private readonly snapshotPort: SnapshotPort,
+    private readonly repositorySnapshotWritePort: RepositorySnapshotWritePort,
     private readonly repositoryGatewayPort: RepositoryGatewayPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
+
+  private static toUtcDayStartIso(date: Date): string {
+    const utcDate = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+    );
+    return utcDate.toISOString();
+  }
 
   private static buildRateLimitDetail(
     status: number | undefined,
@@ -58,11 +69,22 @@ export class RefreshRepositoryService {
         repository.owner,
         repository.name,
       );
+      const fetchedAt = this.now();
       const snapshot = buildSnapshotFromSignals(
         repository.id,
         signals,
-        this.now(),
+        fetchedAt,
       );
+      await this.repositorySnapshotWritePort.upsertSnapshot({
+        repositoryId: repository.id,
+        recordedAt: RefreshRepositoryService.toUtcDayStartIso(fetchedAt),
+        openIssues: signals.openIssuesCount,
+        commitCount30d: null,
+        contributorCount: signals.contributorsCount,
+        lastCommitAt: signals.lastCommitAt.toISOString(),
+        lastReleaseAt: signals.lastReleaseAt?.toISOString() ?? null,
+        healthScoreVersion: RefreshRepositoryService.HEALTH_SCORE_VERSION,
+      });
       await this.snapshotPort.insert(snapshot);
       return Object.freeze({ ok: true, snapshot });
     } catch (error: unknown) {

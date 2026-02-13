@@ -22,7 +22,7 @@ type GitHubErrorPayload = Readonly<{
 }>;
 
 const DEFAULT_API_VERSION = "2022-11-28";
-const MAX_RETRIES = 1;
+const MAX_RETRIES = 3;
 const MIN_BACKOFF_MS = 100;
 const MAX_BACKOFF_MS = 5000;
 const ALLOWED_API_HOSTS = new Set(["api.github.com"]);
@@ -35,6 +35,9 @@ const defaultSleep = async (ms: number): Promise<void> => {
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max);
+
+const calculateExponentialBackoffMs = (attempt: number): number =>
+  clamp(MIN_BACKOFF_MS * 2 ** attempt, MIN_BACKOFF_MS, MAX_BACKOFF_MS);
 
 const toEpochMilliseconds = (seconds: number): number => seconds * 1000;
 
@@ -325,9 +328,7 @@ export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
         if (isRateLimited) {
           const waitMs = parseRetryAfterMs(response) ?? 60_000;
           if (attempt < MAX_RETRIES) {
-            await this.deps.sleep(
-              clamp(waitMs, MIN_BACKOFF_MS, MAX_BACKOFF_MS),
-            );
+            await this.deps.sleep(Math.max(waitMs, MIN_BACKOFF_MS));
             continue;
           }
 
@@ -338,11 +339,7 @@ export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
         }
 
         if (response.status >= 500 && attempt < MAX_RETRIES) {
-          const backoffMs = clamp(
-            (attempt + 1) * 200,
-            MIN_BACKOFF_MS,
-            MAX_BACKOFF_MS,
-          );
+          const backoffMs = calculateExponentialBackoffMs(attempt);
           await this.deps.sleep(backoffMs);
           continue;
         }
@@ -357,11 +354,7 @@ export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
         }
 
         if (attempt < MAX_RETRIES) {
-          const backoffMs = clamp(
-            (attempt + 1) * 200,
-            MIN_BACKOFF_MS,
-            MAX_BACKOFF_MS,
-          );
+          const backoffMs = calculateExponentialBackoffMs(attempt);
           await this.deps.sleep(backoffMs);
           continue;
         }
