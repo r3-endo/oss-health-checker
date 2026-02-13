@@ -1,10 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { CATEGORY_SLUGS } from "../../../domain/models/category.js";
-import { HEALTH_STATUSES } from "../../../domain/models/health-status.js";
 
 export const CategorySlugSchema = z.enum(CATEGORY_SLUGS);
-
-export const HealthStatusSchema = z.enum(HEALTH_STATUSES);
 
 export const CategorySummarySchema = z.object({
   slug: CategorySlugSchema,
@@ -16,31 +13,36 @@ export const ListCategoriesResponseSchema = z.object({
   data: z.array(CategorySummarySchema),
 });
 
-export const DevHealthMetricsSchema = z.object({
-  healthScore: z.number(),
-  status: HealthStatusSchema,
-  scoreVersion: z.number().int(),
-  issueGrowth30d: z.number().nullable(),
-  commitLast30d: z.number().int().nullable(),
+export const RepositoryOwnerSchema = z.object({
+  login: z.string().min(1),
+  type: z.enum(["Organization", "User"]),
 });
 
-export const MetricsContainerSchema = z.object({
-  devHealth: DevHealthMetricsSchema,
-  adoption: z.null(),
-  security: z.null(),
-  governance: z.null(),
+export const CategoryRepositoryGitHubSchema = z.object({
+  stars: z.number().int().nonnegative().nullable(),
+  openIssues: z.number().int().nonnegative().nullable(),
+  openPRs: z.number().int().nonnegative().nullable(),
+  lastCommitToDefaultBranchAt: z.iso.datetime().nullable(),
+  defaultBranch: z.string().min(1).nullable(),
+  dataStatus: z.enum(["ok", "pending", "rate_limited", "error"]),
+  errorMessage: z.string().nullable(),
+});
+
+export const CategoryRepositoryLinksSchema = z.object({
+  repo: z.url(),
 });
 
 export const RepositoryViewSchema = z.object({
-  owner: z.string(),
+  owner: RepositoryOwnerSchema,
   name: z.string(),
-  lastCommit: z.iso.datetime().nullable(),
-  metrics: MetricsContainerSchema,
+  github: CategoryRepositoryGitHubSchema,
+  links: CategoryRepositoryLinksSchema,
 });
 
 export const CategoryDetailSchema = z.object({
   slug: CategorySlugSchema,
   name: z.string(),
+  updatedAt: z.iso.datetime(),
   repositories: z.array(RepositoryViewSchema),
 });
 

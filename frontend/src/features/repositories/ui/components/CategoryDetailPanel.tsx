@@ -14,12 +14,14 @@ export const CategoryDetailPanel = ({
   isError,
   error,
   isFetching,
+  updatedAt,
   repositories,
 }: {
   isPending: boolean;
   isError: boolean;
   error: unknown;
   isFetching: boolean;
+  updatedAt: string | null;
   repositories: readonly CategoryRepositoryView[] | null;
 }) => {
   if (isPending) {
@@ -44,11 +46,28 @@ export const CategoryDetailPanel = ({
     return null;
   }
 
+  const updatedAgo =
+    updatedAt !== null
+      ? Math.max(
+          0,
+          Math.floor((Date.now() - new Date(updatedAt).getTime()) / 60_000),
+        )
+      : null;
+
   return (
     <>
-      {isFetching ? (
-        <p className="text-xs text-text-tertiary">Updating category data...</p>
-      ) : null}
+      <div className="flex items-center justify-between">
+        {isFetching ? (
+          <p className="text-xs text-text-tertiary">Updating category data...</p>
+        ) : (
+          <span />
+        )}
+        <p className="text-xs text-text-tertiary">
+          {updatedAgo === null
+            ? "Updated time unknown"
+            : `Updated ${updatedAgo} min ago`}
+        </p>
+      </div>
       <CategoryRepositoryTable repositories={repositories} />
     </>
   );

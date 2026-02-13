@@ -9,8 +9,7 @@ import {
   CategoryNotFoundErrorResponseSchema,
   ListCategoriesResponseSchema,
   RepositoryViewSchema,
-  MetricsContainerSchema,
-  DevHealthMetricsSchema,
+  CategoryRepositoryGitHubSchema,
   CategorySlugSchema,
 } from "../../src/interface/http/openapi/category-schemas.js";
 
@@ -43,56 +42,63 @@ const createContractApp = (): OpenAPIHono => {
           data: {
             slug: "llm",
             name: "Large Language Models",
+            updatedAt: "2026-02-13T00:00:00Z",
             repositories: [
               {
-                owner: "openai",
-                name: "gpt-4",
-                lastCommit: "2026-02-10T12:00:00Z",
-                metrics: {
-                  devHealth: {
-                    healthScore: 95.5,
-                    status: "Active" as const,
-                    scoreVersion: 1,
-                    issueGrowth30d: 10,
-                    commitLast30d: 50,
-                  },
-                  adoption: null,
-                  security: null,
-                  governance: null,
+                owner: {
+                  login: "anthropic",
+                  type: "Organization" as const,
                 },
-              },
-              {
-                owner: "meta",
-                name: "llama",
-                lastCommit: null,
-                metrics: {
-                  devHealth: {
-                    healthScore: 80.0,
-                    status: "Stale" as const,
-                    scoreVersion: 1,
-                    issueGrowth30d: null,
-                    commitLast30d: null,
-                  },
-                  adoption: null,
-                  security: null,
-                  governance: null,
-                },
-              },
-              {
-                owner: "anthropic",
                 name: "claude",
-                lastCommit: "2026-02-12T08:30:00Z",
-                metrics: {
-                  devHealth: {
-                    healthScore: 70.2,
-                    status: "Risky" as const,
-                    scoreVersion: 1,
-                    issueGrowth30d: 100,
-                    commitLast30d: 5,
-                  },
-                  adoption: null,
-                  security: null,
-                  governance: null,
+                github: {
+                  stars: 702,
+                  openIssues: 100,
+                  openPRs: 5,
+                  lastCommitToDefaultBranchAt: "2026-02-12T08:30:00Z",
+                  defaultBranch: "main",
+                  dataStatus: "ok" as const,
+                  errorMessage: null,
+                },
+                links: {
+                  repo: "https://github.com/anthropic/claude",
+                },
+              },
+              {
+                owner: {
+                  login: "meta",
+                  type: "Organization" as const,
+                },
+                name: "llama",
+                github: {
+                  stars: null,
+                  openIssues: null,
+                  openPRs: null,
+                  lastCommitToDefaultBranchAt: null,
+                  defaultBranch: null,
+                  dataStatus: "rate_limited" as const,
+                  errorMessage: "GitHub API rate limit exceeded",
+                },
+                links: {
+                  repo: "https://github.com/meta/llama",
+                },
+              },
+              {
+                owner: {
+                  login: "openai",
+                  type: "Organization" as const,
+                },
+                name: "gpt-4",
+                github: {
+                  stars: 955,
+                  openIssues: 10,
+                  openPRs: 50,
+                  lastCommitToDefaultBranchAt: "2026-02-10T12:00:00Z",
+                  defaultBranch: "main",
+                  dataStatus: "ok" as const,
+                  errorMessage: null,
+                },
+                links: {
+                  repo: "https://github.com/openai/gpt-4",
                 },
               },
             ],
@@ -143,8 +149,6 @@ describe("category api contract", () => {
         expect(validCategory.slug).toBeDefined();
         expect(validCategory.name).toBeDefined();
         expect(validCategory.displayOrder).toBeDefined();
-        expect(typeof validCategory.name).toBe("string");
-        expect(typeof validCategory.displayOrder).toBe("number");
       }
     });
 
@@ -176,7 +180,7 @@ describe("category api contract", () => {
       CategoryDetailResponseSchema.parse(json);
     });
 
-    it("CategoryDetail contains slug, name, repositories array", async () => {
+    it("CategoryDetail contains slug, name, updatedAt, repositories array", async () => {
       const app = createContractApp();
       const response = await app.request("/api/categories/llm", {
         method: "GET",
@@ -188,10 +192,11 @@ describe("category api contract", () => {
       const detail = CategoryDetailSchema.parse(parsed.data);
       expect(detail.slug).toBeDefined();
       expect(detail.name).toBeDefined();
+      expect(detail.updatedAt).toBeDefined();
       expect(Array.isArray(detail.repositories)).toBe(true);
     });
 
-    it("each RepositoryView has owner, name, lastCommit (nullable), metrics structure", async () => {
+    it("each RepositoryView has owner, name, github, links structure", async () => {
       const app = createContractApp();
       const response = await app.request("/api/categories/llm", {
         method: "GET",
@@ -202,14 +207,15 @@ describe("category api contract", () => {
 
       for (const repo of parsed.data.repositories) {
         const validRepo = RepositoryViewSchema.parse(repo);
-        expect(validRepo.owner).toBeDefined();
+        expect(validRepo.owner.login).toBeDefined();
+        expect(validRepo.owner.type).toBeDefined();
         expect(validRepo.name).toBeDefined();
-        expect("lastCommit" in validRepo).toBe(true);
-        expect(validRepo.metrics).toBeDefined();
+        expect(validRepo.github).toBeDefined();
+        expect(validRepo.links.repo).toContain("https://github.com/");
       }
     });
 
-    it("metrics.devHealth has healthScore, status, scoreVersion, issueGrowth30d (nullable), commitLast30d (nullable)", async () => {
+    it("github object has stars/issues/prs/default-branch/last-commit/data-status", async () => {
       const app = createContractApp();
       const response = await app.request("/api/categories/llm", {
         method: "GET",
@@ -219,21 +225,16 @@ describe("category api contract", () => {
       const parsed = CategoryDetailResponseSchema.parse(json);
 
       for (const repo of parsed.data.repositories) {
-        const validMetrics = MetricsContainerSchema.parse(repo.metrics);
-        const devHealth = DevHealthMetricsSchema.parse(validMetrics.devHealth);
-
-        expect(devHealth.healthScore).toBeDefined();
-        expect(typeof devHealth.healthScore).toBe("number");
-        expect(devHealth.status).toBeDefined();
-        expect(["Active", "Stale", "Risky"]).toContain(devHealth.status);
-        expect(devHealth.scoreVersion).toBeDefined();
-        expect(typeof devHealth.scoreVersion).toBe("number");
-        expect("issueGrowth30d" in devHealth).toBe(true);
-        expect("commitLast30d" in devHealth).toBe(true);
+        const github = CategoryRepositoryGitHubSchema.parse(repo.github);
+        expect("openIssues" in github).toBe(true);
+        expect("openPRs" in github).toBe(true);
+        expect(["ok", "pending", "rate_limited", "error"]).toContain(
+          github.dataStatus,
+        );
       }
     });
 
-    it("metrics.adoption, security, governance are null", async () => {
+    it("repositories are sorted by owner/name ascending", async () => {
       const app = createContractApp();
       const response = await app.request("/api/categories/llm", {
         method: "GET",
@@ -242,35 +243,47 @@ describe("category api contract", () => {
       const json = await response.json();
       const parsed = CategoryDetailResponseSchema.parse(json);
 
-      for (const repo of parsed.data.repositories) {
-        const validMetrics = MetricsContainerSchema.parse(repo.metrics);
-        expect(validMetrics.adoption).toBe(null);
-        expect(validMetrics.security).toBe(null);
-        expect(validMetrics.governance).toBe(null);
-      }
-    });
-
-    it("repositories are sorted by healthScore descending", async () => {
-      const app = createContractApp();
-      const response = await app.request("/api/categories/llm", {
-        method: "GET",
-      });
-
-      const json = await response.json();
-      const parsed = CategoryDetailResponseSchema.parse(json);
-
-      const healthScores = parsed.data.repositories.map(
-        (repo) => repo.metrics.devHealth.healthScore,
+      const keys = parsed.data.repositories.map(
+        (repo) => `${repo.owner.login}/${repo.name}`,
       );
-
-      for (let i = 0; i < healthScores.length - 1; i++) {
-        expect(healthScores[i]!).toBeGreaterThanOrEqual(healthScores[i + 1]!);
-      }
+      expect(keys).toEqual([...keys].sort((a, b) => a.localeCompare(b)));
     });
   });
 
   describe("nullable contract", () => {
-    it("lastCommit can be null", async () => {
+    it("openIssues can be null", async () => {
+      const app = createContractApp();
+      const response = await app.request("/api/categories/llm", {
+        method: "GET",
+      });
+
+      const json = await response.json();
+      const parsed = CategoryDetailResponseSchema.parse(json);
+
+      const reposWithNullOpenIssues = parsed.data.repositories.filter(
+        (repo) => repo.github.openIssues === null,
+      );
+
+      expect(reposWithNullOpenIssues.length).toBeGreaterThan(0);
+    });
+
+    it("openPRs can be null", async () => {
+      const app = createContractApp();
+      const response = await app.request("/api/categories/llm", {
+        method: "GET",
+      });
+
+      const json = await response.json();
+      const parsed = CategoryDetailResponseSchema.parse(json);
+
+      const reposWithNullOpenPRs = parsed.data.repositories.filter(
+        (repo) => repo.github.openPRs === null,
+      );
+
+      expect(reposWithNullOpenPRs.length).toBeGreaterThan(0);
+    });
+
+    it("lastCommitToDefaultBranchAt can be null", async () => {
       const app = createContractApp();
       const response = await app.request("/api/categories/llm", {
         method: "GET",
@@ -280,42 +293,10 @@ describe("category api contract", () => {
       const parsed = CategoryDetailResponseSchema.parse(json);
 
       const reposWithNullLastCommit = parsed.data.repositories.filter(
-        (repo) => repo.lastCommit === null,
+        (repo) => repo.github.lastCommitToDefaultBranchAt === null,
       );
 
       expect(reposWithNullLastCommit.length).toBeGreaterThan(0);
-    });
-
-    it("issueGrowth30d can be null", async () => {
-      const app = createContractApp();
-      const response = await app.request("/api/categories/llm", {
-        method: "GET",
-      });
-
-      const json = await response.json();
-      const parsed = CategoryDetailResponseSchema.parse(json);
-
-      const reposWithNullIssueGrowth = parsed.data.repositories.filter(
-        (repo) => repo.metrics.devHealth.issueGrowth30d === null,
-      );
-
-      expect(reposWithNullIssueGrowth.length).toBeGreaterThan(0);
-    });
-
-    it("commitLast30d can be null", async () => {
-      const app = createContractApp();
-      const response = await app.request("/api/categories/llm", {
-        method: "GET",
-      });
-
-      const json = await response.json();
-      const parsed = CategoryDetailResponseSchema.parse(json);
-
-      const reposWithNullCommitLast30d = parsed.data.repositories.filter(
-        (repo) => repo.metrics.devHealth.commitLast30d === null,
-      );
-
-      expect(reposWithNullCommitLast30d.length).toBeGreaterThan(0);
     });
   });
 

@@ -12,7 +12,6 @@ import { DrizzleCategoryReadAdapter } from "../infrastructure/repositories/drizz
 import { DrizzleRepositoryAdapter } from "../infrastructure/repositories/drizzle-repository-adapter.js";
 import { DrizzleRepositoryReadModelAdapter } from "../infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 import { DrizzleRepositorySnapshotAdapter } from "../infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
-import { DrizzleRepositorySnapshotReadAdapter } from "../infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
 import { DrizzleSnapshotAdapter } from "../infrastructure/repositories/drizzle-snapshot-adapter.js";
 import { DrizzleUnitOfWorkAdapter } from "../infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import { CategoryController } from "../interface/http/controllers/category-controller.js";
@@ -34,8 +33,6 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
   const repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
   const categoryReadAdapter = new DrizzleCategoryReadAdapter(db);
-  const repositorySnapshotReadAdapter =
-    new DrizzleRepositorySnapshotReadAdapter(db);
   const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
   const repositoryGateway = new GitHubRestRepositoryGateway(appEnv);
 
@@ -56,7 +53,7 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   );
   const getCategoryDetailUseCase = new GetCategoryDetailService(
     categoryReadAdapter,
-    repositorySnapshotReadAdapter,
+    repositoryGateway,
   );
 
   const repositoryController = new RepositoryController(
