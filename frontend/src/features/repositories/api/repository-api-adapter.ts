@@ -1,5 +1,7 @@
 import {
   ApiErrorSchema,
+  CategoryDetailResponseSchema,
+  ListCategoriesResponseSchema,
   RefreshRepositoryResponseSchema,
   RegisterRepositoryInputSchema,
   RegisterRepositoryResponseSchema,
@@ -7,6 +9,8 @@ import {
 } from "../model/schemas";
 import type { RepositoryApiPort } from "./repository-api-port";
 import type {
+  CategoryDetail,
+  CategorySummary,
   RepositoryApiRepository,
   RepositoryApiSnapshot,
   RegisterRepositoryInput,
@@ -70,6 +74,30 @@ const toRepositoryView = (
 
 export class HttpRepositoryApiAdapter implements RepositoryApiPort {
   constructor(private readonly baseUrl: string) {}
+
+  async listCategories(): Promise<readonly CategorySummary[]> {
+    const response = await fetch(`${this.baseUrl}/api/categories`);
+    const json = await expectJson(response);
+
+    if (!response.ok) {
+      throw parseErrorResponse(response.status, json);
+    }
+
+    return ListCategoriesResponseSchema.parse(json).data;
+  }
+
+  async getCategoryDetail(slug: string): Promise<CategoryDetail> {
+    const response = await fetch(
+      `${this.baseUrl}/api/categories/${encodeURIComponent(slug)}`,
+    );
+    const json = await expectJson(response);
+
+    if (!response.ok) {
+      throw parseErrorResponse(response.status, json);
+    }
+
+    return CategoryDetailResponseSchema.parse(json).data;
+  }
 
   async listRepositories(): Promise<readonly RepositoryView[]> {
     const response = await fetch(`${this.baseUrl}/api/repositories`);

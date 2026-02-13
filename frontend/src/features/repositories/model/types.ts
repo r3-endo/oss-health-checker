@@ -1,12 +1,18 @@
 export type {
   WarningReasonKey,
   RepositoryStatus,
+  CategorySlug,
+  CategorySummary,
+  CategoryDetail,
+  CategoryRepositoryView,
   RepositoryView,
   RepositoryApiRepository,
   RepositoryApiSnapshot,
   RepositoryListResponse,
   RegisterRepositoryResponse,
   RefreshRepositoryResponse,
+  CategoryDetailResponse,
+  ListCategoriesResponse,
   RegisterRepositoryInput,
   RefreshErrorView,
 } from "./schemas";

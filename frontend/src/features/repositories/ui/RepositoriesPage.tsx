@@ -1,59 +1,89 @@
-import { Suspense } from "react";
-import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { useRegisterRepositoryMutation } from "../hooks/use-register-repository-mutation";
-import { useRepositoriesQuery } from "../hooks/use-repositories-query";
-import { QueryErrorBoundary } from "../../../app/error-boundary";
-import { RepositoryList } from "./components/RepositoryList";
+import { useEffect, useMemo, useState } from "react";
+import { resolveMutationErrorMessage } from "../hooks/error-message";
+import { useCategoriesQuery } from "../hooks/use-categories-query";
+import { useCategoryDetailQuery } from "../hooks/use-category-detail-query";
+import { CategoryDetailPanel } from "./components/CategoryDetailPanel";
+import { CategoryTabs } from "./components/CategoryTabs";
 import { RepositoryListSkeleton } from "./components/RepositoryListSkeleton";
-import { RepositoryRegisterForm } from "./components/RepositoryRegisterForm";
 
-/**
- * Suspense-aware container — calls `useSuspenseQuery` so it **must** be
- * rendered inside a `<Suspense>` + `<ErrorBoundary>` pair.
- * Kept private to this page module to prevent accidental boundary leaks.
- */
-const SuspendedRepositoryList = () => {
-  const { data } = useRepositoriesQuery();
-  return <RepositoryList data={data} />;
-};
+const ErrorBanner = ({ message }: { message: string }) => (
+  <div className="rounded border border-status-risky/20 bg-status-risky/5 px-5 py-4">
+    <p className="text-sm text-status-risky">{message}</p>
+  </div>
+);
 
-/**
- * Page component — owns the async boundaries (Suspense / ErrorBoundary)
- * and the register-mutation side-effect. All presentation is delegated
- * to child components that receive only resolved data or callbacks.
- */
 export const RepositoriesPage = () => {
-  const registerMutation = useRegisterRepositoryMutation();
+  const categoriesQuery = useCategoriesQuery();
+  const categories = useMemo(
+    () =>
+      [...(categoriesQuery.data ?? [])].sort(
+        (a, b) => a.displayOrder - b.displayOrder,
+      ),
+    [categoriesQuery.data],
+  );
+
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      return;
+    }
+
+    if (
+      !selectedSlug ||
+      !categories.some((category) => category.slug === selectedSlug)
+    ) {
+      setSelectedSlug(categories[0]!.slug);
+    }
+  }, [categories, selectedSlug]);
+
+  const detailQuery = useCategoryDetailQuery(selectedSlug);
 
   return (
     <main className="min-h-screen px-6 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-5xl">
-        <header className="mb-10">
+        <header className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-text-primary">
             OSS Maintenance Health
           </h1>
           <p className="mt-2 text-sm text-text-secondary">
-            Monitor the maintenance status of your open source dependencies.
+            Compare repository maintenance signals by category.
           </p>
         </header>
 
-        <section className="mb-10">
-          <RepositoryRegisterForm
-            isSubmitting={registerMutation.isPending}
-            onSubmit={(input) => registerMutation.mutate(input)}
-            errorMessage={registerMutation.errorMessage}
-          />
-        </section>
+        {categoriesQuery.isPending ? <RepositoryListSkeleton /> : null}
 
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <QueryErrorBoundary onReset={reset}>
-              <Suspense fallback={<RepositoryListSkeleton />}>
-                <SuspendedRepositoryList />
-              </Suspense>
-            </QueryErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
+        {categoriesQuery.isError ? (
+          <ErrorBanner
+            message={
+              resolveMutationErrorMessage({
+                isError: categoriesQuery.isError,
+                error: categoriesQuery.error,
+                fallbackMessage: "Failed to load categories.",
+              }) ?? "Failed to load categories."
+            }
+          />
+        ) : null}
+
+        {!categoriesQuery.isPending && !categoriesQuery.isError ? (
+          <>
+            <CategoryTabs
+              categories={categories}
+              selectedSlug={selectedSlug}
+              onSelect={setSelectedSlug}
+            />
+
+            <section aria-live="polite" className="space-y-3">
+              <CategoryDetailPanel
+                isPending={detailQuery.isPending}
+                isError={detailQuery.isError}
+                error={detailQuery.error}
+                isFetching={detailQuery.isFetching}
+                repositories={detailQuery.data?.repositories ?? null}
+              />
+            </section>
+          </>
+        ) : null}
       </div>
     </main>
   );

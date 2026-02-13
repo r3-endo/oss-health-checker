@@ -1,9 +1,12 @@
 import type { RepositoryListParams } from "./use-repositories-query";
 
 export const repositoriesKeys = {
-  all: ["repositories"] as const,
+  all: ["dashboard"] as const,
+  categories: () => [...repositoriesKeys.all, "categories"] as const,
+  categoryDetail: (slug: string) =>
+    [...repositoriesKeys.all, "category-detail", slug] as const,
   list: (params: RepositoryListParams = {}) =>
-    [...repositoriesKeys.all, "list", params] as const,
+    [...repositoriesKeys.all, "repositories", "list", params] as const,
   detail: (repositoryId: string) =>
-    [...repositoriesKeys.all, "detail", repositoryId] as const,
+    [...repositoriesKeys.all, "repositories", "detail", repositoryId] as const,
 };

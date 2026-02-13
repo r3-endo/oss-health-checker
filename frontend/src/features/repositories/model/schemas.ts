@@ -7,6 +7,7 @@ export const WarningReasonSchema = z.enum([
 ]);
 
 export const RepositoryStatusSchema = z.enum(["Active", "Stale", "Risky"]);
+export const CategorySlugSchema = z.enum(["llm", "backend", "frontend"]);
 
 export const RepositoryViewSchema = z.object({
   id: z.string(),
@@ -75,6 +76,7 @@ export const ApiErrorSchema = z.object({
       "VALIDATION_ERROR",
       "NOT_FOUND",
       "INTERNAL_ERROR",
+      "CATEGORY_NOT_FOUND",
     ]),
     message: z.string(),
     detail: z.record(z.string(), z.unknown()).nullable().optional(),
@@ -83,6 +85,48 @@ export const ApiErrorSchema = z.object({
 
 export const RegisterRepositoryInputSchema = z.object({
   url: z.url(),
+});
+
+export const CategorySummarySchema = z.object({
+  slug: CategorySlugSchema,
+  name: z.string(),
+  displayOrder: z.number().int().nonnegative(),
+});
+
+export const ListCategoriesResponseSchema = z.object({
+  data: z.array(CategorySummarySchema),
+});
+
+export const DevHealthMetricsSchema = z.object({
+  healthScore: z.number(),
+  status: RepositoryStatusSchema,
+  scoreVersion: z.number().int(),
+  issueGrowth30d: z.number().nullable(),
+  commitLast30d: z.number().int().nullable(),
+});
+
+export const CategoryRepositoryMetricsSchema = z.object({
+  devHealth: DevHealthMetricsSchema,
+  adoption: z.null(),
+  security: z.null(),
+  governance: z.null(),
+});
+
+export const CategoryRepositoryViewSchema = z.object({
+  owner: z.string(),
+  name: z.string(),
+  lastCommit: z.iso.datetime().nullable(),
+  metrics: CategoryRepositoryMetricsSchema,
+});
+
+export const CategoryDetailSchema = z.object({
+  slug: CategorySlugSchema,
+  name: z.string(),
+  repositories: z.array(CategoryRepositoryViewSchema),
+});
+
+export const CategoryDetailResponseSchema = z.object({
+  data: CategoryDetailSchema,
 });
 
 export type WarningReasonKey = z.infer<typeof WarningReasonSchema>;
@@ -106,3 +150,15 @@ export type RegisterRepositoryInput = z.infer<
 >;
 export type ApiErrorResponse = z.infer<typeof ApiErrorSchema>;
 export type RefreshErrorView = ApiErrorResponse["error"];
+export type CategorySlug = z.infer<typeof CategorySlugSchema>;
+export type CategorySummary = z.infer<typeof CategorySummarySchema>;
+export type ListCategoriesResponse = z.infer<
+  typeof ListCategoriesResponseSchema
+>;
+export type CategoryRepositoryView = z.infer<
+  typeof CategoryRepositoryViewSchema
+>;
+export type CategoryDetail = z.infer<typeof CategoryDetailSchema>;
+export type CategoryDetailResponse = z.infer<
+  typeof CategoryDetailResponseSchema
+>;

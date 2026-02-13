@@ -34,6 +34,71 @@ describe("HttpRepositoryApiAdapter", () => {
     } satisfies Partial<RepositoryApiError>);
   });
 
+  it("parses successful category summary list response", async () => {
+    const adapter = new HttpRepositoryApiAdapter("");
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: [
+            { slug: "llm", name: "LLM", displayOrder: 0 },
+            { slug: "backend", name: "Backend", displayOrder: 1 },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    ) as typeof fetch;
+
+    const categories = await adapter.listCategories();
+    expect(categories).toHaveLength(2);
+    expect(categories[0]?.slug).toBe("llm");
+  });
+
+  it("parses successful category detail response", async () => {
+    const adapter = new HttpRepositoryApiAdapter("");
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: {
+            slug: "llm",
+            name: "LLM",
+            repositories: [
+              {
+                owner: "octo",
+                name: "repo",
+                lastCommit: "2026-02-10T00:00:00.000Z",
+                metrics: {
+                  devHealth: {
+                    healthScore: 80,
+                    status: "Active",
+                    scoreVersion: 1,
+                    issueGrowth30d: 2,
+                    commitLast30d: 7,
+                  },
+                  adoption: null,
+                  security: null,
+                  governance: null,
+                },
+              },
+            ],
+          },
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    ) as typeof fetch;
+
+    const detail = await adapter.getCategoryDetail("llm");
+    expect(detail.slug).toBe("llm");
+    expect(detail.repositories[0]?.name).toBe("repo");
+  });
+
   it("parses successful repository list response", async () => {
     const adapter = new HttpRepositoryApiAdapter("");
 
