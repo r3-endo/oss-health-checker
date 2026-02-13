@@ -20,16 +20,16 @@ vi.mock(
           },
           snapshot: null,
           adoption: {
-            mappingStatus: "not_mapped",
-            adoptionFetchStatus: "not_applicable",
-            source: null,
-            packageName: null,
-            weeklyDownloads: null,
-            downloadsDelta7d: null,
-            downloadsDelta30d: null,
-            lastPublishedAt: null,
-            latestVersion: null,
-            fetchedAt: null,
+            mappingStatus: "mapped",
+            adoptionFetchStatus: "succeeded",
+            source: "npm",
+            packageName: "pkg-1",
+            weeklyDownloads: 123,
+            downloadsDelta7d: 3,
+            downloadsDelta30d: 10,
+            lastPublishedAt: "2026-02-11T00:00:00.000Z",
+            latestVersion: "1.0.0",
+            fetchedAt: "2026-02-12T00:00:00.000Z",
           },
         },
       ],
@@ -43,5 +43,7 @@ describe("RegistryAdoptionPage", () => {
     expect(html).toContain("Registry Adoption");
     expect(html).toContain('href="/"');
     expect(html).toContain("repo-1");
+    expect(html).toContain("Updated every morning");
+    expect(html).toContain("Latest adoption snapshot: 2026-02-12");
   });
 });

@@ -59,3 +59,22 @@ The system MUST expose adoption-integrated repository rows through a dedicated d
 #### Scenario: Dashboard endpoint composes adoption and dev-health
 - **WHEN** the dashboard repository list is requested
 - **THEN** the system SHALL return an integrated row from a dashboard-overview read model that composes development-health and ecosystem-adoption data
+
+### Requirement: Display APIs read from persisted snapshots only
+The system SHALL render GitHub Health and Registry Adoption data from persisted database snapshots, without calling external provider APIs during list/read requests.
+
+#### Scenario: Dashboard list is served from DB snapshot
+- **WHEN** a client requests dashboard repository list data
+- **THEN** the system SHALL read development-health and adoption values from database read models
+- **AND** the system SHALL NOT invoke GitHub API or npm API in the request path
+
+### Requirement: Adoption snapshot is collected by daily batch
+The system SHALL collect npm adoption data in a scheduled daily batch and persist results before UI reads.
+
+#### Scenario: Daily batch updates adoption snapshot
+- **WHEN** the daily adoption collection job runs for mapped repositories
+- **THEN** the system SHALL fetch npm adoption signals and upsert a new `adoption_snapshots` record per repository
+
+#### Scenario: Daily batch preserves prior value on provider failure
+- **WHEN** the daily adoption collection job fails to fetch data for a mapped repository
+- **THEN** the system SHALL preserve prior successful values and persist `adoptionFetchStatus="failed"`

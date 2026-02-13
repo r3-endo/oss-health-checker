@@ -206,14 +206,16 @@ const makeAdoptionSnapshotId = (repositoryId: string): string =>
 
 const ADOPTION_SOURCE = "npm" as const;
 const PROJECT_CATEGORY_SLUGS = ["backend", "frontend"] as const;
+const isProjectCategorySlug = (
+  slug: SeedCategory["slug"],
+): slug is (typeof PROJECT_CATEGORY_SLUGS)[number] =>
+  slug === "backend" || slug === "frontend";
 
 export const seedCategoryBase = (db: DrizzleDatabaseHandle): void => {
   const now = new Date();
   const seededRepositories = toSeededRepositories();
   const backendFrontendSeedRepositoryIds = new Set(
-    SEED_CATEGORIES.filter((category) =>
-      PROJECT_CATEGORY_SLUGS.includes(category.slug),
-    )
+    SEED_CATEGORIES.filter((category) => isProjectCategorySlug(category.slug))
       .flatMap((category) => category.repositories)
       .map((repository) => makeRepositoryId(repository.owner, repository.name)),
   );

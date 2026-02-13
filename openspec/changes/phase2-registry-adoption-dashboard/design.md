@@ -11,6 +11,7 @@
 - npm を最初の provider として実装し、将来 provider（Maven Central/PyPI/Homebrew/Docker）追加時に application 層を変更しない設計にする。
 - API 契約で未マッピングと外部依存失敗を区別可能にし、UI が安定して表示できるようにする。
 - 生データ表示を維持し、欠損値/null を明示的に扱う。
+- 画面表示時のデータ入力を DB snapshot に固定し、表示リクエスト中に GitHub API / npm API を呼ばない。
 
 **Non-Goals:**
 - Adoption スコア算出、重み付け、ランキング機能。
@@ -89,6 +90,16 @@
 - Alternatives considered:
   - 1ページに Dev Health + Adoption を同居: 一覧視認性が低下し、列追加に伴う可読性悪化が大きいため不採用。
 
+### 9. 表示系の入力源を DB snapshot に固定し、外部API取得は日次バッチへ分離する
+- Decision: `Dashboard` / `GitHub Health` / `Registry Adoption` の描画 API は DB に保存された最新 snapshot のみを参照する。GitHub API / npm API の呼び出しは表示処理から分離し、毎朝 1 回の収集ジョブで実行する。
+- Rationale: 画面表示のレイテンシを安定化し、外部システム障害やレート制限の影響をユーザー操作から切り離す。
+- Batch policy:
+  - GitHub signals は既存 `jobs/collect-daily-snapshots.ts` を継続利用する。
+  - Adoption signals は repository mapping を起点に npm API から収集し、`adoption_snapshots` を更新する日次ジョブを追加する。
+  - 収集失敗時は前回成功値を保持し、`adoptionFetchStatus="failed"` を保存/返却する。
+- Alternatives considered:
+  - 画面表示時に都度 fetch: 最新性は高いが、表示遅延と外部依存の増大、失敗時の UX 悪化が大きいため不採用。
+
 ## Risks / Trade-offs
 
 - [Risk] npm API のレート制限や一時障害で取得失敗が増える → Mitigation: タイムアウト/リトライ方針を adapter に閉じ、失敗時は前回成功 snapshot を返す。
@@ -97,6 +108,7 @@
 - [Risk] Dev Health と Adoption の取得タイミング差で情報鮮度がずれる → Mitigation: 各レイヤの `fetchedAt` を独立表示し、同時刻性を前提にしない。
 - [Risk] 集約境界の移行中に endpoint が二重化し、利用側が混在する → Mitigation: `/api/dashboard/repositories` を段階導入し、切替完了後に旧経路の adoption 参照を削除する（移行期間は contract test で両者差分を監視）。
 - [Risk] 画面分離により導線が増え、利用者が目的画面へ迷う可能性 → Mitigation: `Dashboard` を単一入口にし、各画面への明示的ナビゲーションを固定配置する。
+- [Risk] 日次更新と表示時刻のずれでデータが古く見える可能性 → Mitigation: `fetchedAt` を表示し、「毎朝更新」の運用前提を UI 文言に明示する。
 
 ## Migration Plan
 
@@ -113,9 +125,12 @@
 11. ルーティングを導入し、`Dashboard` から `GitHub Health` と `Registry Adoption` へ遷移可能にする。
 12. `Registry Adoption` 画面は `/api/dashboard/repositories`（または将来 `/api/registry/repositories`）を利用し、adoption 列と失敗状態表示を担う。
 13. 移行完了後、`development-health` の repository list read model から adoption 統合責務を削除し、独立性を回復する。
+14. `ecosystem-adoption` に日次収集 use-case/job を追加し、mapping 済み repository を対象に npm API から `adoption_snapshots` を更新する。
+15. 運用基盤（cron/GitHub Actions scheduler など）で GitHub signals と Adoption signals の日次ジョブを毎朝実行する。
+16. 表示 API のテストで「外部API非依存（DB read only）」を固定し、回帰を防止する。
 
 ## Open Questions
 
 - package mapping の初期登録をどこで行うか（手動入力 / 設定ファイル / 自動推定）。
 - npm downloads API の集計基準（週次定義、当日分遅延）を UI 文言でどこまで説明するか。
-- adoption refresh のトリガーを Dev Health refresh と統合するか、独立操作にするか。
+- 「毎朝」の実行基準時刻を UTC/JST のどちらで固定するか。

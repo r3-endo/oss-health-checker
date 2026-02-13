@@ -18,7 +18,12 @@ vi.mock(
   "../../../../src/features/registry-adoption/hooks/use-registry-adoption-repositories-query",
   () => ({
     useRegistryAdoptionRepositoriesQuery: () => ({
-      data: [{ repository: { id: "repo-1" } }],
+      data: [
+        {
+          repository: { id: "repo-1" },
+          adoption: { fetchedAt: "2026-02-12T00:00:00.000Z" },
+        },
+      ],
     }),
   }),
 );
@@ -31,5 +36,7 @@ describe("DashboardPage", () => {
     expect(html).toContain('href="/registry"');
     expect(html).toContain("Categories: 2");
     expect(html).toContain("Repositories: 1");
+    expect(html).toContain("Updated every morning");
+    expect(html).toContain("Latest adoption snapshot: 2026-02-12");
   });
 });
