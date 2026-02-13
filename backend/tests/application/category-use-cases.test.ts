@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { ApplicationError } from "../../src/application/errors/application-error.js";
-import type { CategoryReadPort } from "../../src/application/ports/category-read-port.js";
-import type { CategoryRepositoryFactsPort } from "../../src/application/ports/category-repository-facts-port.js";
-import { GetCategoryDetailService } from "../../src/application/use-cases/get-category-detail-use-case.js";
-import { ListCategorySummariesService } from "../../src/application/use-cases/list-category-summaries-use-case.js";
+import { ApplicationError } from "../../src/features/development-health/application/errors/application-error.js";
+import type { CategoryReadPort } from "../../src/features/development-health/application/ports/category-read-port.js";
+import type { CategoryRepositoryFactsPort } from "../../src/features/development-health/application/ports/category-repository-facts-port.js";
+import { GetCategoryDetailService } from "../../src/features/development-health/application/use-cases/get-category-detail-use-case.js";
+import { ListCategorySummariesService } from "../../src/features/development-health/application/use-cases/list-category-summaries-use-case.js";
 
 describe("category use-cases", () => {
   it("lists category summaries from category read port", async () => {

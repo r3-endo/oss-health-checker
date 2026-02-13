@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port.js";
-import { GitHubRestRepositoryGateway } from "../../src/infrastructure/gateways/github-rest-repository-gateway.js";
+import { RepositoryGatewayError } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
+import { GitHubRestRepositoryGateway } from "../../src/features/development-health/infrastructure/gateways/github-rest-repository-gateway.js";
 
 const createJsonResponse = (
   payload: unknown,

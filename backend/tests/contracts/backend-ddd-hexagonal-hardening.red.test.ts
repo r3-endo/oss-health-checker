@@ -2,12 +2,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { UnitOfWorkPort } from "../../src/application/ports/unit-of-work-port.js";
-import { createDrizzleHandle } from "../../src/infrastructure/db/drizzle/client.js";
-import type { DrizzleDatabaseHandle } from "../../src/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate.js";
-import { DrizzleUnitOfWorkAdapter } from "../../src/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
-import { repositoriesTable } from "../../src/infrastructure/db/drizzle/schema.js";
+import type { UnitOfWorkPort } from "../../src/features/development-health/application/ports/unit-of-work-port.js";
+import { createDrizzleHandle } from "../../src/shared/infrastructure/db/drizzle/client.js";
+import type { DrizzleDatabaseHandle } from "../../src/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleUnitOfWorkAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { repositoriesTable } from "../../src/shared/infrastructure/db/drizzle/schema.js";
 import { count } from "drizzle-orm";
 
 describe("backend-ddd-hexagonal-hardening red cases by capability", () => {

@@ -1,11 +1,11 @@
-import { CollectDailySnapshotsService } from "../application/use-cases/collect-daily-snapshots-use-case.js";
-import { env } from "../infrastructure/config/env.js";
-import { createDrizzleHandle } from "../infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../infrastructure/db/drizzle/migrate.js";
-import { seedCategoryBase } from "../infrastructure/db/drizzle/seed-category-base.js";
-import { GitHubRestRepositoryGateway } from "../infrastructure/gateways/github-rest-repository-gateway.js";
-import { DrizzleRepositoryAdapter } from "../infrastructure/repositories/drizzle-repository-adapter.js";
-import { DrizzleRepositorySnapshotAdapter } from "../infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
+import { CollectDailySnapshotsService } from "../features/development-health/application/use-cases/collect-daily-snapshots-use-case.js";
+import { env } from "../shared/config/env.js";
+import { createDrizzleHandle } from "../shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../shared/infrastructure/db/drizzle/migrate.js";
+import { seedCategoryBase } from "../shared/infrastructure/db/drizzle/seed-category-base.js";
+import { GitHubRestRepositoryGateway } from "../features/development-health/infrastructure/gateways/github-rest-repository-gateway.js";
+import { DrizzleRepositoryAdapter } from "../features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
+import { DrizzleRepositorySnapshotAdapter } from "../features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
 
 const main = async (): Promise<void> => {
   const db = createDrizzleHandle(env);

@@ -11,7 +11,10 @@ const collectTsFiles = (dir: string): string[] => {
 
 describe("layer boundary: application must not depend on infrastructure", () => {
   it("application layer files do not import drizzle or infrastructure modules", () => {
-    const applicationDir = path.resolve(__dirname, "../../src/application");
+    const applicationDir = path.resolve(
+      __dirname,
+      "../../src/features/development-health/application",
+    );
     const files = collectTsFiles(applicationDir);
 
     expect(files.length).toBeGreaterThan(0);

@@ -1,0 +1,20 @@
+import type { RegistryAdoptionSignal } from "../ports/registry-provider-port.js";
+
+export const calculateAdoptionScore = (
+  signals: readonly RegistryAdoptionSignal[],
+): number => {
+  if (signals.length === 0) {
+    return 0;
+  }
+
+  const knownDownloads = signals
+    .map((signal) => signal.downloads30d)
+    .filter((value): value is number => value !== null);
+
+  if (knownDownloads.length === 0) {
+    return 0;
+  }
+
+  const total = knownDownloads.reduce((sum, value) => sum + value, 0);
+  return Math.max(0, Math.min(100, Math.round(Math.log10(total + 1) * 20)));
+};

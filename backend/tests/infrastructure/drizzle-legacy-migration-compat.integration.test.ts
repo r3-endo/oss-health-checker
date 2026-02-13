@@ -5,8 +5,8 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migrate.js";
+} from "../../src/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
 
 const createLegacySchemaWithoutMigrationMetadata = (
   db: DrizzleDatabaseHandle,
