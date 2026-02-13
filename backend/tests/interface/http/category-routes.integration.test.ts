@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { CategoryRepositoryFactsPort } from "../../../src/features/development-health/application/ports/category-repository-facts-port.js";
 import type { RegistryDataPort } from "../../../src/features/development-health/application/ports/registry-data-port.js";
 import { GetCategoryDetailService } from "../../../src/features/development-health/application/use-cases/get-category-detail-use-case.js";
 import { ListCategorySummariesService } from "../../../src/features/development-health/application/use-cases/list-category-summaries-use-case.js";
@@ -12,6 +11,7 @@ import { createDrizzleHandle } from "../../../src/shared/infrastructure/db/drizz
 import { migrateDrizzleDatabase } from "../../../src/shared/infrastructure/db/drizzle/migrate.js";
 import { seedCategoryBase } from "../../../src/shared/infrastructure/db/drizzle/seed-category-base.js";
 import { DrizzleCategoryReadAdapter } from "../../../src/features/development-health/infrastructure/repositories/drizzle-category-read-adapter.js";
+import { DrizzleRepositorySnapshotReadAdapter } from "../../../src/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
 import { CategoryController } from "../../../src/features/development-health/interface/http/controllers/category-controller.js";
 import {
   CategoryDetailResponseSchema,
@@ -50,27 +50,14 @@ describe("category routes integration", () => {
       categoryReadPort,
     );
 
-    const factsPort: CategoryRepositoryFactsPort = {
-      fetchCategoryRepositoryFacts: async (owner) => ({
-        owner: {
-          login: owner,
-          type: owner.includes("-") ? "Organization" : "User",
-        },
-        openIssues: 10,
-        defaultBranch: "main",
-        lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
-        dataStatus: "ok",
-        errorMessage: null,
-      }),
-    };
-
     const registryDataPort: RegistryDataPort = {
       findLatestByRepositoryId: async () => null,
     };
+    const snapshotReadPort = new DrizzleRepositorySnapshotReadAdapter(db);
 
     const getCategoryDetailUseCase = new GetCategoryDetailService(
       categoryReadPort,
-      factsPort,
+      snapshotReadPort,
       registryDataPort,
       () => new Date("2026-02-13T00:00:00.000Z"),
     );
@@ -129,7 +116,7 @@ describe("category routes integration", () => {
     ]);
   });
 
-  it("returns category detail with primary GitHub facts", async () => {
+  it("returns category detail from persisted snapshot data", async () => {
     const response = await app.request("/api/categories/llm");
 
     expect(response.status).toBe(200);
@@ -140,8 +127,9 @@ describe("category routes integration", () => {
     expect(parsed.data.repositories.length).toBeGreaterThan(1);
     const first = parsed.data.repositories[0];
     expect(first?.owner.login).toBeTruthy();
-    expect(first?.github.openIssues).toBe(10);
-    expect(first?.github.dataStatus).toBe("ok");
+    expect(
+      ["ok", "pending"].includes(first?.github.dataStatus ?? ""),
+    ).toBe(true);
     expect(first?.links.repo).toContain("https://github.com/");
   });
 

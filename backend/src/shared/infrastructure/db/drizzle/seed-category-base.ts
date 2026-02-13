@@ -4,6 +4,7 @@ import {
   adoptionSnapshotsTable,
   categoriesTable,
   repositoryPackageMappingsTable,
+  repositorySnapshotsTable,
   repositoriesTable,
   repositoryCategoriesTable,
 } from "./schema.js";
@@ -206,6 +207,10 @@ const makeAdoptionSnapshotId = (repositoryId: string): string =>
 
 const ADOPTION_SOURCE = "npm" as const;
 const PROJECT_CATEGORY_SLUGS = ["backend", "frontend"] as const;
+const makeRecordedAt = (date: Date): string =>
+  new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  ).toISOString();
 const isProjectCategorySlug = (
   slug: SeedCategory["slug"],
 ): slug is (typeof PROJECT_CATEGORY_SLUGS)[number] =>
@@ -325,6 +330,9 @@ export const seedCategoryBase = (db: DrizzleDatabaseHandle): void => {
       tx.delete(adoptionSnapshotsTable)
         .where(inArray(adoptionSnapshotsTable.repositoryId, legacyIds))
         .run();
+      tx.delete(repositorySnapshotsTable)
+        .where(inArray(repositorySnapshotsTable.repositoryId, legacyIds))
+        .run();
 
       const repositoryIdsStillRelated = new Set(
         tx
@@ -355,42 +363,66 @@ export const seedCategoryBase = (db: DrizzleDatabaseHandle): void => {
       } => repository.npm !== undefined,
     );
 
-    if (npmRepositories.length === 0) {
-      return;
+    if (npmRepositories.length > 0) {
+      tx.insert(repositoryPackageMappingsTable)
+        .values(
+          npmRepositories.map((repository) => ({
+            repositoryId: repository.id,
+            source: ADOPTION_SOURCE,
+            packageName: repository.npm.packageName,
+            createdAt: now,
+            updatedAt: now,
+          })),
+        )
+        .onConflictDoNothing({
+          target: repositoryPackageMappingsTable.repositoryId,
+        })
+        .run();
+
+      tx.insert(adoptionSnapshotsTable)
+        .values(
+          npmRepositories.map((repository) => ({
+            id: makeAdoptionSnapshotId(repository.id),
+            repositoryId: repository.id,
+            source: ADOPTION_SOURCE,
+            packageName: repository.npm.packageName,
+            weeklyDownloads: repository.npm.weeklyDownloads,
+            downloadsDelta7d: repository.npm.downloadsDelta7d,
+            downloadsDelta30d: repository.npm.downloadsDelta30d,
+            lastPublishedAt: repository.npm.lastPublishedAt,
+            latestVersion: repository.npm.latestVersion,
+            fetchStatus: "succeeded" as const,
+            fetchedAt: now,
+          })),
+        )
+        .onConflictDoNothing({ target: adoptionSnapshotsTable.id })
+        .run();
     }
 
-    tx.insert(repositoryPackageMappingsTable)
+    const recordedAt = makeRecordedAt(now);
+    tx.insert(repositorySnapshotsTable)
       .values(
-        npmRepositories.map((repository) => ({
+        seededRepositories.map((repository, index) => ({
           repositoryId: repository.id,
-          source: ADOPTION_SOURCE,
-          packageName: repository.npm.packageName,
-          createdAt: now,
-          updatedAt: now,
+          recordedAt,
+          openIssues: 5 + index,
+          commitCount30d: 20 + index,
+          contributorCount: 3 + (index % 10),
+          lastCommitAt: new Date(
+            now.getTime() - (index % 14) * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          lastReleaseAt: new Date(
+            now.getTime() - (index % 30) * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          healthScoreVersion: 1,
         })),
       )
       .onConflictDoNothing({
-        target: repositoryPackageMappingsTable.repositoryId,
+        target: [
+          repositorySnapshotsTable.repositoryId,
+          repositorySnapshotsTable.recordedAt,
+        ],
       })
-      .run();
-
-    tx.insert(adoptionSnapshotsTable)
-      .values(
-        npmRepositories.map((repository) => ({
-          id: makeAdoptionSnapshotId(repository.id),
-          repositoryId: repository.id,
-          source: ADOPTION_SOURCE,
-          packageName: repository.npm.packageName,
-          weeklyDownloads: repository.npm.weeklyDownloads,
-          downloadsDelta7d: repository.npm.downloadsDelta7d,
-          downloadsDelta30d: repository.npm.downloadsDelta30d,
-          lastPublishedAt: repository.npm.lastPublishedAt,
-          latestVersion: repository.npm.latestVersion,
-          fetchStatus: "succeeded" as const,
-          fetchedAt: now,
-        })),
-      )
-      .onConflictDoNothing({ target: adoptionSnapshotsTable.id })
       .run();
   });
 };

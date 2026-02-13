@@ -3,6 +3,7 @@ import { CategoryDetailPanel } from "../components/CategoryDetailPanel";
 import { CategoryTabs } from "../components/CategoryTabs";
 import { QueryErrorBanner } from "../components/QueryErrorBanner";
 import { RepositoryListSkeleton } from "../components/RepositoryListSkeleton";
+import { useRequestGithubRefresh } from "../../hooks/use-request-github-refresh";
 
 export const RepositoriesPage = () => {
   const {
@@ -12,6 +13,7 @@ export const RepositoriesPage = () => {
     categoriesQuery,
     detailQuery,
   } = useRepositoriesPageData();
+  const refreshMutation = useRequestGithubRefresh();
 
   return (
     <main className="min-h-screen px-6 py-12 sm:px-8 lg:px-12">
@@ -29,6 +31,28 @@ export const RepositoriesPage = () => {
             Back to Dashboard
           </a>
         </header>
+        <div className="mb-4 flex items-center gap-3">
+          <button
+            type="button"
+            className="rounded border border-border-subtle px-3 py-1.5 text-sm text-text-primary hover:border-text-secondary disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => refreshMutation.mutate()}
+            disabled={refreshMutation.isPending}
+          >
+            {refreshMutation.isPending
+              ? "Requesting update..."
+              : "Request GitHub Data Update"}
+          </button>
+          {refreshMutation.isSuccess ? (
+            <p className="text-xs text-text-secondary">
+              Requested refresh for {refreshMutation.data} repositories.
+            </p>
+          ) : null}
+          {refreshMutation.isError ? (
+            <p className="text-xs text-status-risky">
+              Failed to request GitHub refresh.
+            </p>
+          ) : null}
+        </div>
 
         {categoriesQuery.isPending ? <RepositoryListSkeleton /> : null}
 

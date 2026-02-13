@@ -46,7 +46,8 @@ export const DashboardPage = () => {
               GitHub Health
             </h2>
             <p className="mt-1 text-sm text-text-secondary">
-              Categories: {githubCategoryCount}
+              Categories:{" "}
+              {categoriesQuery.isPending ? "Loading..." : githubCategoryCount}
             </p>
           </a>
 
@@ -58,7 +59,8 @@ export const DashboardPage = () => {
               Registry Adoption
             </h2>
             <p className="mt-1 text-sm text-text-secondary">
-              Repositories: {registryRepoCount}
+              Repositories:{" "}
+              {registryQuery.isPending ? "Loading..." : registryRepoCount}
             </p>
           </a>
         </section>

@@ -36,6 +36,18 @@ vi.mock(
     }),
   }),
 );
+vi.mock(
+  "../../../../src/features/registry-adoption/hooks/use-request-adoption-refresh",
+  () => ({
+    useRequestAdoptionRefresh: () => ({
+      mutate: () => undefined,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+      data: 0,
+    }),
+  }),
+);
 
 describe("RegistryAdoptionPage", () => {
   it("renders heading, back link, and adoption table", () => {
@@ -45,5 +57,6 @@ describe("RegistryAdoptionPage", () => {
     expect(html).toContain("repo-1");
     expect(html).toContain("Updated every morning");
     expect(html).toContain("Latest adoption snapshot: 2026-02-12");
+    expect(html).toContain("Request Adoption Data Update");
   });
 });

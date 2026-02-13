@@ -14,6 +14,7 @@ import { DrizzleCategoryReadAdapter } from "../../features/development-health/in
 import { DrizzleRepositoryAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
 import { DrizzleRepositoryReadModelAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 import { DrizzleRepositorySnapshotAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
+import { DrizzleRepositorySnapshotReadAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
 import { DrizzleSnapshotAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
 import { DrizzleUnitOfWorkAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import { DrizzleRegistryDataAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-registry-data-adapter.js";
@@ -57,6 +58,9 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const snapshotAdapter = new DrizzleSnapshotAdapter(db);
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
   const repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
+  const repositorySnapshotReadAdapter = new DrizzleRepositorySnapshotReadAdapter(
+    db,
+  );
   const categoryReadAdapter = new DrizzleCategoryReadAdapter(db);
   const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
   const registryDataAdapter = new DrizzleRegistryDataAdapter(db);
@@ -79,7 +83,7 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   );
   const getCategoryDetailUseCase = new GetCategoryDetailService(
     categoryReadAdapter,
-    repositoryGateway,
+    repositorySnapshotReadAdapter,
     registryDataAdapter,
   );
 

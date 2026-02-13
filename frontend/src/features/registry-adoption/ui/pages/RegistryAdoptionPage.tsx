@@ -1,4 +1,5 @@
 import { useRegistryAdoptionRepositoriesQuery } from "../../hooks/use-registry-adoption-repositories-query";
+import { useRequestAdoptionRefresh } from "../../hooks/use-request-adoption-refresh";
 import { RegistryAdoptionTable } from "../components/RegistryAdoptionTable";
 
 const toDateLabel = (value: string | null): string => {
@@ -10,6 +11,7 @@ const toDateLabel = (value: string | null): string => {
 
 export const RegistryAdoptionPage = () => {
   const query = useRegistryAdoptionRepositoriesQuery();
+  const refreshMutation = useRequestAdoptionRefresh();
   const latestAdoptionFetchedAt =
     query.data
       ?.map((row) => row.adoption.fetchedAt)
@@ -32,6 +34,32 @@ export const RegistryAdoptionPage = () => {
               Updated every morning. Latest adoption snapshot:{" "}
               {toDateLabel(latestAdoptionFetchedAt)}
             </p>
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                type="button"
+                className="rounded border border-border-subtle px-3 py-1.5 text-sm text-text-primary hover:border-text-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() =>
+                  refreshMutation.mutate(
+                    (query.data ?? []).map((row) => row.repository.id),
+                  )
+                }
+                disabled={refreshMutation.isPending || !query.data}
+              >
+                {refreshMutation.isPending
+                  ? "Requesting update..."
+                  : "Request Adoption Data Update"}
+              </button>
+              {refreshMutation.isSuccess ? (
+                <p className="text-xs text-text-secondary">
+                  Requested refresh for {refreshMutation.data} repositories.
+                </p>
+              ) : null}
+              {refreshMutation.isError ? (
+                <p className="text-xs text-status-risky">
+                  Failed to request adoption refresh.
+                </p>
+              ) : null}
+            </div>
           </div>
           <a href="/" className="text-sm text-text-secondary hover:underline">
             Back to Dashboard

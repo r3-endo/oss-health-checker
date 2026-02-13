@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { ApplicationError } from "../../src/features/development-health/application/errors/application-error.js";
 import type { CategoryReadPort } from "../../src/features/development-health/application/ports/category-read-port.js";
-import type { CategoryRepositoryFactsPort } from "../../src/features/development-health/application/ports/category-repository-facts-port.js";
 import type { RegistryDataPort } from "../../src/features/development-health/application/ports/registry-data-port.js";
+import type { RepositorySnapshotReadPort } from "../../src/features/development-health/application/ports/repository-snapshot-read-port.js";
 import { GetCategoryDetailService } from "../../src/features/development-health/application/use-cases/get-category-detail-use-case.js";
 import { ListCategorySummariesService } from "../../src/features/development-health/application/use-cases/list-category-summaries-use-case.js";
 
@@ -26,7 +26,7 @@ describe("category use-cases", () => {
     ]);
   });
 
-  it("builds category detail from GitHub facts with separated issue/pr counts", async () => {
+  it("builds category detail from persisted snapshots", async () => {
     const categoryReadPort: CategoryReadPort = {
       listSummaries: async () => [],
       findSummaryBySlug: async () => ({
@@ -40,30 +40,29 @@ describe("category use-cases", () => {
       ],
     };
 
-    const categoryRepositoryFactsPort: CategoryRepositoryFactsPort = {
-      fetchCategoryRepositoryFacts: async (owner) =>
-        owner === "octocat"
-          ? {
-              owner: { login: "octocat", type: "User" },
+    const repositorySnapshotReadPort: RepositorySnapshotReadPort = {
+      findLatestByRepositoryIds: async () =>
+        new Map([
+          [
+            "r1",
+            {
+              repositoryId: "r1",
+              recordedAt: "2026-02-12T00:00:00.000Z",
               openIssues: 8,
-              defaultBranch: "main",
-              lastCommitToDefaultBranchAt: "2026-02-01T00:00:00.000Z",
-              dataStatus: "ok",
-              errorMessage: null,
-            }
-          : {
-              owner: { login: "acme", type: "Organization" },
-              openIssues: null,
-              defaultBranch: null,
-              lastCommitToDefaultBranchAt: null,
-              dataStatus: "rate_limited",
-              errorMessage: "GitHub API rate limit exceeded",
+              commitCount30d: 42,
+              contributorCount: 4,
+              lastCommitAt: "2026-02-01T00:00:00.000Z",
+              lastReleaseAt: null,
+              healthScoreVersion: 1,
             },
+          ],
+        ]),
+      findOpenIssuesAtOrBefore: async () => null,
     };
 
     const useCase = new GetCategoryDetailService(
       categoryReadPort,
-      categoryRepositoryFactsPort,
+      repositorySnapshotReadPort,
       stubRegistryDataPort,
       () => new Date("2026-02-13T01:00:00.000Z"),
     );
@@ -71,17 +70,17 @@ describe("category use-cases", () => {
     const result = await useCase.execute({ slug: "llm" });
 
     expect(result.slug).toBe("llm");
-    expect(result.updatedAt).toBe("2026-02-13T01:00:00.000Z");
+    expect(result.updatedAt).toBe("2026-02-12T00:00:00.000Z");
     expect(result.repositories).toHaveLength(2);
     expect(result.repositories[0]).toEqual({
-      owner: { login: "acme", type: "Organization" },
+      owner: { login: "acme", type: "User" },
       name: "platform",
       github: {
         openIssues: null,
         lastCommitToDefaultBranchAt: null,
         defaultBranch: null,
-        dataStatus: "rate_limited",
-        errorMessage: "GitHub API rate limit exceeded",
+        dataStatus: "pending",
+        errorMessage: "Snapshot not collected yet",
       },
       registry: null,
       links: {
@@ -97,20 +96,14 @@ describe("category use-cases", () => {
       findSummaryBySlug: async () => null,
       listRepositoriesByCategorySlug: async () => [],
     };
-    const categoryRepositoryFactsPort: CategoryRepositoryFactsPort = {
-      fetchCategoryRepositoryFacts: async () => ({
-        owner: { login: "octo", type: "User" },
-        openIssues: 0,
-        defaultBranch: "main",
-        lastCommitToDefaultBranchAt: "2026-02-01T00:00:00.000Z",
-        dataStatus: "ok",
-        errorMessage: null,
-      }),
+    const repositorySnapshotReadPort: RepositorySnapshotReadPort = {
+      findLatestByRepositoryIds: async () => new Map(),
+      findOpenIssuesAtOrBefore: async () => null,
     };
 
     const useCase = new GetCategoryDetailService(
       categoryReadPort,
-      categoryRepositoryFactsPort,
+      repositorySnapshotReadPort,
       stubRegistryDataPort,
     );
 
