@@ -55,11 +55,11 @@
 
 ## 8. フロントエンド（カテゴリダッシュボード）
 
-- [ ] 8.1 TanStack Query を用いてカテゴリタブ状態とデータ取得を実装する
-- [ ] 8.2 タブ切替時に `GET /api/categories/:slug` を再取得し、loading/error を表示する
-- [ ] 8.3 テーブル列を health score、status、last commit、issue delta 30d、commits 30d に更新する
-- [ ] 8.4 healthScore 降順表示と nullable 表示（`null` の見せ方）を UI へ反映する
-- [ ] 8.5 タブ切替・loading/error・並び順の UI テストを追加する
+- [x] 8.1 TanStack Query を用いてカテゴリタブ状態とデータ取得を実装する
+- [x] 8.2 タブ切替時に `GET /api/categories/:slug` を再取得し、loading/error を表示する
+- [x] 8.3 テーブル列を health score、status、last commit、issue delta 30d、commits 30d に更新する
+- [x] 8.4 healthScore 降順表示と nullable 表示（`null` の見せ方）を UI へ反映する
+- [x] 8.5 タブ切替・loading/error・並び順の UI テストを追加する
 
 ## 9. ロールアウト・検証・リファクタ
 
