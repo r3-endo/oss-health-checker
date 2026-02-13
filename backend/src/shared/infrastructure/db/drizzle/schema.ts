@@ -18,9 +18,7 @@ export const repositoriesTable = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
   },
-  (table) => ({
-    repositoriesUrlUnique: uniqueIndex("repositories_url_unique").on(table.url),
-  }),
+  (table) => [uniqueIndex("repositories_url_unique").on(table.url)],
 );
 
 export const snapshotsTable = sqliteTable(
@@ -37,15 +35,16 @@ export const snapshotsTable = sqliteTable(
     status: text("status").notNull(),
     fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }).notNull(),
   },
-  (table) => ({
-    snapshotsRepositoryFetchedIndex: index(
-      "snapshots_repository_fetched_idx",
-    ).on(table.repositoryId, table.fetchedAt),
-    snapshotsStatusCheck: check(
+  (table) => [
+    index("snapshots_repository_fetched_idx").on(
+      table.repositoryId,
+      table.fetchedAt,
+    ),
+    check(
       "snapshots_status_check",
       sql`${table.status} IN ('Active', 'Stale', 'Risky')`,
     ),
-  }),
+  ],
 );
 
 export const snapshotWarningReasonsTable = sqliteTable(
@@ -56,19 +55,17 @@ export const snapshotWarningReasonsTable = sqliteTable(
       .references(() => snapshotsTable.id, { onDelete: "cascade" }),
     reasonKey: text("reason_key").notNull(),
   },
-  (table) => ({
-    snapshotWarningReasonsPk: uniqueIndex("snapshot_warning_reasons_pk").on(
+  (table) => [
+    uniqueIndex("snapshot_warning_reasons_pk").on(
       table.snapshotId,
       table.reasonKey,
     ),
-    snapshotWarningReasonsReasonIdx: index(
-      "snapshot_warning_reasons_reason_idx",
-    ).on(table.reasonKey),
-    snapshotWarningReasonsReasonCheck: check(
+    index("snapshot_warning_reasons_reason_idx").on(table.reasonKey),
+    check(
       "snapshot_warning_reasons_reason_check",
       sql`${table.reasonKey} IN ('commit_stale', 'release_stale', 'open_issues_high')`,
     ),
-  }),
+  ],
 );
 
 export const categoriesTable = sqliteTable(
@@ -82,9 +79,7 @@ export const categoriesTable = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
   },
-  (table) => ({
-    categoriesSlugUnique: uniqueIndex("categories_slug_unique").on(table.slug),
-  }),
+  (table) => [uniqueIndex("categories_slug_unique").on(table.slug)],
 );
 
 export const repositoryCategoriesTable = sqliteTable(
@@ -98,18 +93,14 @@ export const repositoryCategoriesTable = sqliteTable(
       .references(() => categoriesTable.id, { onDelete: "cascade" }),
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   },
-  (table) => ({
-    repositoryCategoriesPk: uniqueIndex("repository_categories_pk").on(
+  (table) => [
+    uniqueIndex("repository_categories_pk").on(
       table.repositoryId,
       table.categoryId,
     ),
-    repositoryCategoriesRepositoryIdx: index(
-      "repository_categories_repository_idx",
-    ).on(table.repositoryId),
-    repositoryCategoriesCategoryIdx: index(
-      "repository_categories_category_idx",
-    ).on(table.categoryId),
-  }),
+    index("repository_categories_repository_idx").on(table.repositoryId),
+    index("repository_categories_category_idx").on(table.categoryId),
+  ],
 );
 
 export const repositorySnapshotsTable = sqliteTable(
@@ -132,13 +123,11 @@ export const repositorySnapshotsTable = sqliteTable(
     topContributorRatio90d: integer("top_contributor_ratio_90d"),
     healthScoreVersion: integer("health_score_version"),
   },
-  (table) => ({
-    repositorySnapshotsPk: uniqueIndex("repository_snapshots_pk").on(
+  (table) => [
+    uniqueIndex("repository_snapshots_pk").on(
       table.repositoryId,
       table.recordedAt,
     ),
-    repositorySnapshotsRecordedAtIdx: index(
-      "repository_snapshots_recorded_idx",
-    ).on(table.recordedAt),
-  }),
+    index("repository_snapshots_recorded_idx").on(table.recordedAt),
+  ],
 );
