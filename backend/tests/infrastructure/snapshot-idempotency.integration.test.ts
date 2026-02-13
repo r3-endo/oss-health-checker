@@ -10,31 +10,6 @@ import { migrateDrizzleDatabase } from "../../src/infrastructure/db/drizzle/migr
 import { DrizzleRepositorySnapshotAdapter } from "../../src/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
 import { repositoriesTable } from "../../src/infrastructure/db/drizzle/schema.js";
 
-/**
- * Create the repository_snapshots table in-memory.
- * This table does not yet exist in migration files, so we create it manually for testing.
- */
-const createRepositorySnapshotsTable = (db: DrizzleDatabaseHandle): void => {
-  db.sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS repository_snapshots (
-      repository_id TEXT NOT NULL,
-      recorded_at TEXT NOT NULL,
-      open_issues INTEGER NOT NULL,
-      commit_count_30d INTEGER,
-      contributor_count INTEGER,
-      last_commit_at TEXT,
-      last_release_at TEXT,
-      star_count INTEGER,
-      fork_count INTEGER,
-      health_score_version INTEGER,
-      PRIMARY KEY (repository_id, recorded_at),
-      FOREIGN KEY (repository_id)
-        REFERENCES repositories(id)
-        ON DELETE CASCADE
-    );
-  `);
-};
-
 describe("Snapshot idempotency", () => {
   let tempDir: string;
   let db: DrizzleDatabaseHandle;
@@ -46,7 +21,6 @@ describe("Snapshot idempotency", () => {
     const databasePath = path.join(tempDir, "test.sqlite");
     db = createDrizzleHandle({ DATABASE_URL: `file:${databasePath}` });
     migrateDrizzleDatabase(db);
-    createRepositorySnapshotsTable(db);
     adapter = new DrizzleRepositorySnapshotAdapter(db);
 
     // Insert a test repository

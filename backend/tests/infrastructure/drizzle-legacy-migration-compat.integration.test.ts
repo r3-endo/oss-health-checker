@@ -78,5 +78,19 @@ describe("migrateDrizzleDatabase legacy compatibility", () => {
       .prepare("SELECT COUNT(*) as value FROM __drizzle_migrations")
       .get() as { value: number };
     expect(migrationRows.value).toBeGreaterThan(0);
+
+    const categoryTable = db.sqlite
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'categories'",
+      )
+      .get() as { name: string } | undefined;
+    const repositorySnapshotsTable = db.sqlite
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'repository_snapshots'",
+      )
+      .get() as { name: string } | undefined;
+
+    expect(categoryTable?.name).toBe("categories");
+    expect(repositorySnapshotsTable?.name).toBe("repository_snapshots");
   });
 });

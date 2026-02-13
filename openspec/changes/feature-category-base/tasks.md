@@ -8,9 +8,9 @@
 
 ## 2. DB スキーマとマイグレーション
 
-- [ ] 2.1 `categories`、`repository_categories`、拡張 `repository_snapshots` の Drizzle schema を追加する
-- [ ] 2.2 PK/UNIQUE/FK 制約とデフォルト値（`display_order`, `is_system`）を含む migration を追加する
-- [ ] 2.3 1日1snapshot制約と関連整合性を検証する migration テストを追加する
+- [x] 2.1 `categories`、`repository_categories`、拡張 `repository_snapshots` の Drizzle schema を追加する
+- [x] 2.2 PK/UNIQUE/FK 制約とデフォルト値（`display_order`, `is_system`）を含む migration を追加する
+- [x] 2.3 1日1snapshot制約と関連整合性を検証する migration テストを追加する
 
 ## 3. Seeder と登録共存
 

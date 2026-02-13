@@ -1,6 +1,6 @@
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import { and, count, eq } from "drizzle-orm";
-import { repositorySnapshotsTable } from "../db/drizzle/repository-snapshots-schema.js";
+import { repositorySnapshotsTable } from "../db/drizzle/schema.js";
 
 export class DrizzleRepositorySnapshotAdapter {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
