@@ -48,8 +48,7 @@ export const sortByHealthScoreDesc = (
   repositories: readonly CategoryRepositoryView[],
 ): readonly CategoryRepositoryView[] =>
   [...repositories].sort(
-    (a, b) =>
-      b.metrics.devHealth.healthScore - a.metrics.devHealth.healthScore,
+    (a, b) => b.metrics.devHealth.healthScore - a.metrics.devHealth.healthScore,
   );
 
 export const CategoryRepositoryTable = ({
@@ -72,7 +71,9 @@ export const CategoryRepositoryTable = ({
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-medium text-text-secondary">Repositories</h2>
+        <h2 className="text-sm font-medium text-text-secondary">
+          Repositories
+        </h2>
         <span className="text-xs text-text-tertiary">
           {sorted.length} {sorted.length === 1 ? "repository" : "repositories"}
         </span>
@@ -112,7 +113,9 @@ export const CategoryRepositoryTable = ({
                       <span className="text-sm font-medium text-text-primary">
                         {repository.name}
                       </span>
-                      <span className="text-xs text-text-tertiary">{repository.owner}</span>
+                      <span className="text-xs text-text-tertiary">
+                        {repository.owner}
+                      </span>
                     </div>
                   </td>
                   <td className="px-5 py-4 text-right text-sm font-semibold tabular-nums text-text-primary">

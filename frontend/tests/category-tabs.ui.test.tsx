@@ -23,7 +23,7 @@ describe("CategoryTabs", () => {
 
     expect(html).toContain("LLM");
     expect(html).toContain("Backend");
-    expect(html).toContain("aria-pressed=\"true\"");
+    expect(html).toContain('aria-pressed="true"');
   });
 
   it("calls onSelect with clicked tab slug", () => {

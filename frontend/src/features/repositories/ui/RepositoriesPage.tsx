@@ -15,7 +15,10 @@ const ErrorBanner = ({ message }: { message: string }) => (
 export const RepositoriesPage = () => {
   const categoriesQuery = useCategoriesQuery();
   const categories = useMemo(
-    () => [...(categoriesQuery.data ?? [])].sort((a, b) => a.displayOrder - b.displayOrder),
+    () =>
+      [...(categoriesQuery.data ?? [])].sort(
+        (a, b) => a.displayOrder - b.displayOrder,
+      ),
     [categoriesQuery.data],
   );
 
@@ -26,7 +29,10 @@ export const RepositoriesPage = () => {
       return;
     }
 
-    if (!selectedSlug || !categories.some((category) => category.slug === selectedSlug)) {
+    if (
+      !selectedSlug ||
+      !categories.some((category) => category.slug === selectedSlug)
+    ) {
       setSelectedSlug(categories[0]!.slug);
     }
   }, [categories, selectedSlug]);

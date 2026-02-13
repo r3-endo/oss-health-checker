@@ -152,7 +152,13 @@ export type ApiErrorResponse = z.infer<typeof ApiErrorSchema>;
 export type RefreshErrorView = ApiErrorResponse["error"];
 export type CategorySlug = z.infer<typeof CategorySlugSchema>;
 export type CategorySummary = z.infer<typeof CategorySummarySchema>;
-export type ListCategoriesResponse = z.infer<typeof ListCategoriesResponseSchema>;
-export type CategoryRepositoryView = z.infer<typeof CategoryRepositoryViewSchema>;
+export type ListCategoriesResponse = z.infer<
+  typeof ListCategoriesResponseSchema
+>;
+export type CategoryRepositoryView = z.infer<
+  typeof CategoryRepositoryViewSchema
+>;
 export type CategoryDetail = z.infer<typeof CategoryDetailSchema>;
-export type CategoryDetailResponse = z.infer<typeof CategoryDetailResponseSchema>;
+export type CategoryDetailResponse = z.infer<
+  typeof CategoryDetailResponseSchema
+>;
