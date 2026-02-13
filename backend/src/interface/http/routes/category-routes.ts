@@ -1,11 +1,11 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { ApplicationError } from "../../../application/errors/application-error.js";
 import {
   CategoryDetailResponseSchema,
   CategoryNotFoundErrorResponseSchema,
   CategorySlugParamSchema,
   ListCategoriesResponseSchema,
 } from "../openapi/category-schemas.js";
+import { mapCategoryErrorToHttp } from "../error-mapper.js";
 
 export type CategoryController = {
   listCategories: () => Promise<{ data: unknown }>;
@@ -85,16 +85,9 @@ export const createCategoryRoutes = (
       const payload = await controller.getCategoryDetail({ slug: params.slug });
       return c.json(payload as never, 200);
     } catch (error) {
-      if (error instanceof ApplicationError && error.code === "NOT_FOUND") {
-        return c.json(
-          {
-            error: {
-              code: "CATEGORY_NOT_FOUND",
-              message: "Category not found",
-            },
-          },
-          404,
-        );
+      const response = mapCategoryErrorToHttp(c, error);
+      if (response.status === 404) {
+        return response as never;
       }
 
       throw error;
