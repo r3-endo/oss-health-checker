@@ -9,7 +9,9 @@ import {
 import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
 import { seedCategoryBase } from "../../src/shared/infrastructure/db/drizzle/seed-category-base.js";
 import {
+  adoptionSnapshotsTable,
   categoriesTable,
+  repositoryPackageMappingsTable,
   repositoriesTable,
   repositoryCategoriesTable,
 } from "../../src/shared/infrastructure/db/drizzle/schema.js";
@@ -51,13 +53,34 @@ describe("category base seeder", () => {
     const categories = await db.db.select().from(categoriesTable);
     const repositories = await db.db.select().from(repositoriesTable);
     const relations = await db.db.select().from(repositoryCategoriesTable);
+    const packageMappings = await db.db
+      .select()
+      .from(repositoryPackageMappingsTable);
+    const adoptionSnapshots = await db.db.select().from(adoptionSnapshotsTable);
 
     expect(categories).toHaveLength(3);
-    expect(repositories).toHaveLength(10);
-    expect(relations).toHaveLength(10);
+    expect(repositories).toHaveLength(11);
+    expect(relations).toHaveLength(12);
+    expect(packageMappings).toHaveLength(7);
+    expect(adoptionSnapshots).toHaveLength(7);
 
     const slugSet = new Set(categories.map((category) => category.slug));
     expect(slugSet).toEqual(new Set(["llm", "backend", "frontend"]));
+
+    const packageNameSet = new Set(
+      packageMappings.map((mapping) => mapping.packageName),
+    );
+    expect(packageNameSet).toEqual(
+      new Set([
+        "hono",
+        "@hono/zod-openapi",
+        "drizzle-orm",
+        "zod",
+        "react",
+        "@tanstack/react-query",
+        "jotai",
+      ]),
+    );
   });
 
   it("coexists with manual registration and avoids duplicate seeded URL records", async () => {
@@ -92,5 +115,92 @@ describe("category base seeder", () => {
     const listedUrls = new Set(listed.map((row) => row.repository.url));
     expect(listedUrls.has(seededUrl)).toBe(true);
     expect(listedUrls.has("https://github.com/octocat/Hello-World")).toBe(true);
+  });
+
+  it("removes legacy backend/frontend seeded repositories no longer in current seed set", async () => {
+    const now = new Date("2026-02-10T00:00:00.000Z");
+    await db.db.insert(categoriesTable).values([
+      {
+        id: "cat-backend",
+        slug: "backend",
+        name: "Backend Frameworks",
+        displayOrder: 2,
+        isSystem: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        id: "cat-frontend",
+        slug: "frontend",
+        name: "Frontend Frameworks",
+        displayOrder: 3,
+        isSystem: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+
+    await db.db.insert(repositoriesTable).values({
+      id: "seed-spring-projects-spring-boot",
+      owner: "spring-projects",
+      name: "spring-boot",
+      url: "https://github.com/spring-projects/spring-boot",
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.db.insert(repositoryCategoriesTable).values({
+      repositoryId: "seed-spring-projects-spring-boot",
+      categoryId: "cat-backend",
+      createdAt: now,
+    });
+    await db.db.insert(repositoryPackageMappingsTable).values({
+      repositoryId: "seed-spring-projects-spring-boot",
+      source: "npm",
+      packageName: "spring-boot",
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.db.insert(adoptionSnapshotsTable).values({
+      id: "seed-adoption-seed-spring-projects-spring-boot",
+      repositoryId: "seed-spring-projects-spring-boot",
+      source: "npm",
+      packageName: "spring-boot",
+      weeklyDownloads: 1,
+      downloadsDelta7d: 0,
+      downloadsDelta30d: 0,
+      lastPublishedAt: "2026-02-01T00:00:00.000Z",
+      latestVersion: "0.0.0",
+      fetchStatus: "succeeded",
+      fetchedAt: now,
+    });
+
+    seedCategoryBase(db);
+
+    const legacyRepo = await db.db
+      .select()
+      .from(repositoriesTable)
+      .where(eq(repositoriesTable.id, "seed-spring-projects-spring-boot"));
+    const legacyMapping = await db.db
+      .select()
+      .from(repositoryPackageMappingsTable)
+      .where(
+        eq(
+          repositoryPackageMappingsTable.repositoryId,
+          "seed-spring-projects-spring-boot",
+        ),
+      );
+    const legacySnapshot = await db.db
+      .select()
+      .from(adoptionSnapshotsTable)
+      .where(
+        eq(
+          adoptionSnapshotsTable.repositoryId,
+          "seed-spring-projects-spring-boot",
+        ),
+      );
+
+    expect(legacyRepo).toHaveLength(0);
+    expect(legacyMapping).toHaveLength(0);
+    expect(legacySnapshot).toHaveLength(0);
   });
 });
