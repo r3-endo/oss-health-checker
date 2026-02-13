@@ -2,6 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import type { AppContainer } from "./build-container.js";
+import { createCategoryRoutes } from "../interface/http/routes/category-routes.js";
 import { createRepositoryRoutes } from "../interface/http/routes/repository-routes.js";
 import { mapErrorToHttp } from "../interface/http/error-mapper.js";
 
@@ -33,6 +34,7 @@ export const buildApp = (container: AppContainer): OpenAPIHono => {
   );
 
   app.get("/health", (c) => c.json({ ok: true }));
+  app.route("/api", createCategoryRoutes(container.categoryController));
   app.route("/api", createRepositoryRoutes(container.repositoryController));
   app.doc("/api/openapi.json", {
     openapi: "3.0.0",

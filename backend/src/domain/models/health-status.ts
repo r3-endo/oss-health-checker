@@ -1,4 +1,6 @@
-export type HealthStatus = "Active" | "Stale" | "Risky";
+export const HEALTH_STATUSES = ["Active", "Stale", "Risky"] as const;
+
+export type HealthStatus = (typeof HEALTH_STATUSES)[number];
 
 /**
  * Maps a numeric health score to a status label.
