@@ -53,13 +53,19 @@ Phase 1 では Dev Health 指標に限定しつつ、後続フェーズで Adopt
 - Alternative considered: Phase 1 は平坦レスポンスのみ。
 - Why not: Phase 2 以降で API 破壊的変更が起きやすい。
 
-5. レイヤ責務を固定し、GitHub adapter は raw signal のみ返す
+5. deduction reasons は Phase 1 では API 非公開（内部利用限定）とする
+- Decision: deduction reasons は score 算出時に内部生成するが、Phase 1 の API レスポンスには含めない。
+- Rationale: 契約を最小化しつつ、将来の説明可能性要件や監査ログ用途へ拡張余地を残せる。
+- Alternative considered: Phase 1 から API に reasons を公開する。
+- Why not: 表示仕様・文言仕様が未確定のまま公開すると、互換維持コストが先行して増える。
+
+6. レイヤ責務を固定し、GitHub adapter は raw signal のみ返す
 - Decision: infrastructure は取得、application はユースケース調停、domain は評価/集計ロジックを担当する。route は I/O 変換のみに限定する。
 - Rationale: Clean Architecture 境界を守り、外部依存変更（GitHub API 仕様差異、収集元追加）への耐性を持たせる。
 - Alternative considered: route/service 層で計算を直接実装する。
 - Why not: 変更点が散らばり、テストと保守が困難になる。
 
-6. 日次ジョブ基盤は GitHub Actions cron に固定する
+7. 日次ジョブ基盤は GitHub Actions cron に固定する
 - Decision: Phase 1 は GitHub Actions `schedule` + `workflow_dispatch` を採用し、日次 snapshot 更新を実行する。
 - Rationale: 既存 CI と同じ運用面に寄せ、アプリ常駐要件なしで最小コスト運用できる。
 - Alternative considered: Hono scheduled handler。

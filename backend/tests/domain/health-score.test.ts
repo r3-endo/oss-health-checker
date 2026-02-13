@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { calculateHealthScore } from "../../src/domain/models/health-score.js";
+import {
+  calculateHealthScore,
+  generateDeductionReasons,
+} from "../../src/domain/models/health-score.js";
 import { mapScoreToStatus } from "../../src/domain/models/health-status.js";
 
 describe("calculateHealthScore", () => {
@@ -436,5 +439,38 @@ describe("mapScoreToStatus", () => {
 
   it("returns Risky when score is 0", () => {
     expect(mapScoreToStatus(0)).toBe("Risky");
+  });
+});
+
+describe("generateDeductionReasons", () => {
+  const baseDate = new Date("2026-02-13T00:00:00Z");
+
+  it("returns empty reasons when no deduction applies", () => {
+    const reasons = generateDeductionReasons({
+      lastCommitAt: new Date("2026-02-10T00:00:00Z"),
+      lastReleaseAt: new Date("2026-01-10T00:00:00Z"),
+      openIssues: 10,
+      contributors: 5,
+      evaluatedAt: baseDate,
+    });
+
+    expect(reasons).toEqual([]);
+  });
+
+  it("returns all matched reasons with configured deduction points", () => {
+    const reasons = generateDeductionReasons({
+      lastCommitAt: null,
+      lastReleaseAt: null,
+      openIssues: 101,
+      contributors: 2,
+      evaluatedAt: baseDate,
+    });
+
+    expect(reasons).toEqual([
+      { key: "commit_stale_or_missing", points: 40 },
+      { key: "release_stale_or_missing", points: 20 },
+      { key: "open_issues_high", points: 15 },
+      { key: "contributors_low", points: 15 },
+    ]);
   });
 });
