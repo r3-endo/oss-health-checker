@@ -3,6 +3,7 @@ import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import type { CreateRepositoryInput } from "./repository-port.js";
 
 export interface TransactionRepositoryPort {
+  findByUrl(url: string): Repository | null;
   createWithLimit(input: CreateRepositoryInput, limit: number): Repository;
 }
 

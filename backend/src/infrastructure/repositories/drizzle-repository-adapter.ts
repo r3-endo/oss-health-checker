@@ -8,9 +8,12 @@ import type {
   Repository,
   RepositoryId,
 } from "../../domain/models/repository.js";
-import { asc, count, eq } from "drizzle-orm";
+import { asc, count, eq, notExists } from "drizzle-orm";
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
-import { repositoriesTable } from "../db/drizzle/schema.js";
+import {
+  repositoriesTable,
+  repositoryCategoriesTable,
+} from "../db/drizzle/schema.js";
 
 const mapRepository = (
   row: typeof repositoriesTable.$inferSelect,
@@ -73,6 +76,21 @@ export class DrizzleRepositoryAdapter implements RepositoryPort {
         const [row] = tx
           .select({ value: count() })
           .from(repositoriesTable)
+          .where(
+            notExists(
+              tx
+                .select({
+                  repositoryId: repositoryCategoriesTable.repositoryId,
+                })
+                .from(repositoryCategoriesTable)
+                .where(
+                  eq(
+                    repositoryCategoriesTable.repositoryId,
+                    repositoriesTable.id,
+                  ),
+                ),
+            ),
+          )
           .all();
         const repositoryCount = row?.value ?? 0;
         if (repositoryCount >= limit) {
@@ -124,6 +142,16 @@ export class DrizzleRepositoryAdapter implements RepositoryPort {
       .select()
       .from(repositoriesTable)
       .where(eq(repositoriesTable.id, id))
+      .limit(1);
+
+    return row ? mapRepository(row) : null;
+  }
+
+  async findByUrl(url: string): Promise<Repository | null> {
+    const [row] = await this.db.db
+      .select()
+      .from(repositoriesTable)
+      .where(eq(repositoriesTable.url, url))
       .limit(1);
 
     return row ? mapRepository(row) : null;

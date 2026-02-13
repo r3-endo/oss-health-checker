@@ -1,10 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { ApplicationError } from "../../src/application/errors/application-error.js";
 import { RepositoryGatewayError } from "../../src/application/ports/repository-gateway-port.js";
-import {
-  RepositoryAlreadyExistsError,
-  type RepositoryPort,
-} from "../../src/application/ports/repository-port.js";
+import { type RepositoryPort } from "../../src/application/ports/repository-port.js";
 import type { SnapshotPort } from "../../src/application/ports/snapshot-port.js";
 import type { RepositoryGatewayPort } from "../../src/application/ports/repository-gateway-port.js";
 import type {
@@ -33,6 +30,7 @@ const buildMockUnitOfWork = (overrides?: {
 }): UnitOfWorkPort => {
   const repository = buildRepository();
   const txRepositoryPort: TransactionRepositoryPort = {
+    findByUrl: overrides?.repositoryPort?.findByUrl ?? (() => null),
     createWithLimit:
       overrides?.repositoryPort?.createWithLimit ?? (() => repository),
   };
@@ -122,13 +120,14 @@ describe("repository signal ingestion use-cases", () => {
     expect(createWithLimit).not.toHaveBeenCalled();
   });
 
-  it("maps duplicate repository to validation error", async () => {
+  it("reuses existing repository when URL is already seeded", async () => {
+    const repository = buildRepository();
+    const snapshotInsert = vi.fn<(snapshot: RepositorySnapshot) => void>();
     const unitOfWork = buildMockUnitOfWork({
       repositoryPort: {
-        createWithLimit: () => {
-          throw new RepositoryAlreadyExistsError();
-        },
+        findByUrl: () => repository,
       },
+      snapshotPort: { insert: snapshotInsert },
     });
 
     const repositoryGateway: RepositoryGatewayPort = {
@@ -145,15 +144,12 @@ describe("repository signal ingestion use-cases", () => {
       repositoryGateway,
     );
 
-    await expect(
-      useCase.execute({
-        url: "https://github.com/octocat/Hello-World",
-      }),
-    ).rejects.toMatchObject({
-      name: "ApplicationError",
-      code: "VALIDATION_ERROR",
-      message: "Repository already exists",
+    const result = await useCase.execute({
+      url: "https://github.com/octocat/Hello-World",
     });
+
+    expect(result.repository.id).toBe(repository.id);
+    expect(snapshotInsert).toHaveBeenCalledTimes(1);
   });
 
   it("throws rate-limit ApplicationError and keeps previous snapshot when refresh fails", async () => {
@@ -163,6 +159,7 @@ describe("repository signal ingestion use-cases", () => {
       create: vi.fn(async () => repository),
       createWithLimit: vi.fn(async () => repository),
       list: vi.fn(async () => [repository]),
+      findByUrl: vi.fn(async () => repository),
       findById: vi.fn(async () => repository),
       count: vi.fn(async () => 1),
     };
@@ -219,6 +216,7 @@ describe("repository signal ingestion use-cases", () => {
       create: vi.fn(async () => repository),
       createWithLimit: vi.fn(async () => repository),
       list: vi.fn(async () => [repository]),
+      findByUrl: vi.fn(async () => repository),
       findById: vi.fn(async () => repository),
       count: vi.fn(async () => 1),
     };
@@ -261,6 +259,7 @@ describe("repository signal ingestion use-cases", () => {
       create: vi.fn(async () => repository),
       createWithLimit: vi.fn(async () => repository),
       list: vi.fn(async () => [repository]),
+      findByUrl: vi.fn(async () => repository),
       findById: vi.fn(async () => repository),
       count: vi.fn(async () => 1),
     };

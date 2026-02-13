@@ -3,10 +3,7 @@ import type { RepositorySnapshot } from "../../domain/models/snapshot.js";
 import { ApplicationError } from "../errors/application-error.js";
 import type { RepositoryGatewayPort } from "../ports/repository-gateway-port.js";
 import { RepositoryGatewayError } from "../ports/repository-gateway-port.js";
-import {
-  RepositoryAlreadyExistsError,
-  RepositoryLimitExceededError,
-} from "../ports/repository-port.js";
+import { RepositoryLimitExceededError } from "../ports/repository-port.js";
 import type { UnitOfWorkPort } from "../ports/unit-of-work-port.js";
 import {
   GitHubRepositoryUrlError,
@@ -64,14 +61,17 @@ export class RegisterRepositoryService {
       );
 
       const result = await this.unitOfWorkPort.runInTransaction((tx) => {
-        const repository = tx.repositoryPort.createWithLimit(
-          {
-            url: parsed.normalizedUrl,
-            owner: parsed.owner,
-            name: parsed.name,
-          },
-          MAX_REPOSITORY_COUNT,
-        );
+        const existing = tx.repositoryPort.findByUrl(parsed.normalizedUrl);
+        const repository =
+          existing ??
+          tx.repositoryPort.createWithLimit(
+            {
+              url: parsed.normalizedUrl,
+              owner: parsed.owner,
+              name: parsed.name,
+            },
+            MAX_REPOSITORY_COUNT,
+          );
 
         const snapshot = buildSnapshotFromSignals(
           repository.id,
@@ -117,12 +117,6 @@ export class RegisterRepositoryService {
       if (error instanceof RepositoryLimitExceededError) {
         throw new ApplicationError("VALIDATION_ERROR", error.message, {
           limit: error.limit,
-        });
-      }
-
-      if (error instanceof RepositoryAlreadyExistsError) {
-        throw new ApplicationError("VALIDATION_ERROR", error.message, {
-          reason: "duplicate_repository_url",
         });
       }
 

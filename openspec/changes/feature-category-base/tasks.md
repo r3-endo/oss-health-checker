@@ -14,10 +14,10 @@
 
 ## 3. Seeder と登録共存
 
-- [ ] 3.1 `llm`、`backend`、`frontend` の冪等 category seeder を実装する
-- [ ] 3.2 既定リポジトリと repository-category 関連の冪等 seeder を実装する
-- [ ] 3.3 既存 seed 済み URL の手動登録で重複レコードを作らないよう登録ユースケースを更新する
-- [ ] 3.4 seed 済み + 手動登録の共存が回帰しないことを検証するテストを追加する
+- [x] 3.1 `llm`、`backend`、`frontend` の冪等 category seeder を実装する
+- [x] 3.2 既定リポジトリと repository-category 関連の冪等 seeder を実装する
+- [x] 3.3 既存 seed 済み URL の手動登録で重複レコードを作らないよう登録ユースケースを更新する
+- [x] 3.4 seed 済み + 手動登録の共存が回帰しないことを検証するテストを追加する
 
 ## 4. ドメインロジック（Dev Health）
 

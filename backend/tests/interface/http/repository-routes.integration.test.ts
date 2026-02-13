@@ -410,7 +410,7 @@ describe("repository routes integration", () => {
     expect(body.error.message).toBe("Failed to refresh");
   });
 
-  it("returns validation error when repository URL is duplicated", async () => {
+  it("does not create duplicate repository when repository URL is duplicated", async () => {
     gateway.setSignals("octocat", "Hello-World", {
       lastCommitAt: new Date("2026-01-10T00:00:00Z"),
       lastReleaseAt: null,
@@ -428,9 +428,12 @@ describe("repository routes integration", () => {
       requestJson({ url: "https://github.com/octocat/Hello-World" }),
     );
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(201);
     const body = await response.json();
-    expect(body.error.code).toBe("VALIDATION_ERROR");
-    expect(body.error.detail.reason).toBe("duplicate_repository_url");
+    expect(body.data.repository.owner).toBe("octocat");
+
+    const listResponse = await app.request("/api/repositories");
+    const listBody = await listResponse.json();
+    expect(listBody.data).toHaveLength(1);
   });
 });
