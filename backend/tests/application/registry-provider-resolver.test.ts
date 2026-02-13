@@ -12,6 +12,7 @@ describe("RegistryProviderResolver", () => {
         downloadsDelta30d: null,
         lastPublishedAt: null,
         latestVersion: null,
+        deprecated: false,
       }),
     };
 

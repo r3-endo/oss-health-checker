@@ -45,6 +45,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
         downloadsDelta30d: null,
         lastPublishedAt: null,
         latestVersion: null,
+        deprecated: null,
         fetchedAt: null,
         source: null,
       });
@@ -64,6 +65,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
         downloadsDelta30d: latest?.downloadsDelta30d ?? null,
         lastPublishedAt: latest?.lastPublishedAt ?? null,
         latestVersion: latest?.latestVersion ?? null,
+        deprecated: latest?.deprecated ?? null,
         fetchedAt: latest ? latest.fetchedAt.toISOString() : null,
         source: mapping.source,
       });
@@ -81,6 +83,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
         downloadsDelta30d: adopted.downloadsDelta30d,
         lastPublishedAt: adopted.lastPublishedAt,
         latestVersion: adopted.latestVersion,
+        deprecated: adopted.deprecated,
         fetchStatus: "succeeded",
         fetchedAt,
       });
@@ -93,6 +96,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
         downloadsDelta30d: saved.downloadsDelta30d,
         lastPublishedAt: saved.lastPublishedAt,
         latestVersion: saved.latestVersion,
+        deprecated: saved.deprecated,
         fetchedAt: saved.fetchedAt.toISOString(),
         source: saved.source,
       });
@@ -112,6 +116,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
           downloadsDelta30d: previous?.downloadsDelta30d ?? null,
           lastPublishedAt: previous?.lastPublishedAt ?? null,
           latestVersion: previous?.latestVersion ?? null,
+          deprecated: previous?.deprecated ?? null,
           fetchStatus: "failed",
           fetchedAt,
         });
@@ -125,6 +130,7 @@ export class RefreshRepositoryAdoptionService implements RefreshRepositoryAdopti
           downloadsDelta30d: saved.downloadsDelta30d,
           lastPublishedAt: saved.lastPublishedAt,
           latestVersion: saved.latestVersion,
+          deprecated: saved.deprecated,
           fetchedAt: saved.fetchedAt.toISOString(),
           source: saved.source,
         });

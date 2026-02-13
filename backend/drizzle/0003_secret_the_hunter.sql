@@ -1,0 +1,1 @@
+ALTER TABLE `adoption_snapshots` ADD `deprecated` integer;

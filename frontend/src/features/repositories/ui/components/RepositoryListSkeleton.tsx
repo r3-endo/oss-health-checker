@@ -11,19 +11,16 @@ const SkeletonRow = () => (
       </div>
     </td>
     <td className="px-5 py-4">
-      <SkeletonBar className="ml-auto h-4 w-10" />
+      <SkeletonBar className="h-5 w-20" />
     </td>
     <td className="px-5 py-4">
-      <SkeletonBar className="h-5 w-20" />
+      <SkeletonBar className="ml-auto h-4 w-14" />
     </td>
     <td className="px-5 py-4">
       <SkeletonBar className="h-4 w-20" />
     </td>
     <td className="px-5 py-4">
-      <SkeletonBar className="ml-auto h-4 w-14" />
-    </td>
-    <td className="px-5 py-4">
-      <SkeletonBar className="ml-auto h-4 w-14" />
+      <SkeletonBar className="h-4 w-24" />
     </td>
   </tr>
 );
@@ -41,20 +38,17 @@ export const RepositoryListSkeleton = ({ rows = 3 }: { rows?: number }) => (
             <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
               Repository
             </th>
-            <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Stars
-            </th>
             <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
               Maintainer
-            </th>
-            <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Last Commit (default branch)
             </th>
             <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
               Open Issues
             </th>
-            <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Open PRs
+            <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
+              Last Commit (default branch)
+            </th>
+            <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
+              Registry
             </th>
           </tr>
         </thead>

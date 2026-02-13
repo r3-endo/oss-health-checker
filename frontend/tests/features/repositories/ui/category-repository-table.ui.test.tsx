@@ -11,14 +11,13 @@ const repositories: readonly CategoryRepositoryView[] = [
     owner: { login: "octo", type: "User" },
     name: "beta",
     github: {
-      stars: null,
       openIssues: null,
-      openPRs: null,
       lastCommitToDefaultBranchAt: null,
       defaultBranch: null,
       dataStatus: "rate_limited",
       errorMessage: "rate limited",
     },
+    registry: null,
     links: {
       repo: "https://github.com/octo/beta",
     },
@@ -27,14 +26,13 @@ const repositories: readonly CategoryRepositoryView[] = [
     owner: { login: "acme", type: "Organization" },
     name: "alpha",
     github: {
-      stars: 88,
       openIssues: 12,
-      openPRs: 5,
       lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
       defaultBranch: "main",
       dataStatus: "ok",
       errorMessage: null,
     },
+    registry: null,
     links: {
       repo: "https://github.com/acme/alpha",
     },
@@ -55,7 +53,7 @@ describe("CategoryRepositoryTable", () => {
     );
 
     expect(html).toContain("Open Issues");
-    expect(html).toContain("Open PRs");
+    expect(html).toContain("Registry");
     expect(html).toContain("N/A");
   });
 

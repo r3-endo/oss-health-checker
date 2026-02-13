@@ -16,6 +16,7 @@ import { DrizzleRepositoryReadModelAdapter } from "../../features/development-he
 import { DrizzleRepositorySnapshotAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
 import { DrizzleSnapshotAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
 import { DrizzleUnitOfWorkAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { DrizzleRegistryDataAdapter } from "../../features/development-health/infrastructure/repositories/drizzle-registry-data-adapter.js";
 import { CategoryController } from "../../features/development-health/interface/http/controllers/category-controller.js";
 import { RepositoryController } from "../../features/development-health/interface/http/controllers/repository-controller.js";
 import { AdoptionController } from "../../features/ecosystem-adoption/interface/http/controllers/adoption-controller.js";
@@ -58,6 +59,7 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
   const categoryReadAdapter = new DrizzleCategoryReadAdapter(db);
   const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
+  const registryDataAdapter = new DrizzleRegistryDataAdapter(db);
   const repositoryGateway = new GitHubRestRepositoryGateway(appEnv);
 
   const listRepositoriesWithLatestSnapshotUseCase =
@@ -78,6 +80,7 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const getCategoryDetailUseCase = new GetCategoryDetailService(
     categoryReadAdapter,
     repositoryGateway,
+    registryDataAdapter,
   );
 
   const repositoryPackageMappingAdapter =

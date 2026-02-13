@@ -82,6 +82,7 @@ describe("RefreshRepositoryAdoptionService", () => {
           downloadsDelta30d: 40,
           lastPublishedAt: "2026-02-12T00:00:00.000Z",
           latestVersion: "1.0.0",
+          deprecated: false,
         })),
       })),
     };
@@ -124,6 +125,7 @@ describe("RefreshRepositoryAdoptionService", () => {
         downloadsDelta30d: 20,
         lastPublishedAt: "2026-02-10T00:00:00.000Z",
         latestVersion: "0.9.0",
+        deprecated: false,
         fetchStatus: "succeeded" as const,
         fetchedAt: new Date("2026-02-12T00:00:00.000Z"),
       })),

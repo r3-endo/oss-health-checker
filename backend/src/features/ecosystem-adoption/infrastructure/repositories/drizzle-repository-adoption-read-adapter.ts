@@ -23,6 +23,7 @@ export class DrizzleRepositoryAdoptionReadAdapter implements RepositoryAdoptionR
         downloadsDelta30d: null,
         lastPublishedAt: null,
         latestVersion: null,
+        deprecated: null,
         fetchedAt: null,
       });
     }
@@ -41,6 +42,7 @@ export class DrizzleRepositoryAdoptionReadAdapter implements RepositoryAdoptionR
         downloadsDelta30d: null,
         lastPublishedAt: null,
         latestVersion: null,
+        deprecated: null,
         fetchedAt: null,
       });
     }
@@ -55,6 +57,7 @@ export class DrizzleRepositoryAdoptionReadAdapter implements RepositoryAdoptionR
       downloadsDelta30d: snapshot.downloadsDelta30d,
       lastPublishedAt: snapshot.lastPublishedAt,
       latestVersion: snapshot.latestVersion,
+      deprecated: snapshot.deprecated,
       fetchedAt: snapshot.fetchedAt.toISOString(),
     });
   }

@@ -74,6 +74,7 @@ describe("NpmRegistryProviderAdapter", () => {
       downloadsDelta30d: null,
       lastPublishedAt: "2026-02-10T00:00:00.000Z",
       latestVersion: "19.0.0",
+      deprecated: false,
     });
   });
 });

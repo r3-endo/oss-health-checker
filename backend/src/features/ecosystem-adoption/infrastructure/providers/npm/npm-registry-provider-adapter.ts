@@ -47,6 +47,7 @@ export class NpmRegistryProviderAdapter implements RegistryProviderPort {
     downloadsDelta30d: number | null;
     lastPublishedAt: string | null;
     latestVersion: string | null;
+    deprecated: boolean;
   }> {
     const encoded = encodeURIComponent(packageName);
     const timeout = this.env.NPM_REGISTRY_TIMEOUT_MS;
@@ -104,6 +105,7 @@ export class NpmRegistryProviderAdapter implements RegistryProviderPort {
     const packagePayload = (await toJson(packageResponse)) as {
       "dist-tags"?: { latest?: unknown };
       time?: { [k: string]: unknown; modified?: unknown };
+      versions?: { [k: string]: { deprecated?: unknown } };
     } | null;
 
     const latestVersion =
@@ -116,6 +118,10 @@ export class NpmRegistryProviderAdapter implements RegistryProviderPort {
         packagePayload?.time?.modified,
     );
 
+    const deprecated = latestVersion
+      ? Boolean(packagePayload?.versions?.[latestVersion]?.deprecated)
+      : false;
+
     return Object.freeze({
       packageName,
       weeklyDownloads: toInt(downloadsPayload?.downloads),
@@ -123,6 +129,7 @@ export class NpmRegistryProviderAdapter implements RegistryProviderPort {
       downloadsDelta30d: null,
       lastPublishedAt,
       latestVersion,
+      deprecated,
     });
   }
 }

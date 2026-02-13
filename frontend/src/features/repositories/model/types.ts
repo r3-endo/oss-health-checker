@@ -15,4 +15,5 @@ export type {
   ListCategoriesResponse,
   RegisterRepositoryInput,
   RefreshErrorView,
+  RegistryInfo,
 } from "./schemas";

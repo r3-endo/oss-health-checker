@@ -94,9 +94,7 @@ describe("GitHubRestRepositoryGateway", () => {
 
     expect(result).toEqual({
       owner: { login: "langchain-ai", type: "Organization" },
-      stars: 123,
       openIssues: 11,
-      openPRs: 22,
       defaultBranch: "main",
       lastCommitToDefaultBranchAt: "2026-02-13T01:23:45.000Z",
       dataStatus: "ok",

@@ -383,9 +383,7 @@ export class GitHubRestRepositoryGateway
               login: owner,
               type: "User" as const,
             }),
-            stars: null,
             openIssues: null,
-            openPRs: null,
             defaultBranch: null,
             lastCommitToDefaultBranchAt: null,
             dataStatus: status,
@@ -398,9 +396,7 @@ export class GitHubRestRepositoryGateway
             login: owner,
             type: "User" as const,
           }),
-          stars: null,
           openIssues: null,
-          openPRs: null,
           defaultBranch: null,
           lastCommitToDefaultBranchAt: null,
           dataStatus: "error" as const,
@@ -423,14 +419,9 @@ export class GitHubRestRepositoryGateway
 
     const repository = await this.requestJson<{
       owner?: unknown;
-      stargazers_count?: unknown;
       default_branch?: unknown;
     }>(repoPath);
     const ownerInfo = parseRepositoryOwner(repository.body.owner);
-    const stars = normalizeCount(
-      repository.body.stargazers_count,
-      "stargazers_count",
-    );
     const defaultBranch = parseNonEmptyString(
       repository.body.default_branch,
       "default_branch",
@@ -450,23 +441,13 @@ export class GitHubRestRepositoryGateway
     const issueQuery = encodeURIComponent(
       `repo:${owner}/${name} type:issue state:open`,
     );
-    const prQuery = encodeURIComponent(
-      `repo:${owner}/${name} type:pr state:open`,
+    const openIssues = await this.requestJson<{ total_count?: unknown }>(
+      `/search/issues?q=${issueQuery}`,
     );
-    const [openIssues, openPRs] = await Promise.all([
-      this.requestJson<{ total_count?: unknown }>(
-        `/search/issues?q=${issueQuery}`,
-      ),
-      this.requestJson<{ total_count?: unknown }>(
-        `/search/issues?q=${prQuery}`,
-      ),
-    ]);
 
     return Object.freeze({
       owner: ownerInfo,
-      stars,
       openIssues: normalizeCount(openIssues.body.total_count, "total_count"),
-      openPRs: normalizeCount(openPRs.body.total_count, "total_count"),
       defaultBranch,
       lastCommitToDefaultBranchAt,
       dataStatus: "ok",
