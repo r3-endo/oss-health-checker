@@ -21,11 +21,11 @@
 
 ## 4. ドメインロジック（Dev Health）
 
-- [ ] 4.1 `calculateHealthScore(input, scoreVersion)` を scoreVersion `1` で実装する
-- [ ] 4.2 health score から status（`Active`/`Stale`/`Risky`）を算出するマッパーを実装する
-- [ ] 4.3 explainability 用 deduction reasons 生成を実装する
-- [ ] 4.4 `issueGrowth30d` と `commitLast30d` の 30日補助ロジック（欠損時 null）を実装する
-- [ ] 4.5 deduction reasons を API 公開するか内部利用に限定するかを決定し、design/spec と整合させる
+- [x] 4.1 `calculateHealthScore(input, scoreVersion)` を scoreVersion `1` で実装する
+- [x] 4.2 health score から status（`Active`/`Stale`/`Risky`）を算出するマッパーを実装する
+- [x] 4.3 explainability 用 deduction reasons 生成を実装する
+- [x] 4.4 `issueGrowth30d` と `commitLast30d` の 30日補助ロジック（欠損時 null）を実装する
+- [x] 4.5 deduction reasons を API 公開するか内部利用に限定するかを決定し、design/spec と整合させる
 
 ## 5. アプリケーション層と境界（Architecture 準拠）
 

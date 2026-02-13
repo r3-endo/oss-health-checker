@@ -37,9 +37,9 @@ The system SHALL derive final status from computed health score ranges.
 ### Requirement: Classification includes explainable reasons
 The system MUST provide the applied deduction reasons used for classification.
 
-#### Scenario: Return deduction reasons
+#### Scenario: Return deduction reasons for internal use
 - **WHEN** status evaluation completes
-- **THEN** the response includes which deduction rules were applied
+- **THEN** the evaluation result retains which deduction rules were applied for internal processing and diagnostics
 
 ## ADDED Requirements
 
