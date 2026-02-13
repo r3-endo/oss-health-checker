@@ -79,6 +79,7 @@ export const RepositoriesPage = () => {
                 isError={detailQuery.isError}
                 error={detailQuery.error}
                 isFetching={detailQuery.isFetching}
+                updatedAt={detailQuery.data?.updatedAt ?? null}
                 repositories={detailQuery.data?.repositories ?? null}
               />
             </section>

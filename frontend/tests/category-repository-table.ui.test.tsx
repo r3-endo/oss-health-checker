@@ -2,50 +2,48 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   CategoryRepositoryTable,
-  sortByHealthScoreDesc,
+  sortByRepositoryName,
 } from "../src/features/repositories/ui/components/CategoryRepositoryTable";
 import type { CategoryRepositoryView } from "../src/features/repositories/model/types";
 
 const repositories: readonly CategoryRepositoryView[] = [
   {
-    owner: "octo",
+    owner: { login: "octo", type: "User" },
     name: "beta",
-    lastCommit: null,
-    metrics: {
-      devHealth: {
-        healthScore: 42,
-        status: "Stale",
-        scoreVersion: 1,
-        issueGrowth30d: null,
-        commitLast30d: null,
-      },
-      adoption: null,
-      security: null,
-      governance: null,
+    github: {
+      stars: null,
+      openIssues: null,
+      openPRs: null,
+      lastCommitToDefaultBranchAt: null,
+      defaultBranch: null,
+      dataStatus: "rate_limited",
+      errorMessage: "rate limited",
+    },
+    links: {
+      repo: "https://github.com/octo/beta",
     },
   },
   {
-    owner: "octo",
+    owner: { login: "acme", type: "Organization" },
     name: "alpha",
-    lastCommit: "2026-02-10T00:00:00.000Z",
-    metrics: {
-      devHealth: {
-        healthScore: 88,
-        status: "Active",
-        scoreVersion: 1,
-        issueGrowth30d: 12,
-        commitLast30d: 34,
-      },
-      adoption: null,
-      security: null,
-      governance: null,
+    github: {
+      stars: 88,
+      openIssues: 12,
+      openPRs: 5,
+      lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
+      defaultBranch: "main",
+      dataStatus: "ok",
+      errorMessage: null,
+    },
+    links: {
+      repo: "https://github.com/acme/alpha",
     },
   },
 ];
 
 describe("CategoryRepositoryTable", () => {
-  it("sorts repositories by health score descending", () => {
-    const sorted = sortByHealthScoreDesc(repositories);
+  it("sorts repositories by owner/name ascending", () => {
+    const sorted = sortByRepositoryName(repositories);
 
     expect(sorted[0]?.name).toBe("alpha");
     expect(sorted[1]?.name).toBe("beta");
@@ -56,16 +54,18 @@ describe("CategoryRepositoryTable", () => {
       <CategoryRepositoryTable repositories={repositories} />,
     );
 
-    expect(html).toContain("Issue Delta 30d");
-    expect(html).toContain("Commits 30d");
+    expect(html).toContain("Open Issues");
+    expect(html).toContain("Open PRs");
     expect(html).toContain("N/A");
   });
 
-  it("renders repository name as a GitHub link", () => {
+  it("renders repository as a GitHub link", () => {
     const html = renderToStaticMarkup(
       <CategoryRepositoryTable repositories={repositories} />,
     );
 
-    expect(html).toContain('href="https://github.com/octo/alpha"');
+    expect(html).toContain('href="https://github.com/acme/alpha"');
+    expect(html).toContain("Org");
+    expect(html).toContain("rate limited");
   });
 });

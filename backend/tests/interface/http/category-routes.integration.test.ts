@@ -2,10 +2,16 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildApp, buildContainer } from "../../../src/app.js";
+import type { CategoryRepositoryFactsPort } from "../../../src/application/ports/category-repository-facts-port.js";
+import { GetCategoryDetailService } from "../../../src/application/use-cases/get-category-detail-use-case.js";
+import { ListCategorySummariesService } from "../../../src/application/use-cases/list-category-summaries-use-case.js";
+import { buildApp } from "../../../src/bootstrap/build-app.js";
 import type { AppEnv } from "../../../src/infrastructure/config/env.js";
 import { createDrizzleHandle } from "../../../src/infrastructure/db/drizzle/client.js";
-import { repositorySnapshotsTable } from "../../../src/infrastructure/db/drizzle/schema.js";
+import { migrateDrizzleDatabase } from "../../../src/infrastructure/db/drizzle/migrate.js";
+import { seedCategoryBase } from "../../../src/infrastructure/db/drizzle/seed-category-base.js";
+import { DrizzleCategoryReadAdapter } from "../../../src/infrastructure/repositories/drizzle-category-read-adapter.js";
+import { CategoryController } from "../../../src/interface/http/controllers/category-controller.js";
 import {
   CategoryDetailResponseSchema,
   ListCategoriesResponseSchema,
@@ -29,47 +35,52 @@ describe("category routes integration", () => {
     tempDir = mkdtempSync(path.join(os.tmpdir(), "oss-health-checker-cat-"));
     const databasePath = path.join(tempDir, "test.sqlite");
     const env = createTestEnv(databasePath);
-    const container = buildContainer(env);
-    app = buildApp(container);
 
     const db = createDrizzleHandle(env);
-    const latestRecordedAt = "2026-02-10T00:00:00.000Z";
+    migrateDrizzleDatabase(db);
+    seedCategoryBase(db);
 
-    db.db
-      .insert(repositorySnapshotsTable)
-      .values([
-        {
-          repositoryId: "seed-openai-openai-agent-sdk",
-          recordedAt: latestRecordedAt,
-          openIssues: 30,
-          commitCount30d: 50,
-          contributorCount: 12,
-          lastCommitAt: "2026-02-08T00:00:00.000Z",
-          lastReleaseAt: "2026-01-20T00:00:00.000Z",
-          healthScoreVersion: 1,
+    const categoryReadPort = new DrizzleCategoryReadAdapter(db);
+    const listCategorySummariesUseCase = new ListCategorySummariesService(
+      categoryReadPort,
+    );
+
+    const factsPort: CategoryRepositoryFactsPort = {
+      fetchCategoryRepositoryFacts: async (owner) => ({
+        owner: {
+          login: owner,
+          type: owner.includes("-") ? "Organization" : "User",
         },
-        {
-          repositoryId: "seed-openai-openai-agent-sdk",
-          recordedAt: "2026-01-11T00:00:00.000Z",
-          openIssues: 20,
-          commitCount30d: 40,
-          contributorCount: 10,
-          lastCommitAt: "2026-01-10T00:00:00.000Z",
-          lastReleaseAt: "2025-12-20T00:00:00.000Z",
-          healthScoreVersion: 1,
-        },
-        {
-          repositoryId: "seed-mastra-ai-mastra",
-          recordedAt: latestRecordedAt,
-          openIssues: 220,
-          commitCount30d: null,
-          contributorCount: 1,
-          lastCommitAt: "2025-01-01T00:00:00.000Z",
-          lastReleaseAt: null,
-          healthScoreVersion: 1,
-        },
-      ])
-      .run();
+        stars: 100,
+        openIssues: 10,
+        openPRs: 3,
+        defaultBranch: "main",
+        lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
+        dataStatus: "ok",
+        errorMessage: null,
+      }),
+    };
+
+    const getCategoryDetailUseCase = new GetCategoryDetailService(
+      categoryReadPort,
+      factsPort,
+      () => new Date("2026-02-13T00:00:00.000Z"),
+    );
+
+    const categoryController = new CategoryController(
+      listCategorySummariesUseCase,
+      getCategoryDetailUseCase,
+    );
+
+    app = buildApp({
+      categoryController,
+      repositoryController: {
+        listRepositories: async () => ({ data: [] }),
+        registerRepository: async () => ({ data: null }),
+        refreshRepository: async () => ({ data: null }),
+      } as never,
+      corsAllowedOrigins: ["http://localhost:5173"],
+    });
   });
 
   afterEach(() => {
@@ -89,25 +100,21 @@ describe("category routes integration", () => {
     ]);
   });
 
-  it("returns category detail sorted by health score with nullable metrics", async () => {
+  it("returns category detail with primary GitHub facts", async () => {
     const response = await app.request("/api/categories/llm");
 
     expect(response.status).toBe(200);
     const json = await response.json();
     const parsed = CategoryDetailResponseSchema.parse(json);
 
+    expect(parsed.data.updatedAt).toBe("2026-02-13T00:00:00.000Z");
     expect(parsed.data.repositories.length).toBeGreaterThan(1);
     const first = parsed.data.repositories[0];
-    const second = parsed.data.repositories[1];
-    expect(first?.metrics.devHealth.healthScore).toBeGreaterThanOrEqual(
-      second?.metrics.devHealth.healthScore ?? 0,
-    );
-    expect(first?.metrics.devHealth.issueGrowth30d).toBe(10);
-    expect(second?.metrics.devHealth.issueGrowth30d).toBeNull();
-    expect(second?.metrics.devHealth.commitLast30d).toBeNull();
-    expect(first?.metrics.adoption).toBeNull();
-    expect(first?.metrics.security).toBeNull();
-    expect(first?.metrics.governance).toBeNull();
+    expect(first?.owner.login).toBeTruthy();
+    expect(first?.github.openIssues).toBe(10);
+    expect(first?.github.openPRs).toBe(3);
+    expect(first?.github.dataStatus).toBe("ok");
+    expect(first?.links.repo).toContain("https://github.com/");
   });
 
   it("returns CATEGORY_NOT_FOUND for unknown slug", async () => {

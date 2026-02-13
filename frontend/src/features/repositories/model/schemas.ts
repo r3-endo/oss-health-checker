@@ -97,31 +97,36 @@ export const ListCategoriesResponseSchema = z.object({
   data: z.array(CategorySummarySchema),
 });
 
-export const DevHealthMetricsSchema = z.object({
-  healthScore: z.number(),
-  status: RepositoryStatusSchema,
-  scoreVersion: z.number().int(),
-  issueGrowth30d: z.number().nullable(),
-  commitLast30d: z.number().int().nullable(),
+export const CategoryRepositoryOwnerSchema = z.object({
+  login: z.string().min(1),
+  type: z.enum(["Organization", "User"]),
 });
 
-export const CategoryRepositoryMetricsSchema = z.object({
-  devHealth: DevHealthMetricsSchema,
-  adoption: z.null(),
-  security: z.null(),
-  governance: z.null(),
+export const CategoryRepositoryGitHubSchema = z.object({
+  stars: z.number().int().nonnegative().nullable(),
+  openIssues: z.number().int().nonnegative().nullable(),
+  openPRs: z.number().int().nonnegative().nullable(),
+  lastCommitToDefaultBranchAt: z.iso.datetime().nullable(),
+  defaultBranch: z.string().min(1).nullable(),
+  dataStatus: z.enum(["ok", "pending", "rate_limited", "error"]),
+  errorMessage: z.string().nullable(),
+});
+
+export const CategoryRepositoryLinksSchema = z.object({
+  repo: z.url(),
 });
 
 export const CategoryRepositoryViewSchema = z.object({
-  owner: z.string(),
+  owner: CategoryRepositoryOwnerSchema,
   name: z.string(),
-  lastCommit: z.iso.datetime().nullable(),
-  metrics: CategoryRepositoryMetricsSchema,
+  github: CategoryRepositoryGitHubSchema,
+  links: CategoryRepositoryLinksSchema,
 });
 
 export const CategoryDetailSchema = z.object({
   slug: CategorySlugSchema,
   name: z.string(),
+  updatedAt: z.iso.datetime(),
   repositories: z.array(CategoryRepositoryViewSchema),
 });
 

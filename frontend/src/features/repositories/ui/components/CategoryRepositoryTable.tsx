@@ -27,7 +27,7 @@ const formatTimestamp = (value: string | null): string => {
     return "N/A";
   }
 
-  return date.toISOString().slice(0, 10);
+  return date.toISOString().slice(0, 16).replace("T", " ");
 };
 
 const formatNullableNumber = (value: number | null): string => {
@@ -38,25 +38,36 @@ const formatNullableNumber = (value: number | null): string => {
   return value.toLocaleString();
 };
 
-const statusStyles: Record<string, string> = {
-  Active: "bg-status-active/10 text-status-active border-status-active/20",
-  Stale: "bg-status-stale/10 text-status-stale border-status-stale/20",
-  Risky: "bg-status-risky/10 text-status-risky border-status-risky/20",
+const toMaintainerType = (type: "Organization" | "User"): string =>
+  type === "Organization" ? "Org" : "Individual";
+
+const dataStatusStyles: Record<string, string> = {
+  ok: "bg-status-active/10 text-status-active border-status-active/20",
+  pending: "bg-status-stale/10 text-status-stale border-status-stale/20",
+  rate_limited: "bg-status-risky/10 text-status-risky border-status-risky/20",
+  error: "bg-status-risky/10 text-status-risky border-status-risky/20",
 };
 
-export const sortByHealthScoreDesc = (
+const toDataStatusLabel = (value: string): string =>
+  value === "rate_limited"
+    ? "Rate limited"
+    : value.charAt(0).toUpperCase() + value.slice(1);
+
+export const sortByRepositoryName = (
   repositories: readonly CategoryRepositoryView[],
 ): readonly CategoryRepositoryView[] =>
-  [...repositories].sort(
-    (a, b) => b.metrics.devHealth.healthScore - a.metrics.devHealth.healthScore,
-  );
+  [...repositories].sort((a, b) => {
+    const left = `${a.owner.login}/${a.name}`.toLowerCase();
+    const right = `${b.owner.login}/${b.name}`.toLowerCase();
+    return left.localeCompare(right);
+  });
 
 export const CategoryRepositoryTable = ({
   repositories,
 }: {
   repositories: readonly CategoryRepositoryView[];
 }) => {
-  const sorted = sortByHealthScoreDesc(repositories);
+  const sorted = sortByRepositoryName(repositories);
 
   if (sorted.length === 0) {
     return (
@@ -85,62 +96,73 @@ export const CategoryRepositoryTable = ({
               <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
                 Repository
               </th>
+              <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
+                Maintainer
+              </th>
               <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Health Score
+                Stars
+              </th>
+              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
+                Open Issues
+              </th>
+              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
+                Open PRs
               </th>
               <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Status
-              </th>
-              <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Last Commit
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Issue Delta 30d
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Commits 30d
+                Last Commit (default branch)
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {sorted.map((repository) => {
-              const devHealth = repository.metrics.devHealth;
+              const statusStyle =
+                dataStatusStyles[repository.github.dataStatus];
 
               return (
-                <tr key={`${repository.owner}/${repository.name}`}>
+                <tr key={`${repository.owner.login}/${repository.name}`}>
                   <td className="px-5 py-4">
                     <div className="flex flex-col">
                       <a
-                        href={`https://github.com/${repository.owner}/${repository.name}`}
+                        href={repository.links.repo}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm font-medium text-text-primary underline-offset-2 hover:underline"
                       >
-                        {repository.name}
+                        {repository.owner.login}/{repository.name}
                       </a>
-                      <span className="text-xs text-text-tertiary">
-                        {repository.owner}
-                      </span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-right text-sm font-semibold tabular-nums text-text-primary">
-                    {Math.round(devHealth.healthScore)}
-                  </td>
                   <td className="px-5 py-4">
-                    <span
-                      className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium ${statusStyles[devHealth.status]}`}
-                    >
-                      {devHealth.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-text-primary">
+                        {repository.owner.login}
+                      </span>
+                      <span
+                        className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium ${statusStyle}`}
+                      >
+                        {toMaintainerType(repository.owner.type)}
+                      </span>
+                    </div>
+                    {repository.github.dataStatus !== "ok" ? (
+                      <p className="mt-1 text-xs text-status-risky">
+                        {repository.github.errorMessage ??
+                          toDataStatusLabel(repository.github.dataStatus)}
+                      </p>
+                    ) : null}
+                  </td>
+                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
+                    {formatNullableNumber(repository.github.stars)}
+                  </td>
+                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
+                    {formatNullableNumber(repository.github.openIssues)}
+                  </td>
+                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
+                    {formatNullableNumber(repository.github.openPRs)}
                   </td>
                   <td className="px-5 py-4 text-sm text-text-secondary">
-                    {formatTimestamp(repository.lastCommit)}
-                  </td>
-                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
-                    {formatNullableNumber(devHealth.issueGrowth30d)}
-                  </td>
-                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
-                    {formatNullableNumber(devHealth.commitLast30d)}
+                    {formatTimestamp(
+                      repository.github.lastCommitToDefaultBranchAt,
+                    )}
                   </td>
                 </tr>
               );

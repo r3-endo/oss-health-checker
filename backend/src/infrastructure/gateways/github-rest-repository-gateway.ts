@@ -3,6 +3,11 @@ import {
   type RepositoryGatewayPort,
   type RepositorySignals,
 } from "../../application/ports/repository-gateway-port.js";
+import type {
+  CategoryRepositoryFacts,
+  CategoryRepositoryFactsPort,
+  RepositoryOwner,
+} from "../../application/ports/category-repository-facts-port.js";
 import type { AppEnv } from "../config/env.js";
 
 type FetchFn = typeof fetch;
@@ -15,6 +20,7 @@ type GatewayEnv = Pick<
 type GatewayDependencies = Readonly<{
   fetch: FetchFn;
   sleep: (ms: number) => Promise<void>;
+  now: () => number;
 }>;
 
 type GitHubErrorPayload = Readonly<{
@@ -25,6 +31,7 @@ const DEFAULT_API_VERSION = "2022-11-28";
 const MAX_RETRIES = 3;
 const MIN_BACKOFF_MS = 100;
 const MAX_BACKOFF_MS = 5000;
+const FACTS_CACHE_TTL_MS = 30 * 60 * 1000;
 const ALLOWED_API_HOSTS = new Set(["api.github.com"]);
 
 const defaultSleep = async (ms: number): Promise<void> => {
@@ -150,6 +157,45 @@ const parseMessage = (payload: unknown): string | undefined => {
     : undefined;
 };
 
+const parseNonEmptyString = (value: unknown, fieldName: string): string => {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new RepositoryGatewayError(
+      "API_ERROR",
+      `Invalid ${fieldName} in GitHub API response`,
+      { status: 502 },
+    );
+  }
+
+  return value;
+};
+
+const parseRepositoryOwner = (payload: unknown): RepositoryOwner => {
+  if (!payload || typeof payload !== "object") {
+    throw new RepositoryGatewayError(
+      "API_ERROR",
+      "Invalid owner in GitHub API response",
+      { status: 502 },
+    );
+  }
+
+  const rawLogin = (payload as { login?: unknown }).login;
+  const rawType = (payload as { type?: unknown }).type;
+  const login = parseNonEmptyString(rawLogin, "owner.login");
+
+  if (rawType !== "Organization" && rawType !== "User") {
+    throw new RepositoryGatewayError(
+      "API_ERROR",
+      "Invalid owner.type in GitHub API response",
+      { status: 502 },
+    );
+  }
+
+  return Object.freeze({
+    login,
+    type: rawType,
+  });
+};
+
 const buildRepositoryApiPath = (owner: string, name: string): string =>
   `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`;
 
@@ -193,10 +239,20 @@ const validateApiBaseUrl = (rawBaseUrl: string): string => {
   return rawBaseUrl.replace(/\/+$/, "");
 };
 
-export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
+export class GitHubRestRepositoryGateway
+  implements RepositoryGatewayPort, CategoryRepositoryFactsPort
+{
   private readonly baseUrl: string;
   private readonly env: GatewayEnv;
   private readonly deps: GatewayDependencies;
+  private readonly factsCache = new Map<
+    string,
+    Readonly<{ value: CategoryRepositoryFacts; expiresAtMs: number }>
+  >();
+  private readonly inFlightFacts = new Map<
+    string,
+    Promise<CategoryRepositoryFacts>
+  >();
 
   constructor(env: GatewayEnv, dependencies?: Partial<GatewayDependencies>) {
     this.baseUrl = validateApiBaseUrl(env.GITHUB_API_BASE_URL);
@@ -204,6 +260,7 @@ export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
     this.deps = {
       fetch: dependencies?.fetch ?? fetch,
       sleep: dependencies?.sleep ?? defaultSleep,
+      now: dependencies?.now ?? Date.now,
     };
   }
 
@@ -286,6 +343,134 @@ export class GitHubRestRepositoryGateway implements RepositoryGatewayPort {
       lastReleaseAt,
       openIssuesCount,
       contributorsCount,
+    });
+  }
+
+  async fetchCategoryRepositoryFacts(
+    owner: string,
+    name: string,
+  ): Promise<CategoryRepositoryFacts> {
+    const key = `${owner}/${name}`;
+    const cached = this.factsCache.get(key);
+    const now = this.deps.now();
+
+    if (cached && cached.expiresAtMs > now) {
+      return cached.value;
+    }
+
+    const inFlight = this.inFlightFacts.get(key);
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const promise = this.fetchCategoryRepositoryFactsFresh(owner, name)
+      .then((fresh) => {
+        this.factsCache.set(key, {
+          value: fresh,
+          expiresAtMs: this.deps.now() + FACTS_CACHE_TTL_MS,
+        });
+        return fresh;
+      })
+      .catch((error: unknown) => {
+        if (cached) {
+          return cached.value;
+        }
+
+        if (error instanceof RepositoryGatewayError) {
+          const status = error.code === "RATE_LIMIT" ? "rate_limited" : "error";
+          return Object.freeze({
+            owner: Object.freeze({
+              login: owner,
+              type: "User" as const,
+            }),
+            stars: null,
+            openIssues: null,
+            openPRs: null,
+            defaultBranch: null,
+            lastCommitToDefaultBranchAt: null,
+            dataStatus: status,
+            errorMessage: error.message,
+          });
+        }
+
+        return Object.freeze({
+          owner: Object.freeze({
+            login: owner,
+            type: "User" as const,
+          }),
+          stars: null,
+          openIssues: null,
+          openPRs: null,
+          defaultBranch: null,
+          lastCommitToDefaultBranchAt: null,
+          dataStatus: "error" as const,
+          errorMessage: "Failed to fetch repository facts",
+        });
+      })
+      .finally(() => {
+        this.inFlightFacts.delete(key);
+      });
+
+    this.inFlightFacts.set(key, promise);
+    return promise;
+  }
+
+  private async fetchCategoryRepositoryFactsFresh(
+    owner: string,
+    name: string,
+  ): Promise<CategoryRepositoryFacts> {
+    const repoPath = buildRepositoryApiPath(owner, name);
+
+    const repository = await this.requestJson<{
+      owner?: unknown;
+      stargazers_count?: unknown;
+      default_branch?: unknown;
+    }>(repoPath);
+    const ownerInfo = parseRepositoryOwner(repository.body.owner);
+    const stars = normalizeCount(
+      repository.body.stargazers_count,
+      "stargazers_count",
+    );
+    const defaultBranch = parseNonEmptyString(
+      repository.body.default_branch,
+      "default_branch",
+    );
+
+    const latestCommit = await this.requestJson<{
+      commit?: { committer?: { date?: unknown }; author?: { date?: unknown } };
+    }>(`${repoPath}/commits/${encodeURIComponent(defaultBranch)}`);
+    const latestCommitDate =
+      latestCommit.body.commit?.committer?.date ??
+      latestCommit.body.commit?.author?.date;
+    const lastCommitToDefaultBranchAt = parseIsoDate(
+      latestCommitDate,
+      "commit date",
+    ).toISOString();
+
+    const issueQuery = encodeURIComponent(
+      `repo:${owner}/${name} type:issue state:open`,
+    );
+    const prQuery = encodeURIComponent(
+      `repo:${owner}/${name} type:pr state:open`,
+    );
+    const [openIssues, openPRs] = await Promise.all([
+      this.requestJson<{ total_count?: unknown }>(
+        `/search/issues?q=${issueQuery}`,
+      ),
+      this.requestJson<{ total_count?: unknown }>(
+        `/search/issues?q=${prQuery}`,
+      ),
+    ]);
+
+    return Object.freeze({
+      owner: ownerInfo,
+      stars,
+      openIssues: normalizeCount(openIssues.body.total_count, "total_count"),
+      openPRs: normalizeCount(openPRs.body.total_count, "total_count"),
+      defaultBranch,
+      lastCommitToDefaultBranchAt,
+      dataStatus: "ok",
+      errorMessage: null,
     });
   }
 

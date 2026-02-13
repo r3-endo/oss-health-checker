@@ -14,7 +14,7 @@ const SkeletonRow = () => (
       <SkeletonBar className="ml-auto h-4 w-10" />
     </td>
     <td className="px-5 py-4">
-      <SkeletonBar className="h-5 w-14" />
+      <SkeletonBar className="h-5 w-20" />
     </td>
     <td className="px-5 py-4">
       <SkeletonBar className="h-4 w-20" />
@@ -42,19 +42,19 @@ export const RepositoryListSkeleton = ({ rows = 3 }: { rows?: number }) => (
               Repository
             </th>
             <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Health Score
+              Stars
             </th>
             <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Status
+              Maintainer
             </th>
             <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Last Commit
+              Last Commit (default branch)
             </th>
             <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Issue Delta 30d
+              Open Issues
             </th>
             <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-              Commits 30d
+              Open PRs
             </th>
           </tr>
         </thead>

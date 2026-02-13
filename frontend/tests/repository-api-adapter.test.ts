@@ -68,23 +68,26 @@ describe("HttpRepositoryApiAdapter", () => {
             name: "LLM",
             repositories: [
               {
-                owner: "octo",
+                owner: {
+                  login: "octo",
+                  type: "User",
+                },
                 name: "repo",
-                lastCommit: "2026-02-10T00:00:00.000Z",
-                metrics: {
-                  devHealth: {
-                    healthScore: 80,
-                    status: "Active",
-                    scoreVersion: 1,
-                    issueGrowth30d: 2,
-                    commitLast30d: 7,
-                  },
-                  adoption: null,
-                  security: null,
-                  governance: null,
+                github: {
+                  stars: 100,
+                  openIssues: 2,
+                  openPRs: 7,
+                  lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
+                  defaultBranch: "main",
+                  dataStatus: "ok",
+                  errorMessage: null,
+                },
+                links: {
+                  repo: "https://github.com/octo/repo",
                 },
               },
             ],
+            updatedAt: "2026-02-13T00:00:00.000Z",
           },
         }),
         {
@@ -97,6 +100,7 @@ describe("HttpRepositoryApiAdapter", () => {
     const detail = await adapter.getCategoryDetail("llm");
     expect(detail.slug).toBe("llm");
     expect(detail.repositories[0]?.name).toBe("repo");
+    expect(detail.repositories[0]?.github.openPRs).toBe(7);
   });
 
   it("parses successful repository list response", async () => {
