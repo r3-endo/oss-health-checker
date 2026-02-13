@@ -60,4 +60,12 @@ describe("CategoryRepositoryTable", () => {
     expect(html).toContain("Commits 30d");
     expect(html).toContain("N/A");
   });
+
+  it("renders repository name as a GitHub link", () => {
+    const html = renderToStaticMarkup(
+      <CategoryRepositoryTable repositories={repositories} />,
+    );
+
+    expect(html).toContain('href="https://github.com/octo/alpha"');
+  });
 });

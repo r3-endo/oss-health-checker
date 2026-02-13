@@ -110,9 +110,14 @@ export const CategoryRepositoryTable = ({
                 <tr key={`${repository.owner}/${repository.name}`}>
                   <td className="px-5 py-4">
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-text-primary">
+                      <a
+                        href={`https://github.com/${repository.owner}/${repository.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-text-primary underline-offset-2 hover:underline"
+                      >
                         {repository.name}
-                      </span>
+                      </a>
                       <span className="text-xs text-text-tertiary">
                         {repository.owner}
                       </span>

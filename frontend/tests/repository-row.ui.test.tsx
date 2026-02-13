@@ -37,4 +37,32 @@ describe("RepositoryRowView", () => {
     expect(html).toContain("9");
     expect(html).toContain("rate limited");
   });
+
+  it("renders repository name as a GitHub link", () => {
+    const html = renderToStaticMarkup(
+      <table>
+        <tbody>
+          <RepositoryRowView
+            repository={{
+              id: "repo-1",
+              url: "https://github.com/octocat/Hello-World",
+              owner: "octocat",
+              name: "Hello-World",
+              status: "Active",
+              warningReasons: [],
+              lastCommitAt: "2025-01-10T00:00:00.000Z",
+              lastReleaseAt: null,
+              openIssuesCount: 0,
+              contributorsCount: 1,
+              fetchedAt: "2026-02-10T00:00:00.000Z",
+            }}
+            isRefreshing={false}
+            onRefresh={() => undefined}
+          />
+        </tbody>
+      </table>,
+    );
+
+    expect(html).toContain('href="https://github.com/octocat/Hello-World"');
+  });
 });
