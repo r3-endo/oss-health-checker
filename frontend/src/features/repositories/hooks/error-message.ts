@@ -1,24 +1,22 @@
 import { RepositoryApiError } from "../api/repository-api-adapter";
 
-type ResolveMutationErrorMessageInput = {
+type ResolveApiErrorMessageInput = {
   isError: boolean;
   error: unknown;
   fallbackMessage: string;
 };
 
 /**
- * Resolves a user-facing error message from a mutation result.
+ * Resolves a user-facing error message from query/mutation state.
  *
- * Only domain-level errors ({@link RepositoryApiError}) have their message
- * surfaced to the UI. All other error types (ZodError, TypeError, network
- * failures, etc.) fall back to a stable generic string to prevent internal
- * diagnostic text from leaking into production UI.
+ * Only domain-level errors (RepositoryApiError) have their message surfaced.
+ * All other error types fall back to a stable generic string.
  */
-export const resolveMutationErrorMessage = ({
+export const resolveApiErrorMessage = ({
   isError,
   error,
   fallbackMessage,
-}: ResolveMutationErrorMessageInput): string | undefined => {
+}: ResolveApiErrorMessageInput): string | undefined => {
   if (!isError) {
     return undefined;
   }
