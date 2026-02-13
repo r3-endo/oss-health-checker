@@ -11,9 +11,7 @@ export type CategoryRepositoryDataStatus =
 
 export type CategoryRepositoryFacts = Readonly<{
   owner: RepositoryOwner;
-  stars: number | null;
   openIssues: number | null;
-  openPRs: number | null;
   lastCommitToDefaultBranchAt: string | null;
   defaultBranch: string | null;
   dataStatus: CategoryRepositoryDataStatus;

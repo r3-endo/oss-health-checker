@@ -22,6 +22,13 @@
       "when": 1770961218024,
       "tag": "0002_parched_shotgun",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1770986903844,
+      "tag": "0003_secret_the_hunter",
+      "breakpoints": true
     }
   ]
 }

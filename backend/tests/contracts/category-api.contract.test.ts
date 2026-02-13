@@ -51,14 +51,13 @@ const createContractApp = (): OpenAPIHono => {
                 },
                 name: "claude",
                 github: {
-                  stars: 702,
                   openIssues: 100,
-                  openPRs: 5,
                   lastCommitToDefaultBranchAt: "2026-02-12T08:30:00Z",
                   defaultBranch: "main",
                   dataStatus: "ok" as const,
                   errorMessage: null,
                 },
+                registry: null,
                 links: {
                   repo: "https://github.com/anthropic/claude",
                 },
@@ -70,14 +69,13 @@ const createContractApp = (): OpenAPIHono => {
                 },
                 name: "llama",
                 github: {
-                  stars: null,
                   openIssues: null,
-                  openPRs: null,
                   lastCommitToDefaultBranchAt: null,
                   defaultBranch: null,
                   dataStatus: "rate_limited" as const,
                   errorMessage: "GitHub API rate limit exceeded",
                 },
+                registry: null,
                 links: {
                   repo: "https://github.com/meta/llama",
                 },
@@ -89,14 +87,13 @@ const createContractApp = (): OpenAPIHono => {
                 },
                 name: "gpt-4",
                 github: {
-                  stars: 955,
                   openIssues: 10,
-                  openPRs: 50,
                   lastCommitToDefaultBranchAt: "2026-02-10T12:00:00Z",
                   defaultBranch: "main",
                   dataStatus: "ok" as const,
                   errorMessage: null,
                 },
+                registry: null,
                 links: {
                   repo: "https://github.com/openai/gpt-4",
                 },
@@ -227,7 +224,6 @@ describe("category api contract", () => {
       for (const repo of parsed.data.repositories) {
         const github = CategoryRepositoryGitHubSchema.parse(repo.github);
         expect("openIssues" in github).toBe(true);
-        expect("openPRs" in github).toBe(true);
         expect(["ok", "pending", "rate_limited", "error"]).toContain(
           github.dataStatus,
         );
@@ -265,22 +261,6 @@ describe("category api contract", () => {
       );
 
       expect(reposWithNullOpenIssues.length).toBeGreaterThan(0);
-    });
-
-    it("openPRs can be null", async () => {
-      const app = createContractApp();
-      const response = await app.request("/api/categories/llm", {
-        method: "GET",
-      });
-
-      const json = await response.json();
-      const parsed = CategoryDetailResponseSchema.parse(json);
-
-      const reposWithNullOpenPRs = parsed.data.repositories.filter(
-        (repo) => repo.github.openPRs === null,
-      );
-
-      expect(reposWithNullOpenPRs.length).toBeGreaterThan(0);
     });
 
     it("lastCommitToDefaultBranchAt can be null", async () => {

@@ -21,6 +21,7 @@ export type RegistryAdoptionFetchResult = Readonly<{
   downloadsDelta30d: number | null;
   lastPublishedAt: string | null;
   latestVersion: string | null;
+  deprecated: boolean;
 }>;
 
 export interface RegistryProviderPort {

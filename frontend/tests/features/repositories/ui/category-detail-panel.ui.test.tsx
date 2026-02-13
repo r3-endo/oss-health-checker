@@ -15,7 +15,7 @@ describe("CategoryDetailPanel", () => {
     );
 
     expect(html).toContain("Open Issues");
-    expect(html).toContain("Open PRs");
+    expect(html).toContain("Registry");
   });
 
   it("shows error message when detail request fails", () => {
@@ -47,14 +47,13 @@ describe("CategoryDetailPanel", () => {
             owner: { login: "octo", type: "User" },
             name: "repo",
             github: {
-              stars: 1,
               openIssues: 2,
-              openPRs: 3,
               lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
               defaultBranch: "main",
               dataStatus: "ok",
               errorMessage: null,
             },
+            registry: null,
             links: {
               repo: "https://github.com/octo/repo",
             },

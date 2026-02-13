@@ -27,6 +27,7 @@ const AdoptionValueFieldsSchema = z.object({
   downloadsDelta30d: z.number().int().nullable(),
   lastPublishedAt: z.string().datetime().nullable(),
   latestVersion: z.string().nullable(),
+  deprecated: z.boolean().nullable(),
 });
 
 export const AdoptionMappedSucceededSchema = AdoptionValueFieldsSchema.extend({
@@ -76,6 +77,7 @@ export type AdoptionSnapshot = Readonly<{
   downloadsDelta30d: number | null;
   lastPublishedAt: string | null;
   latestVersion: string | null;
+  deprecated: boolean | null;
   fetchStatus: Extract<AdoptionFetchStatus, "succeeded" | "failed">;
   fetchedAt: Date;
 }>;

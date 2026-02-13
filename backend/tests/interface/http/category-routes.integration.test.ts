@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import type { CategoryRepositoryFactsPort } from "../../../src/features/development-health/application/ports/category-repository-facts-port.js";
+import type { RegistryDataPort } from "../../../src/features/development-health/application/ports/registry-data-port.js";
 import { GetCategoryDetailService } from "../../../src/features/development-health/application/use-cases/get-category-detail-use-case.js";
 import { ListCategorySummariesService } from "../../../src/features/development-health/application/use-cases/list-category-summaries-use-case.js";
 import { buildApp } from "../../../src/shared/bootstrap/build-app.js";
@@ -55,9 +56,7 @@ describe("category routes integration", () => {
           login: owner,
           type: owner.includes("-") ? "Organization" : "User",
         },
-        stars: 100,
         openIssues: 10,
-        openPRs: 3,
         defaultBranch: "main",
         lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
         dataStatus: "ok",
@@ -65,9 +64,14 @@ describe("category routes integration", () => {
       }),
     };
 
+    const registryDataPort: RegistryDataPort = {
+      findLatestByRepositoryId: async () => null,
+    };
+
     const getCategoryDetailUseCase = new GetCategoryDetailService(
       categoryReadPort,
       factsPort,
+      registryDataPort,
       () => new Date("2026-02-13T00:00:00.000Z"),
     );
 
@@ -137,7 +141,6 @@ describe("category routes integration", () => {
     const first = parsed.data.repositories[0];
     expect(first?.owner.login).toBeTruthy();
     expect(first?.github.openIssues).toBe(10);
-    expect(first?.github.openPRs).toBe(3);
     expect(first?.github.dataStatus).toBe("ok");
     expect(first?.links.repo).toContain("https://github.com/");
   });

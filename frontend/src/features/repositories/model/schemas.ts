@@ -103,9 +103,7 @@ export const CategoryRepositoryOwnerSchema = z.object({
 });
 
 export const CategoryRepositoryGitHubSchema = z.object({
-  stars: z.number().int().nonnegative().nullable(),
   openIssues: z.number().int().nonnegative().nullable(),
-  openPRs: z.number().int().nonnegative().nullable(),
   lastCommitToDefaultBranchAt: z.iso.datetime().nullable(),
   defaultBranch: z.string().min(1).nullable(),
   dataStatus: z.enum(["ok", "pending", "rate_limited", "error"]),
@@ -116,10 +114,20 @@ export const CategoryRepositoryLinksSchema = z.object({
   repo: z.url(),
 });
 
+export const RegistryInfoSchema = z.object({
+  packageName: z.string(),
+  latestVersion: z.string().nullable(),
+  lastPublishedAt: z.iso.datetime().nullable(),
+  weeklyDownloads: z.number().int().nonnegative().nullable(),
+  deprecated: z.boolean(),
+  npmUrl: z.url(),
+});
+
 export const CategoryRepositoryViewSchema = z.object({
   owner: CategoryRepositoryOwnerSchema,
   name: z.string(),
   github: CategoryRepositoryGitHubSchema,
+  registry: RegistryInfoSchema.nullable(),
   links: CategoryRepositoryLinksSchema,
 });
 
@@ -167,3 +175,4 @@ export type CategoryDetail = z.infer<typeof CategoryDetailSchema>;
 export type CategoryDetailResponse = z.infer<
   typeof CategoryDetailResponseSchema
 >;
+export type RegistryInfo = z.infer<typeof RegistryInfoSchema>;

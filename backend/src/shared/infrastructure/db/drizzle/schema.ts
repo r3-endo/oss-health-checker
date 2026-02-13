@@ -166,6 +166,7 @@ export const adoptionSnapshotsTable = sqliteTable(
     downloadsDelta30d: integer("downloads_delta_30d"),
     lastPublishedAt: text("last_published_at"),
     latestVersion: text("latest_version"),
+    deprecated: integer("deprecated", { mode: "boolean" }),
     fetchStatus: text("fetch_status").notNull(),
     fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }).notNull(),
   },

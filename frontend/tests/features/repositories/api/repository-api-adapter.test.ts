@@ -74,14 +74,13 @@ describe("HttpRepositoryApiAdapter", () => {
                 },
                 name: "repo",
                 github: {
-                  stars: 100,
                   openIssues: 2,
-                  openPRs: 7,
                   lastCommitToDefaultBranchAt: "2026-02-10T00:00:00.000Z",
                   defaultBranch: "main",
                   dataStatus: "ok",
                   errorMessage: null,
                 },
+                registry: null,
                 links: {
                   repo: "https://github.com/octo/repo",
                 },
@@ -100,7 +99,7 @@ describe("HttpRepositoryApiAdapter", () => {
     const detail = await adapter.getCategoryDetail("llm");
     expect(detail.slug).toBe("llm");
     expect(detail.repositories[0]?.name).toBe("repo");
-    expect(detail.repositories[0]?.github.openPRs).toBe(7);
+    expect(detail.repositories[0]?.github.openIssues).toBe(2);
   });
 
   it("parses successful repository list response", async () => {

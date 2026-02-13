@@ -22,6 +22,7 @@ const mapRow = (
     downloadsDelta30d: row.downloadsDelta30d,
     lastPublishedAt: row.lastPublishedAt,
     latestVersion: row.latestVersion,
+    deprecated: row.deprecated ?? null,
     fetchStatus: parsePersistedFetchStatus(row.fetchStatus),
     fetchedAt: row.fetchedAt,
   });
@@ -59,6 +60,7 @@ export class DrizzleAdoptionSnapshotAdapter implements AdoptionSnapshotPort {
         downloadsDelta30d: input.downloadsDelta30d,
         lastPublishedAt: input.lastPublishedAt,
         latestVersion: input.latestVersion,
+        deprecated: input.deprecated,
         fetchStatus: input.fetchStatus,
         fetchedAt: input.fetchedAt,
       })

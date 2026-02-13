@@ -58,6 +58,7 @@ describe("adoption drizzle repositories", () => {
       downloadsDelta30d: 20,
       lastPublishedAt: "2026-02-01T00:00:00.000Z",
       latestVersion: "1.2.3",
+      deprecated: false,
       fetchStatus: "succeeded",
       fetchedAt: new Date("2026-02-13T00:00:00.000Z"),
     });
@@ -71,6 +72,7 @@ describe("adoption drizzle repositories", () => {
       downloadsDelta30d: 40,
       lastPublishedAt: "2026-02-10T00:00:00.000Z",
       latestVersion: "1.2.4",
+      deprecated: false,
       fetchStatus: "failed",
       fetchedAt: new Date("2026-02-14T00:00:00.000Z"),
     });
@@ -93,6 +95,7 @@ describe("adoption drizzle repositories", () => {
         downloadsDelta30d: null,
         lastPublishedAt: null,
         latestVersion: null,
+        deprecated: null,
         fetchStatus: "failed",
         fetchedAt: new Date("2026-02-14T00:00:00.000Z"),
       }),

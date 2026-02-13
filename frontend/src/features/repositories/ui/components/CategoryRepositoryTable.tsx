@@ -38,6 +38,26 @@ const formatNullableNumber = (value: number | null): string => {
   return value.toLocaleString();
 };
 
+const formatRelativeDate = (isoDate: string): string => {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  const diffMs = Date.now() - date.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (days < 1) return "today";
+  if (days === 1) return "1d ago";
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  const years = Math.floor(days / 365);
+  return `${years}y ago`;
+};
+
+const formatCompactNumber = (value: number): string => {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return value.toString();
+};
+
 const toMaintainerType = (type: "Organization" | "User"): string =>
   type === "Organization" ? "Org" : "Individual";
 
@@ -100,16 +120,13 @@ export const CategoryRepositoryTable = ({
                 Maintainer
               </th>
               <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Stars
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
                 Open Issues
-              </th>
-              <th className="px-5 py-3 text-right text-xs font-medium tracking-wider text-text-secondary uppercase">
-                Open PRs
               </th>
               <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
                 Last Commit (default branch)
+              </th>
+              <th className="px-5 py-3 text-left text-xs font-medium tracking-wider text-text-secondary uppercase">
+                Registry
               </th>
             </tr>
           </thead>
@@ -151,17 +168,58 @@ export const CategoryRepositoryTable = ({
                     ) : null}
                   </td>
                   <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
-                    {formatNullableNumber(repository.github.stars)}
-                  </td>
-                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
                     {formatNullableNumber(repository.github.openIssues)}
-                  </td>
-                  <td className="px-5 py-4 text-right text-sm tabular-nums text-text-secondary">
-                    {formatNullableNumber(repository.github.openPRs)}
                   </td>
                   <td className="px-5 py-4 text-sm text-text-secondary">
                     {formatTimestamp(
                       repository.github.lastCommitToDefaultBranchAt,
+                    )}
+                  </td>
+                  <td className="px-5 py-4 text-sm text-text-secondary">
+                    {repository.registry ? (
+                      <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={repository.registry.npmUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-text-primary underline-offset-2 hover:underline"
+                          >
+                            npm ↗
+                          </a>
+                          {repository.registry.latestVersion ? (
+                            <span className="text-xs text-text-tertiary">
+                              latest: {repository.registry.latestVersion}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
+                          {repository.registry.lastPublishedAt ? (
+                            <span>
+                              published:{" "}
+                              {formatRelativeDate(
+                                repository.registry.lastPublishedAt,
+                              )}
+                            </span>
+                          ) : null}
+                          {repository.registry.weeklyDownloads !== null ? (
+                            <span>
+                              /{" "}
+                              {formatCompactNumber(
+                                repository.registry.weeklyDownloads,
+                              )}{" "}
+                              wk
+                            </span>
+                          ) : null}
+                        </div>
+                        {repository.registry.deprecated ? (
+                          <span className="text-xs font-medium text-status-risky">
+                            deprecated
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <span className="text-text-tertiary">N/A</span>
                     )}
                   </td>
                 </tr>
