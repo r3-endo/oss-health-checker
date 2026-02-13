@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { resolveApiErrorMessage } from "../src/features/repositories/hooks/error-message";
-import { RepositoryApiError } from "../src/features/repositories/api/repository-api-adapter";
+import { resolveApiErrorMessage } from "../../../../src/features/repositories/hooks/error-message";
+import { RepositoryApiError } from "../../../../src/features/repositories/api/repository-api-adapter";
 
 describe("resolveApiErrorMessage", () => {
   it("returns undefined when mutation is not in error state", () => {

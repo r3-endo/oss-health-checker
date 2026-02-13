@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { EmptyState } from "../src/features/repositories/ui/components/EmptyState";
+import { EmptyState } from "../../../../src/features/repositories/ui/components/EmptyState";
 
 describe("EmptyState", () => {
   it("renders title and description", () => {

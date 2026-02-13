@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   HttpRepositoryApiAdapter,
   RepositoryApiError,
-} from "../src/features/repositories/api/repository-api-adapter";
+} from "../../../../src/features/repositories/api/repository-api-adapter";
 
 describe("HttpRepositoryApiAdapter", () => {
   const originalFetch = globalThis.fetch;

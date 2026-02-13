@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { CategoryDetailPanel } from "../src/features/repositories/ui/components/CategoryDetailPanel";
+import { CategoryDetailPanel } from "../../../../src/features/repositories/ui/components/CategoryDetailPanel";
 
 describe("CategoryDetailPanel", () => {
   it("shows loading skeleton while fetching category detail", () => {

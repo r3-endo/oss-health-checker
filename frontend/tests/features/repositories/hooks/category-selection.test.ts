@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   resolveSelectedCategorySlug,
   sortCategoriesByDisplayOrder,
-} from "../src/features/repositories/hooks/category-selection";
+} from "../../../../src/features/repositories/hooks/category-selection";
 
 const categories = [
   { slug: "backend", name: "Backend", displayOrder: 2 },

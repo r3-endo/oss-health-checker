@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { CategoryTabs } from "../src/features/repositories/ui/components/CategoryTabs";
+import { CategoryTabs } from "../../../../src/features/repositories/ui/components/CategoryTabs";
 
 type TabButtonElement = ReactElement<{ onClick: () => void }, "button">;
 type TabsNavElement = ReactElement<{ children: TabButtonElement[] }, "nav">;

@@ -3,8 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   CategoryRepositoryTable,
   sortByRepositoryName,
-} from "../src/features/repositories/ui/components/CategoryRepositoryTable";
-import type { CategoryRepositoryView } from "../src/features/repositories/model/types";
+} from "../../../../src/features/repositories/ui/components/CategoryRepositoryTable";
+import type { CategoryRepositoryView } from "../../../../src/features/repositories/model/types";
 
 const repositories: readonly CategoryRepositoryView[] = [
   {
