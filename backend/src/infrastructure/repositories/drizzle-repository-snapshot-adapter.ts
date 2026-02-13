@@ -1,8 +1,9 @@
 import type { DrizzleDatabaseHandle } from "../db/drizzle/client.js";
 import { and, count, eq } from "drizzle-orm";
 import { repositorySnapshotsTable } from "../db/drizzle/schema.js";
+import type { RepositorySnapshotWritePort } from "../../application/ports/repository-snapshot-write-port.js";
 
-export class DrizzleRepositorySnapshotAdapter {
+export class DrizzleRepositorySnapshotAdapter implements RepositorySnapshotWritePort {
   constructor(private readonly db: DrizzleDatabaseHandle) {}
 
   async upsertSnapshot(params: {
@@ -10,6 +11,10 @@ export class DrizzleRepositorySnapshotAdapter {
     recordedAt: string;
     openIssues: number;
     commitCount30d: number | null;
+    contributorCount: number | null;
+    lastCommitAt: string | null;
+    lastReleaseAt: string | null;
+    healthScoreVersion: number | null;
   }): Promise<void> {
     this.db.db
       .insert(repositorySnapshotsTable)
@@ -18,6 +23,10 @@ export class DrizzleRepositorySnapshotAdapter {
         recordedAt: params.recordedAt,
         openIssues: params.openIssues,
         commitCount30d: params.commitCount30d,
+        contributorCount: params.contributorCount,
+        lastCommitAt: params.lastCommitAt,
+        lastReleaseAt: params.lastReleaseAt,
+        healthScoreVersion: params.healthScoreVersion,
       })
       .onConflictDoUpdate({
         target: [
@@ -27,6 +36,10 @@ export class DrizzleRepositorySnapshotAdapter {
         set: {
           openIssues: params.openIssues,
           commitCount30d: params.commitCount30d,
+          contributorCount: params.contributorCount,
+          lastCommitAt: params.lastCommitAt,
+          lastReleaseAt: params.lastReleaseAt,
+          healthScoreVersion: params.healthScoreVersion,
         },
       })
       .run();

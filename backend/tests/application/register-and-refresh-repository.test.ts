@@ -191,9 +191,14 @@ describe("repository signal ingestion use-cases", () => {
       }),
     };
 
+    const repositorySnapshotWritePort = {
+      upsertSnapshot: vi.fn(async () => undefined),
+    };
+
     const useCase = new RefreshRepositoryService(
       repositoryPort,
       snapshotPort,
+      repositorySnapshotWritePort,
       repositoryGateway,
     );
 
@@ -208,6 +213,56 @@ describe("repository signal ingestion use-cases", () => {
       },
     });
     expect(snapshotInsert).not.toHaveBeenCalled();
+    expect(repositorySnapshotWritePort.upsertSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("upserts repository_snapshots with UTC day when refresh succeeds", async () => {
+    const repository = buildRepository();
+    const repositoryPort: RepositoryPort = {
+      create: vi.fn(async () => repository),
+      createWithLimit: vi.fn(async () => repository),
+      list: vi.fn(async () => [repository]),
+      findByUrl: vi.fn(async () => repository),
+      findById: vi.fn(async () => repository),
+      count: vi.fn(async () => 1),
+    };
+    const snapshotPort: SnapshotPort = {
+      insert: vi.fn(async () => undefined),
+      findLatestByRepositoryId: vi.fn(async () => null),
+      findLatestForAllRepositories: vi.fn(async () => []),
+    };
+    const repositorySnapshotWritePort = {
+      upsertSnapshot: vi.fn(async () => undefined),
+    };
+    const repositoryGateway: RepositoryGatewayPort = {
+      fetchSignals: vi.fn(async () => ({
+        lastCommitAt: new Date("2026-02-05T10:30:00Z"),
+        lastReleaseAt: null,
+        openIssuesCount: 10,
+        contributorsCount: 5,
+      })),
+    };
+
+    const useCase = new RefreshRepositoryService(
+      repositoryPort,
+      snapshotPort,
+      repositorySnapshotWritePort,
+      repositoryGateway,
+      () => new Date("2026-02-06T12:34:56Z"),
+    );
+
+    await useCase.execute({ repositoryId: repository.id });
+
+    expect(repositorySnapshotWritePort.upsertSnapshot).toHaveBeenCalledWith({
+      repositoryId: repository.id,
+      recordedAt: "2026-02-06T00:00:00.000Z",
+      openIssues: 10,
+      commitCount30d: null,
+      contributorCount: 5,
+      lastCommitAt: "2026-02-05T10:30:00.000Z",
+      lastReleaseAt: null,
+      healthScoreVersion: 1,
+    });
   });
 
   it("maps non-rate-limit gateway failure to EXTERNAL_API_ERROR", async () => {
@@ -236,6 +291,9 @@ describe("repository signal ingestion use-cases", () => {
     const useCase = new RefreshRepositoryService(
       repositoryPort,
       snapshotPort,
+      {
+        upsertSnapshot: vi.fn(async () => undefined),
+      },
       repositoryGateway,
     );
 
@@ -277,6 +335,9 @@ describe("repository signal ingestion use-cases", () => {
     const useCase = new RefreshRepositoryService(
       repositoryPort,
       snapshotPort,
+      {
+        upsertSnapshot: vi.fn(async () => undefined),
+      },
       repositoryGateway,
     );
 

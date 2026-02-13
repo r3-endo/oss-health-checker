@@ -1,10 +1,6 @@
 import { z } from "@hono/zod-openapi";
-
-export const CATEGORY_SLUGS = ["llm", "backend", "frontend"] as const;
-export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
-
-export const HEALTH_STATUSES = ["Active", "Stale", "Risky"] as const;
-export type HealthStatus = (typeof HEALTH_STATUSES)[number];
+import { CATEGORY_SLUGS } from "../../../domain/models/category.js";
+import { HEALTH_STATUSES } from "../../../domain/models/health-status.js";
 
 export const CategorySlugSchema = z.enum(CATEGORY_SLUGS);
 
@@ -43,7 +39,7 @@ export const RepositoryViewSchema = z.object({
 });
 
 export const CategoryDetailSchema = z.object({
-  slug: z.string(),
+  slug: CategorySlugSchema,
   name: z.string(),
   repositories: z.array(RepositoryViewSchema),
 });

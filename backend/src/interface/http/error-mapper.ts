@@ -1,7 +1,18 @@
 import type { Context } from "hono";
 import { ApplicationError } from "../../application/errors/application-error.js";
 
-export const mapErrorToHttp = (c: Context, error: unknown): Response => {
+type ErrorMappingOptions = Readonly<{
+  notFoundCodeOverride?: string;
+  includeDetail?: boolean;
+}>;
+
+export const mapErrorToHttp = (
+  c: Context,
+  error: unknown,
+  options?: ErrorMappingOptions,
+): Response => {
+  const includeDetail = options?.includeDetail ?? true;
+
   if (error instanceof ApplicationError) {
     const statusByCode: Record<
       ApplicationError["code"],
@@ -14,12 +25,17 @@ export const mapErrorToHttp = (c: Context, error: unknown): Response => {
       INTERNAL_ERROR: 500,
     };
 
+    const errorCode =
+      error.code === "NOT_FOUND" && options?.notFoundCodeOverride
+        ? options.notFoundCodeOverride
+        : error.code;
+
     return c.json(
       {
         error: {
-          code: error.code,
+          code: errorCode,
           message: error.message,
-          detail: error.detail ?? null,
+          ...(includeDetail ? { detail: error.detail ?? null } : {}),
         },
       },
       statusByCode[error.code],
@@ -36,3 +52,9 @@ export const mapErrorToHttp = (c: Context, error: unknown): Response => {
     500,
   );
 };
+
+export const mapCategoryErrorToHttp = (c: Context, error: unknown): Response =>
+  mapErrorToHttp(c, error, {
+    notFoundCodeOverride: "CATEGORY_NOT_FOUND",
+    includeDetail: false,
+  });

@@ -15,6 +15,12 @@ describe("Snapshot idempotency", () => {
   let db: DrizzleDatabaseHandle;
   let adapter: DrizzleRepositorySnapshotAdapter;
   let testRepoId: string;
+  const baseSnapshotPayload = {
+    contributorCount: null,
+    lastCommitAt: null,
+    lastReleaseAt: null,
+    healthScoreVersion: 1,
+  } as const;
 
   beforeEach(() => {
     tempDir = mkdtempSync(path.join(os.tmpdir(), "snapshot-idempotency-"));
@@ -48,6 +54,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 10,
       commitCount30d: 5,
+      ...baseSnapshotPayload,
     });
 
     const snapshotCount = await adapter.countSnapshots(testRepoId);
@@ -60,6 +67,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 10,
       commitCount30d: 5,
+      ...baseSnapshotPayload,
     });
 
     await adapter.upsertSnapshot({
@@ -67,6 +75,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 12,
       commitCount30d: 7,
+      ...baseSnapshotPayload,
     });
 
     const snapshotCount = await adapter.countSnapshots(testRepoId);
@@ -79,6 +88,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 10,
       commitCount30d: 5,
+      ...baseSnapshotPayload,
     });
 
     await adapter.upsertSnapshot({
@@ -86,6 +96,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 12,
       commitCount30d: 7,
+      ...baseSnapshotPayload,
     });
 
     const snapshot = await adapter.getSnapshot(
@@ -104,6 +115,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 10,
       commitCount30d: 5,
+      ...baseSnapshotPayload,
     });
 
     await adapter.upsertSnapshot({
@@ -111,6 +123,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-16T00:00:00Z",
       openIssues: 11,
       commitCount30d: 6,
+      ...baseSnapshotPayload,
     });
 
     const snapshotCount = await adapter.countSnapshots(testRepoId);
@@ -123,6 +136,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-15T00:00:00Z",
       openIssues: 10,
       commitCount30d: 5,
+      ...baseSnapshotPayload,
     });
 
     await adapter.upsertSnapshot({
@@ -130,6 +144,7 @@ describe("Snapshot idempotency", () => {
       recordedAt: "2026-01-16T00:00:00Z",
       openIssues: 11,
       commitCount30d: 6,
+      ...baseSnapshotPayload,
     });
 
     const snapshot15 = await adapter.getSnapshot(
@@ -158,6 +173,7 @@ describe("Snapshot idempotency", () => {
         recordedAt: "2026-01-15T00:00:00Z",
         openIssues: 10,
         commitCount30d: 5,
+        ...baseSnapshotPayload,
       }),
     ).rejects.toThrow();
   });

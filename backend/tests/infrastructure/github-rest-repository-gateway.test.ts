@@ -83,7 +83,7 @@ describe("GitHubRestRepositoryGateway", () => {
     });
   });
 
-  it("retries once on secondary rate limit then throws rate-limit error", async () => {
+  it("retries up to 3 times on secondary rate limit then throws rate-limit error", async () => {
     const fetchMock = vi.fn<typeof fetch>().mockImplementation(async () =>
       createJsonResponse(
         { message: "You have exceeded a secondary rate limit." },
@@ -117,8 +117,8 @@ describe("GitHubRestRepositoryGateway", () => {
         code: "RATE_LIMIT",
       }),
     );
-    expect(fetchMock).toHaveBeenCalledTimes(8);
-    expect(sleepMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(16);
+    expect(sleepMock).toHaveBeenCalledTimes(12);
   });
 
   it("rejects non-https or non-api.github.com base URL", () => {

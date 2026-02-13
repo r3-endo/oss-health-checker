@@ -29,29 +29,29 @@
 
 ## 5. アプリケーション層と境界（Architecture 準拠）
 
-- [ ] 5.1 category summary/detail の use-case を `application/use-cases` に実装する
-- [ ] 5.2 category 参照・snapshot 参照・signal 更新の port を `application/ports` に定義する
-- [ ] 5.3 bootstrap 配線を更新し、route から実装詳細への直接依存を排除する
-- [ ] 5.4 `ApplicationError` への正規化と HTTP `error-mapper` の集約を実装する
-- [ ] 5.5 category detail で healthScore 降順ソートと metrics 構造（`devHealth` + 他 null）を組み立てる
+- [x] 5.1 category summary/detail の use-case を `application/use-cases` に実装する
+- [x] 5.2 category 参照・snapshot 参照・signal 更新の port を `application/ports` に定義する
+- [x] 5.3 bootstrap 配線を更新し、route から実装詳細への直接依存を排除する
+- [x] 5.4 `ApplicationError` への正規化と HTTP `error-mapper` の集約を実装する
+- [x] 5.5 category detail で healthScore 降順ソートと metrics 構造（`devHealth` + 他 null）を組み立てる
 
 ## 6. API ルートと OpenAPI 契約
 
-- [ ] 6.1 category summary/detail/error の OpenAPI schema を追加する
-- [ ] 6.2 `GET /api/categories` を use-case 経由で実装する
-- [ ] 6.3 `GET /api/categories/:slug` を 404 契約（`CATEGORY_NOT_FOUND`）付きで実装する
-- [ ] 6.4 `lastCommit`、`issueGrowth30d`、`commitLast30d` の nullable 契約をレスポンスで保証する
-- [ ] 6.5 OpenAPI schema の定義元を domain/application 型に寄せ、重複定義を排除する
-- [ ] 6.6 deduction reasons の公開方針に合わせて OpenAPI schema とレスポンス実装を一致させる
+- [x] 6.1 category summary/detail/error の OpenAPI schema を追加する
+- [x] 6.2 `GET /api/categories` を use-case 経由で実装する
+- [x] 6.3 `GET /api/categories/:slug` を 404 契約（`CATEGORY_NOT_FOUND`）付きで実装する
+- [x] 6.4 `lastCommit`、`issueGrowth30d`、`commitLast30d` の nullable 契約をレスポンスで保証する
+- [x] 6.5 OpenAPI schema の定義元を domain/application 型に寄せ、重複定義を排除する
+- [x] 6.6 deduction reasons の公開方針に合わせて OpenAPI schema とレスポンス実装を一致させる
 
 ## 7. Snapshot 収集と manual refresh
 
-- [ ] 7.1 `.github/workflows/daily-snapshot.yml` を追加し、`schedule` と `workflow_dispatch` を設定する
-- [ ] 7.2 定期実行と手動再実行で共通利用する snapshot 収集エントリポイントを実装する
-- [ ] 7.3 ingestion adapter に retry/backoff と 429 `Retry-After` 対応を実装する
-- [ ] 7.4 取得失敗時に前回成功 snapshot を保持するテストを追加する
-- [ ] 7.5 manual refresh endpoint が当日 UTC snapshot を upsert するよう更新する
-- [ ] 7.6 manual refresh の回帰テスト（同日 upsert・失敗時不更新）を追加する
+- [x] 7.1 `.github/workflows/daily-snapshot.yml` を追加し、`schedule` と `workflow_dispatch` を設定する
+- [x] 7.2 定期実行と手動再実行で共通利用する snapshot 収集エントリポイントを実装する
+- [x] 7.3 ingestion adapter に retry/backoff と 429 `Retry-After` 対応を実装する
+- [x] 7.4 取得失敗時に前回成功 snapshot を保持するテストを追加する
+- [x] 7.5 manual refresh endpoint が当日 UTC snapshot を upsert するよう更新する
+- [x] 7.6 manual refresh の回帰テスト（同日 upsert・失敗時不更新）を追加する
 
 ## 8. フロントエンド（カテゴリダッシュボード）
 

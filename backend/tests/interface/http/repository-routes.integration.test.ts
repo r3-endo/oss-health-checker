@@ -15,6 +15,7 @@ import { createDrizzleHandle } from "../../../src/infrastructure/db/drizzle/clie
 import { migrateDrizzleDatabase } from "../../../src/infrastructure/db/drizzle/migrate.js";
 import { DrizzleRepositoryAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-adapter.js";
 import { DrizzleRepositoryReadModelAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleRepositorySnapshotAdapter } from "../../../src/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
 import { DrizzleSnapshotAdapter } from "../../../src/infrastructure/repositories/drizzle-snapshot-adapter.js";
 import { DrizzleUnitOfWorkAdapter } from "../../../src/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import { RepositoryController } from "../../../src/interface/http/controllers/repository-controller.js";
@@ -70,10 +71,16 @@ const requestJson = (body: unknown): Readonly<RequestInit> => ({
   body: JSON.stringify(body),
 });
 
+const toUtcDayStartIso = (date: Date): string =>
+  new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  ).toISOString();
+
 describe("repository routes integration", () => {
   let tempDir: string;
   let app: ReturnType<typeof buildApp>;
   let gateway: InMemoryRepositoryGateway;
+  let repositorySnapshotAdapter: DrizzleRepositorySnapshotAdapter;
 
   beforeEach(() => {
     tempDir = mkdtempSync(path.join(os.tmpdir(), "oss-health-checker-"));
@@ -84,6 +91,7 @@ describe("repository routes integration", () => {
 
     const repositoryPort = new DrizzleRepositoryAdapter(db);
     const snapshotPort = new DrizzleSnapshotAdapter(db);
+    repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
     const repositoryReadModelPort = new DrizzleRepositoryReadModelAdapter(db);
     const unitOfWork = new DrizzleUnitOfWorkAdapter(db);
 
@@ -98,6 +106,7 @@ describe("repository routes integration", () => {
     const refreshRepositoryUseCase = new RefreshRepositoryService(
       repositoryPort,
       snapshotPort,
+      repositorySnapshotAdapter,
       gateway,
     );
 
@@ -108,6 +117,16 @@ describe("repository routes integration", () => {
     );
 
     app = buildApp({
+      categoryController: {
+        listCategories: async () => ({ data: [] }),
+        getCategoryDetail: async () => ({
+          data: {
+            slug: "llm",
+            name: "Large Language Models",
+            repositories: [],
+          },
+        }),
+      } as never,
       repositoryController,
       corsAllowedOrigins: ["http://localhost:5173"],
     });
@@ -197,6 +216,108 @@ describe("repository routes integration", () => {
     expect(body.data.ok).toBe(true);
     expect(body.data.snapshot.status).toBe("Risky");
     expect(body.data.snapshot.warningReasons).toContain("open_issues_high");
+  });
+
+  it("manual refresh upserts one daily snapshot per UTC day", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: new Date("2026-01-09T00:00:00Z"),
+      openIssuesCount: 4,
+      contributorsCount: 11,
+    });
+
+    const createResponse = await app.request(
+      "/api/repositories",
+      requestJson({
+        url: "https://github.com/octocat/Hello-World",
+      }),
+    );
+    const created = await createResponse.json();
+    const repositoryId = created.data.repository.id as string;
+
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-11T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 10,
+      contributorsCount: 8,
+    });
+    await app.request(`/api/repositories/${repositoryId}/refresh`, {
+      method: "POST",
+    });
+
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-12T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 15,
+      contributorsCount: 8,
+    });
+    await app.request(`/api/repositories/${repositoryId}/refresh`, {
+      method: "POST",
+    });
+
+    const recordedAt = toUtcDayStartIso(new Date());
+    await expect(
+      repositorySnapshotAdapter.countSnapshots(repositoryId),
+    ).resolves.toBe(1);
+    await expect(
+      repositorySnapshotAdapter.getSnapshot(repositoryId, recordedAt),
+    ).resolves.toEqual({
+      openIssues: 15,
+      commitCount30d: null,
+    });
+  });
+
+  it("manual refresh keeps previous daily snapshot when GitHub fetch fails", async () => {
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-10T00:00:00Z"),
+      lastReleaseAt: new Date("2026-01-09T00:00:00Z"),
+      openIssuesCount: 4,
+      contributorsCount: 11,
+    });
+
+    const createResponse = await app.request(
+      "/api/repositories",
+      requestJson({
+        url: "https://github.com/octocat/Hello-World",
+      }),
+    );
+    const created = await createResponse.json();
+    const repositoryId = created.data.repository.id as string;
+
+    gateway.setSignals("octocat", "Hello-World", {
+      lastCommitAt: new Date("2026-01-12T00:00:00Z"),
+      lastReleaseAt: null,
+      openIssuesCount: 12,
+      contributorsCount: 7,
+    });
+    await app.request(`/api/repositories/${repositoryId}/refresh`, {
+      method: "POST",
+    });
+
+    gateway.setFailure(
+      "octocat",
+      "Hello-World",
+      new RepositoryGatewayError("RATE_LIMIT", "rate limited", {
+        retryAfterSeconds: 60,
+      }),
+    );
+
+    const failedRefreshResponse = await app.request(
+      `/api/repositories/${repositoryId}/refresh`,
+      { method: "POST" },
+    );
+    expect(failedRefreshResponse.status).toBe(429);
+
+    const recordedAt = toUtcDayStartIso(new Date());
+    await expect(
+      repositorySnapshotAdapter.countSnapshots(repositoryId),
+    ).resolves.toBe(1);
+    await expect(
+      repositorySnapshotAdapter.getSnapshot(repositoryId, recordedAt),
+    ).resolves.toEqual({
+      openIssues: 12,
+      commitCount30d: null,
+    });
   });
 
   it("returns validation error for invalid URL", async () => {
