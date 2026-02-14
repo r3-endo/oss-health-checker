@@ -1,6 +1,11 @@
-# Frontend
+# Frontend (Legacy - Migration Pending)
 
-Architecture:
+> **NOTE**: 実行入口は `apps/frontend` に統一されました。
+> ルートコマンド `bun run frontend:dev` 等は `apps/frontend` 経由で本ディレクトリに委譲されます。
+> 新規機能の追加は引き続き `frontend/src/features/` に実装しますが、
+> 将来的に `apps/frontend` への移送を予定しています。
+
+## Architecture
 
 - Feature-based folder structure
 - `app` = composition root / provider wiring
@@ -11,38 +16,11 @@ Architecture:
 - Validation: zod
 - API boundary via repository API port + adapter
 
-Directory guide:
+## Commands (via root)
 
-```text
-src/
-  app/
-  features/
-    <feature>/
-      api/
-      model/
-      hooks/
-      ui/
-      testing/        # feature-local fixtures/builders
-  shared/
-    ui/               # cross-feature presentational primitives
-    lib/              # pure utility helpers
-    types/            # cross-feature shared types
-tests/
-  app/
-  features/<feature>/
-    api/
-    hooks/
-    ui/
-    testing/          # test-only builders/fixtures
+```bash
+bun run frontend:dev
+bun run frontend:typecheck
+bun run frontend:lint
+bun run frontend:test
 ```
-
-Notes:
-
-- Keep domain-specific code inside each feature. Promote to `shared/` only after at least two features need the same abstraction.
-- For Phase 2 adoption columns, add table cell components and UI tests under `features/repositories/ui/components/adoption/` and `tests/features/repositories/ui/adoption/`.
-
-Commands:
-
-- `bun run format:check`
-- `bun run lint`
-- `bun run test`

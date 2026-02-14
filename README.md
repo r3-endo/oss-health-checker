@@ -58,10 +58,10 @@ bun run test
 - `apps/*` 同士の直接依存は禁止し、共有は `packages/*` 経由で参照する。
 - `db` と `infra` は実行アプリとして扱わない。
 
-## Scope Note
+## Note
 
-- 本 change（`separate-app-layout-from-dockerization`）の範囲はレイアウト分離と依存境界の固定です。
-- Dockerfile / `compose.yml` の実装は次の OpenSpec change で扱います。
+- ルート直下の `backend/` `frontend/` は移行期間の互換レイヤーです。新規実装は `apps/*` に追加してください。
+- Dockerfile / `compose.yml` の実装は別の OpenSpec change で扱います。
 
 ## MVP Constraints
 

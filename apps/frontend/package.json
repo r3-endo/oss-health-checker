@@ -1,0 +1,13 @@
+{
+  "name": "oss-health-checker-frontend-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --filter oss-health-checker-frontend dev",
+    "typecheck": "bun run --filter oss-health-checker-frontend typecheck",
+    "lint": "bun run --filter oss-health-checker-frontend lint",
+    "format:check": "bun run --filter oss-health-checker-frontend format:check",
+    "test": "bun run --filter oss-health-checker-frontend test"
+  }
+}
