@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import type { RepositoryPort } from "../../src/features/development-health/application/ports/repository-port.js";
-import { RegistryProviderError } from "../../src/features/ecosystem-adoption/application/ports/registry-provider-port.js";
-import type { AdoptionSnapshotPort } from "../../src/features/ecosystem-adoption/application/ports/adoption-snapshot-port.js";
-import type { RepositoryPackageMappingPort } from "../../src/features/ecosystem-adoption/application/ports/repository-package-mapping-port.js";
-import type { RegistryProviderResolverPort } from "../../src/features/ecosystem-adoption/application/ports/registry-provider-resolver-port.js";
-import { CollectDailyAdoptionSnapshotsService } from "../../src/features/ecosystem-adoption/application/use-cases/collect-daily-adoption-snapshots-use-case.js";
+import type { RepositoryPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-port.js";
+import { RegistryProviderError } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-port.js";
+import type { AdoptionSnapshotPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/adoption-snapshot-port.js";
+import type { RepositoryPackageMappingPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/repository-package-mapping-port.js";
+import type { RegistryProviderResolverPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-resolver-port.js";
+import { CollectDailyAdoptionSnapshotsService } from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/collect-daily-adoption-snapshots-use-case.js";
 
 describe("CollectDailyAdoptionSnapshotsService", () => {
   it("collects adoption only for mapped repositories and skips not_mapped repositories", async () => {

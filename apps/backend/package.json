@@ -1,0 +1,20 @@
+{
+  "name": "oss-health-checker-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@oss-health-checker/common": "workspace:*",
+    "@hono/node-server": "^1.19.9",
+    "hono": "^4.11.9"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

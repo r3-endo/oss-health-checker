@@ -5,10 +5,10 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleAdoptionSnapshotAdapter } from "../../src/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
-import { DrizzleRepositoryPackageMappingAdapter } from "../../src/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
+} from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleAdoptionSnapshotAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
+import { DrizzleRepositoryPackageMappingAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
 
 describe("adoption drizzle repositories", () => {
   let tempDir: string;

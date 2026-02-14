@@ -1,19 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApplicationError } from "../../src/features/development-health/application/errors/application-error.js";
-import { RepositoryGatewayError } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
-import { type RepositoryPort } from "../../src/features/development-health/application/ports/repository-port.js";
-import type { SnapshotPort } from "../../src/features/development-health/application/ports/snapshot-port.js";
-import type { RepositoryGatewayPort } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
+import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
+import { RepositoryGatewayError } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
+import { type RepositoryPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-port.js";
+import type { SnapshotPort } from "@oss-health-checker/common/features/development-health/application/ports/snapshot-port.js";
+import type { RepositoryGatewayPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
 import type {
   UnitOfWorkPort,
   TransactionPorts,
   TransactionRepositoryPort,
   TransactionSnapshotPort,
-} from "../../src/features/development-health/application/ports/unit-of-work-port.js";
-import { RegisterRepositoryService } from "../../src/features/development-health/application/use-cases/register-repository-use-case.js";
-import { RefreshRepositoryService } from "../../src/features/development-health/application/use-cases/refresh-repository-use-case.js";
-import type { Repository } from "../../src/features/development-health/domain/models/repository.js";
-import type { RepositorySnapshot } from "../../src/features/development-health/domain/models/snapshot.js";
+} from "@oss-health-checker/common/features/development-health/application/ports/unit-of-work-port.js";
+import { RegisterRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
+import { RefreshRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import type { Repository } from "@oss-health-checker/common/features/development-health/domain/models/repository.js";
+import type { RepositorySnapshot } from "@oss-health-checker/common/features/development-health/domain/models/snapshot.js";
 
 const buildRepository = (): Repository => ({
   id: "repo-1",

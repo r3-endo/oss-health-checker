@@ -2,14 +2,14 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { ApplicationError } from "../../src/features/development-health/application/errors/application-error.js";
+import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleRepositoryReadModelAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
-import { DrizzleSnapshotAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
+} from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleSnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
 
 const insertRepository = (db: DrizzleDatabaseHandle, id = "r1"): void => {
   const now = Date.now();

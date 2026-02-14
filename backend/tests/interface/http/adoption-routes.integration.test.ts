@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildApp } from "../../../src/shared/bootstrap/build-app.js";
+import { buildApp } from "@oss-health-checker/common/shared/bootstrap/build-app.js";
 
 describe("adoption routes integration", () => {
   it("exposes adoption refresh route", async () => {

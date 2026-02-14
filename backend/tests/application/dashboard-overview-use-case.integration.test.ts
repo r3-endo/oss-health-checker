@@ -5,13 +5,13 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleRepositoryReadModelAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
-import { DrizzleRepositoryPackageMappingAdapter } from "../../src/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
-import { DrizzleAdoptionSnapshotAdapter } from "../../src/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
-import { DrizzleRepositoryAdoptionReadAdapter } from "../../src/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-adoption-read-adapter.js";
-import { ListDashboardRepositoriesService } from "../../src/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
+} from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleRepositoryPackageMappingAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
+import { DrizzleAdoptionSnapshotAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
+import { DrizzleRepositoryAdoptionReadAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-adoption-read-adapter.js";
+import { ListDashboardRepositoriesService } from "@oss-health-checker/common/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
 
 describe("dashboard overview integration", () => {
   let tempDir: string;

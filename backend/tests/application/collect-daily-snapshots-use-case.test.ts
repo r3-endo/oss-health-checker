@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { RepositoryGatewayError } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
-import type { RepositoryPort } from "../../src/features/development-health/application/ports/repository-port.js";
-import type { RepositoryGatewayPort } from "../../src/features/development-health/application/ports/repository-gateway-port.js";
-import type { RepositorySnapshotWritePort } from "../../src/features/development-health/application/ports/repository-snapshot-write-port.js";
-import { CollectDailySnapshotsService } from "../../src/features/development-health/application/use-cases/collect-daily-snapshots-use-case.js";
+import { RepositoryGatewayError } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
+import type { RepositoryPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-port.js";
+import type { RepositoryGatewayPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
+import type { RepositorySnapshotWritePort } from "@oss-health-checker/common/features/development-health/application/ports/repository-snapshot-write-port.js";
+import { CollectDailySnapshotsService } from "@oss-health-checker/common/features/development-health/application/use-cases/collect-daily-snapshots-use-case.js";
 
 describe("CollectDailySnapshotsService", () => {
   it("collects all repositories and allows partial failures", async () => {

@@ -5,10 +5,10 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleRepositorySnapshotAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
-import { repositoriesTable } from "../../src/shared/infrastructure/db/drizzle/schema.js";
+} from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositorySnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
+import { repositoriesTable } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/schema.js";
 
 describe("Snapshot idempotency", () => {
   let tempDir: string;

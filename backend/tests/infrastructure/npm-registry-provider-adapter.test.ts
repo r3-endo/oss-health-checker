@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { NpmRegistryProviderAdapter } from "../../src/features/ecosystem-adoption/infrastructure/providers/npm/npm-registry-provider-adapter.js";
+import { NpmRegistryProviderAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/providers/npm/npm-registry-provider-adapter.js";
 
 describe("NpmRegistryProviderAdapter", () => {
   const originalFetch = globalThis.fetch;

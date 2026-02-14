@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildApp } from "../../src/shared/bootstrap/build-app.js";
+import { buildApp } from "@oss-health-checker/common/shared/bootstrap/build-app.js";
 
 describe("github/registry boundary contract", () => {
   it("keeps GitHub list endpoint dev-health only and serves adoption via dashboard endpoint", async () => {
