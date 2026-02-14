@@ -7,57 +7,61 @@ GitHub リポジトリの保守状態を最小シグナルで可視化する MVP
 - Bun `1.1.43` 以上
 - Node.js `20+`（Bun 実行環境として）
 
-## Setup（現行）
+## Setup
 
 ```bash
-cd backend && bun install
-cd ../frontend && bun install
+bun install
 ```
 
-## Run（現行）
+## Run
 
 ```bash
-# terminal 1
-cd backend
-bun run dev
+# Backend API (http://localhost:3000)
+bun run backend:dev
 
-# terminal 2
-cd frontend
-bunx --bun vite
+# Frontend UI (http://localhost:5173)
+bun run frontend:dev
+
+# Batch jobs (manual run)
+bun run batch:snapshots
+bun run batch:adoption
 ```
 
-Backend は `http://localhost:3000`、Frontend は `http://localhost:5173` を想定しています。
+## Database / Migration
+
+```bash
+bun run db:drizzle:migrate
+bun run db:drizzle:generate
+bun run check:drizzle-drift
+```
 
 ## Quality Gates
 
 CI と同じ入口コマンドです。
 
 ```bash
-cd backend
-bun run format:check
-bun run lint
-bun run test
-
-cd ../frontend
-bun run format:check
+bun run typecheck
 bun run lint
 bun run test
 ```
 
-## レイアウト移行方針（OpenSpec: `separate-app-layout-from-dockerization`）
+## Repository Layout
 
-実装前提の新レイアウトは以下です。
+- `apps/backend`: API 実行アプリ
+- `apps/batch`: 定期収集ジョブ実行アプリ
+- `apps/frontend`: UI アプリ（現時点はプレースホルダ）
+- `packages/common`: 共有コード
+- `db`: migration / drizzle artifacts など DB 資産
+- `infra`: compose / env / scripts など運用資産の置き場
 
-- `apps/backend`
-- `apps/batch`
-- `apps/frontend`
-- `packages/common`
-- `db`
-- `infra`
+境界ルール:
+- `apps/*` 同士の直接依存は禁止し、共有は `packages/*` 経由で参照する。
+- `db` と `infra` は実行アプリとして扱わない。
 
-注意:
-- この change ではレイアウト分離と依存境界の固定を扱います。
-- Dockerfile / `compose.yml` は次の change で扱います（本 change の範囲外）。
+## Scope Note
+
+- 本 change（`separate-app-layout-from-dockerization`）の範囲はレイアウト分離と依存境界の固定です。
+- Dockerfile / `compose.yml` の実装は次の OpenSpec change で扱います。
 
 ## MVP Constraints
 
