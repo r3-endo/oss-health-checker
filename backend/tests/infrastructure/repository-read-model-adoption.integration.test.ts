@@ -5,9 +5,9 @@ import path from "node:path";
 import {
   createDrizzleHandle,
   type DrizzleDatabaseHandle,
-} from "../../src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../src/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleRepositoryReadModelAdapter } from "../../src/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+} from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 
 describe("repository read model non-adoption integration", () => {
   let tempDir: string;

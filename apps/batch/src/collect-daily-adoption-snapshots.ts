@@ -1,17 +1,17 @@
-import { CollectDailyAdoptionSnapshotsService } from "../features/ecosystem-adoption/application/use-cases/collect-daily-adoption-snapshots-use-case.js";
+import { CollectDailyAdoptionSnapshotsService } from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/collect-daily-adoption-snapshots-use-case.js";
 import {
   REGISTRY_SOURCES,
   type RegistrySource,
-} from "../features/ecosystem-adoption/domain/models/adoption.js";
-import { NpmRegistryProviderAdapter } from "../features/ecosystem-adoption/infrastructure/providers/npm/npm-registry-provider-adapter.js";
-import { RegistryProviderResolver } from "../features/ecosystem-adoption/infrastructure/providers/registry-provider-resolver.js";
-import { DrizzleAdoptionSnapshotAdapter } from "../features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
-import { DrizzleRepositoryPackageMappingAdapter } from "../features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
-import { DrizzleRepositoryAdapter } from "../features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
-import { env } from "../shared/config/env.js";
-import { createDrizzleHandle } from "../shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../shared/infrastructure/db/drizzle/migrate.js";
-import { seedCategoryBase } from "../shared/infrastructure/db/drizzle/seed-category-base.js";
+} from "@oss-health-checker/common/features/ecosystem-adoption/domain/models/adoption.js";
+import { NpmRegistryProviderAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/providers/npm/npm-registry-provider-adapter.js";
+import { RegistryProviderResolver } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/providers/registry-provider-resolver.js";
+import { DrizzleAdoptionSnapshotAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
+import { DrizzleRepositoryPackageMappingAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
+import { DrizzleRepositoryAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
+import { env } from "@oss-health-checker/common/shared/config/env.js";
+import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
+import { seedCategoryBase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/seed-category-base.js";
 
 const toEnabledSources = (
   sources: readonly string[],

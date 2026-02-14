@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import type { RepositoryPort } from "../../src/features/development-health/application/ports/repository-port.js";
-import { ApplicationError } from "../../src/features/ecosystem-adoption/application/errors/application-error.js";
-import type { AdoptionSnapshotPort } from "../../src/features/ecosystem-adoption/application/ports/adoption-snapshot-port.js";
-import type { RepositoryPackageMappingPort } from "../../src/features/ecosystem-adoption/application/ports/repository-package-mapping-port.js";
-import type { RegistryProviderResolverPort } from "../../src/features/ecosystem-adoption/application/ports/registry-provider-resolver-port.js";
-import { RegistryProviderError } from "../../src/features/ecosystem-adoption/application/ports/registry-provider-port.js";
-import { RefreshRepositoryAdoptionService } from "../../src/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
+import type { RepositoryPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-port.js";
+import { ApplicationError } from "@oss-health-checker/common/features/ecosystem-adoption/application/errors/application-error.js";
+import type { AdoptionSnapshotPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/adoption-snapshot-port.js";
+import type { RepositoryPackageMappingPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/repository-package-mapping-port.js";
+import type { RegistryProviderResolverPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-resolver-port.js";
+import { RegistryProviderError } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-port.js";
+import { RefreshRepositoryAdoptionService } from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
 
 const repositoryPort: RepositoryPort = {
   create: vi.fn(),

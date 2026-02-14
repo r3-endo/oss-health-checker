@@ -1,0 +1,18 @@
+{
+  "name": "oss-health-checker-batch",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "snapshots:collect": "tsx src/collect-daily-snapshots.ts",
+    "adoption:snapshots:collect": "tsx src/collect-daily-adoption-snapshots.ts"
+  },
+  "dependencies": {
+    "@oss-health-checker/common": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

@@ -7,7 +7,7 @@ import type { DrizzleDatabaseHandle } from "./client.js";
 
 const migrationFolder = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../../../../drizzle",
+  "../../../../../../../backend/drizzle",
 );
 
 const domainTables = [

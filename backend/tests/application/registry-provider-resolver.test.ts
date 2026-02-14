@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RegistryProviderResolver } from "../../src/features/ecosystem-adoption/infrastructure/providers/registry-provider-resolver.js";
+import { RegistryProviderResolver } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/providers/registry-provider-resolver.js";
 
 describe("RegistryProviderResolver", () => {
   it("returns null when a provider source is disabled", () => {
