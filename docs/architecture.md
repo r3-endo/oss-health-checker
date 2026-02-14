@@ -58,6 +58,14 @@
 - **依存注入で差し替え可能にする**: API adapter の concrete は `app` で組み立てる。
 - **状態の原則を固定する**: サーバー状態は TanStack Query、UIローカル状態はコンポーネント内部。グローバルUI状態は必要時のみ導入する。
 
+## 旧導線の扱い（移行期間）
+
+- ルート直下の `backend/` はテスト・設定・スクリプトのみ残存する互換レイヤー。`backend/src/` への新規実装追加は禁止。
+- ルート直下の `frontend/` は実体コードを保持するが、実行入口は `apps/frontend` 経由に統一。
+- 新規機能は `apps/*` または `packages/*` に実装する。
+- 契約テスト `app-layout-boundary.test.ts` が旧導線への実装混入を自動検知する。
+- Phase 4 で `backend/` `frontend/` の物理削除を予定。
+
 ## Docker 化の扱い
 
 - Dockerfile / `compose.yml` 実装は本 change の範囲外。

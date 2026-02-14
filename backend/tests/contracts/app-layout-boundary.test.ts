@@ -143,6 +143,53 @@ describe("app isolation boundary: apps must not import from other apps", () => {
   });
 });
 
+describe("entrypoint consolidation: apps/* is the official entrypoint", () => {
+  it("apps/backend has package.json with start/dev scripts", () => {
+    const pkgPath = path.join(repoRoot, "apps/backend/package.json");
+    expect(existsSync(pkgPath)).toBe(true);
+    const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+    expect(pkg.scripts).toBeDefined();
+    expect(pkg.scripts.dev || pkg.scripts.start).toBeDefined();
+  });
+
+  it("apps/batch has package.json with batch scripts", () => {
+    const pkgPath = path.join(repoRoot, "apps/batch/package.json");
+    expect(existsSync(pkgPath)).toBe(true);
+    const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+    expect(pkg.scripts).toBeDefined();
+  });
+
+  it("root backend/ must not contain source code (only tests, config, docs, scripts)", () => {
+    const backendSrcDir = path.join(repoRoot, "backend/src");
+    if (existsSync(backendSrcDir)) {
+      const tsFiles = collectTsFiles(backendSrcDir);
+      expect(tsFiles).toEqual([]);
+    }
+  });
+
+  it("root frontend/ must not be the official entrypoint (apps/frontend takes precedence)", () => {
+    const appsFrontendPkg = path.join(repoRoot, "apps/frontend/package.json");
+    // apps/frontend must exist as official entrypoint
+    expect(existsSync(appsFrontendPkg)).toBe(true);
+  });
+
+  it("root package.json scripts reference apps/* packages, not root backend/frontend directly", () => {
+    const rootPkg = JSON.parse(
+      readFileSync(path.join(repoRoot, "package.json"), "utf-8"),
+    );
+    const scripts = rootPkg.scripts || {};
+    const violations: string[] = [];
+    for (const [name, cmd] of Object.entries(scripts)) {
+      const command = cmd as string;
+      // Scripts should not cd into backend/ or frontend/ directly
+      if (/\bcd\s+(backend|frontend)\b/.test(command)) {
+        violations.push(`${name}: ${command}`);
+      }
+    }
+    expect(violations).toEqual([]);
+  });
+});
+
 describe("contract test baseline: existing tests must not be lost", () => {
   it("backend/tests/contracts directory contains all existing contract tests", () => {
     const contractsDir = path.join(repoRoot, "backend/tests/contracts");
