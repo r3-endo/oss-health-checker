@@ -7,14 +7,14 @@ GitHub リポジトリの保守状態を最小シグナルで可視化する MVP
 - Bun `1.1.43` 以上
 - Node.js `20+`（Bun 実行環境として）
 
-## Setup
+## Setup（現行）
 
 ```bash
 cd backend && bun install
 cd ../frontend && bun install
 ```
 
-## Run
+## Run（現行）
 
 ```bash
 # terminal 1
@@ -26,7 +26,7 @@ cd frontend
 bunx --bun vite
 ```
 
-Backend はデフォルトで `http://localhost:3000`、Frontend は `http://localhost:5173` を想定しています。
+Backend は `http://localhost:3000`、Frontend は `http://localhost:5173` を想定しています。
 
 ## Quality Gates
 
@@ -43,6 +43,21 @@ bun run format:check
 bun run lint
 bun run test
 ```
+
+## レイアウト移行方針（OpenSpec: `separate-app-layout-from-dockerization`）
+
+実装前提の新レイアウトは以下です。
+
+- `apps/backend`
+- `apps/batch`
+- `apps/frontend`
+- `packages/common`
+- `db`
+- `infra`
+
+注意:
+- この change ではレイアウト分離と依存境界の固定を扱います。
+- Dockerfile / `compose.yml` は次の change で扱います（本 change の範囲外）。
 
 ## MVP Constraints
 
