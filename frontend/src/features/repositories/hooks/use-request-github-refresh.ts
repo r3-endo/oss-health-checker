@@ -16,7 +16,9 @@ export const useRequestGithubRefresh = () => {
     },
     onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: repositoriesKeys.categories() }),
+        queryClient.invalidateQueries({
+          queryKey: repositoriesKeys.categories(),
+        }),
         queryClient.invalidateQueries({ queryKey: repositoriesKeys.all }),
         queryClient.invalidateQueries({ queryKey: ["registry-adoption"] }),
       ]);
