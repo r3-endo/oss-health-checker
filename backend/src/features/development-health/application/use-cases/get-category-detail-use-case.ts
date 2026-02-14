@@ -40,7 +40,9 @@ export class GetCategoryDetailService implements GetCategoryDetailUseCase {
     const repositories = await Promise.all(
       repositoryRefs.map(async (repositoryRef) => {
         const [snapshot, registryData] = await Promise.all([
-          Promise.resolve(latestSnapshots.get(repositoryRef.repositoryId) ?? null),
+          Promise.resolve(
+            latestSnapshots.get(repositoryRef.repositoryId) ?? null,
+          ),
           this.registryDataPort.findLatestByRepositoryId(
             repositoryRef.repositoryId,
           ),

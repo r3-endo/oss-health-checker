@@ -58,9 +58,8 @@ export const buildContainer = (appEnv: AppEnv): AppContainer => {
   const snapshotAdapter = new DrizzleSnapshotAdapter(db);
   const repositoryReadModelAdapter = new DrizzleRepositoryReadModelAdapter(db);
   const repositorySnapshotAdapter = new DrizzleRepositorySnapshotAdapter(db);
-  const repositorySnapshotReadAdapter = new DrizzleRepositorySnapshotReadAdapter(
-    db,
-  );
+  const repositorySnapshotReadAdapter =
+    new DrizzleRepositorySnapshotReadAdapter(db);
   const categoryReadAdapter = new DrizzleCategoryReadAdapter(db);
   const unitOfWorkAdapter = new DrizzleUnitOfWorkAdapter(db);
   const registryDataAdapter = new DrizzleRegistryDataAdapter(db);

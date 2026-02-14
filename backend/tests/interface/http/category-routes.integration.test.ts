@@ -127,9 +127,9 @@ describe("category routes integration", () => {
     expect(parsed.data.repositories.length).toBeGreaterThan(1);
     const first = parsed.data.repositories[0];
     expect(first?.owner.login).toBeTruthy();
-    expect(
-      ["ok", "pending"].includes(first?.github.dataStatus ?? ""),
-    ).toBe(true);
+    expect(["ok", "pending"].includes(first?.github.dataStatus ?? "")).toBe(
+      true,
+    );
     expect(first?.links.repo).toContain("https://github.com/");
   });
 
