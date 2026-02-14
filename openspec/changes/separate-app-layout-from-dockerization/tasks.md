@@ -36,4 +36,4 @@
 - [x] 4.3 Docker 化が次 change 範囲であることを README と OpenSpec artifacts に明記する
 - [x] 4.4 API 契約テストを含む全テストを最終実行する
 - [x] 4.5 変更差分に Dockerfile / `compose.yml` 実装が含まれていないことを確認する
-- [ ] 4.6 PR-4 を作成する（範囲: docs と最終確認）
+- [x] 4.6 PR-4 を作成する（範囲: docs と最終確認）
