@@ -3,55 +3,45 @@
 ## 設計思想
 - **MVPで小さく保つ**: 実装は最小限、ただし将来の変更点が局所化される境界を先に作る。
 - **Feature単位で分割する**: バックエンドは `development-health` と `ecosystem-adoption` を対等な機能軸として扱う。
-- **依存方向を固定する**: 各 feature で `interface -> application -> domain`。`infrastructure` は `application` の `port` を実装する。
+- **依存方向を固定する**: `interface -> application -> domain`。`infrastructure` は `application` の `port` を実装する。
 - **Composition Rootを集約する**: `new` は `shared/bootstrap` に集め、差し替えやテストを容易にする。
 - **契約の単一ソース化**: status / warning reason / error code は domain/application の定義をAPIスキーマから再利用する。
 
-## リポジトリレイアウト方針（移行中）
+## Repository Layout
 
-セルフホスト向けの分離に合わせ、レイアウトは以下へ段階移行する。
-
-- `apps/backend`: API 実行アプリ
-- `apps/batch`: 定期収集ジョブ実行アプリ
+- `apps/backend`: API 実行アプリ（エントリポイント）
+- `apps/batch`: 定期収集ジョブ実行アプリ（エントリポイント）
 - `apps/frontend`: UI アプリ
-- `packages/common`: 共有コード（app 間は直接依存せずここ経由）
-- `db`: migration / drizzle / seed など DB 資産
+- `packages/common`: backend/batch 共通の feature 実装と shared 基盤
+- `db`: migration / drizzle artifacts / sqlite ファイルなど DB 資産
 - `infra`: compose / env / scripts など運用資産
 
-ルール:
-- `apps/*` 同士の直接 import は禁止し、共有は `packages/*` に集約する。
-- `db` と `infra` は実行アプリではない。
-- Dockerfile / `compose.yml` は別 OpenSpec change で実装する。
+依存方向ルール:
+- `apps/*` は `packages/*` に依存してよいが、`apps/*` 同士の直接依存は禁止。
+- `packages/common` 内は feature ごとに `interface -> application -> domain` の方向を守る。
+- `db` と `infra` は実行アプリではなく、コード所有境界として扱う。
 
-## Backend 構成（現行コード）
+## Backend/Batch 構成（現行コード）
 
-### `backend/src/features/development-health`
-- GitHub由来の「開発健全性シグナル」を扱う feature。
-- 主な責務:
-  - `domain/models/*`: health score / status / snapshot などのドメインルール
-  - `application/use-cases/*`: register / refresh / list / category detail のユースケース
-  - `application/ports/*`: GitHub・DB・read model への境界
-  - `infrastructure/gateways/*`: GitHub API アダプタ
-  - `infrastructure/repositories/*`: Drizzle経由の永続化アダプタ
-  - `interface/http/*`: route / controller / openapi / error mapping
+### `apps/backend/src`
+- `server.ts`: Node サーバ起動エントリ。
+- `index.ts`: `@oss-health-checker/common/shared/bootstrap/build-container` を使って API app を組み立て。
+- `app.ts`: 再エクスポート境界（起動/テスト分離）。
 
-### `backend/src/features/ecosystem-adoption`
-- npm, Maven Central, PyPI, Homebrew, Docker由来の「採用実態シグナル」を扱う feature。
-- `application/ports/registry-provider-port.ts` を中心に provider plugin を拡張する。
-- 各データ源の実装は `infrastructure/providers/<source>/` に閉じ込める。
+### `apps/batch/src`
+- `collect-daily-snapshots.ts`: development-health の日次収集ジョブ。
+- `collect-daily-adoption-snapshots.ts`: ecosystem-adoption の日次収集ジョブ。
 
-### `backend/src/shared`
-- feature横断の基盤を置く。
-- `config/env.ts`: 環境変数解決
-- `infrastructure/db/drizzle/*`: DBハンドル・schema・migration・seed
-- `bootstrap/build-container.ts`: feature実装を組み立てる composition root
-- `bootstrap/build-app.ts`: Hono app に HTTP route を配線
+### `packages/common/src/features`
+- `development-health`: GitHub由来の開発健全性シグナル。
+- `ecosystem-adoption`: npm等の採用実態シグナル。
+- `dashboard-overview`: ダッシュボード集約取得。
 
-## エントリポイント（現行コード）
-- `backend/src/index.ts`: 実行時の `env` を使って `buildContainer` + `buildApp` を実行。
-- `backend/src/app.ts`: `shared/bootstrap` の組み立て関数を再エクスポート（テスト/起動の境界を明確化）。
-- `backend/src/jobs/collect-daily-snapshots.ts`: development-health 用のバッチジョブを実行。
-- `backend/src/jobs/collect-daily-adoption-snapshots.ts`: ecosystem-adoption 用のバッチジョブを実行。
+### `packages/common/src/shared`
+- `config/env.ts`: 環境変数解決。
+- `infrastructure/db/drizzle/*`: DBハンドル・schema・migration・seed。
+- `bootstrap/build-container.ts`: DI と adapter の配線。
+- `bootstrap/build-app.ts`: Hono app への route 配線。
 
 ## 変更に強くするためのルール
 - 新機能は `features/<feature>/application/use-cases` と `ports` から追加する。
@@ -67,3 +57,8 @@
 - **責務分離を優先**: ページは composition、表示は `ui/components`、サーバー通信は `api`、非同期状態は `hooks`。
 - **依存注入で差し替え可能にする**: API adapter の concrete は `app` で組み立てる。
 - **状態の原則を固定する**: サーバー状態は TanStack Query、UIローカル状態はコンポーネント内部。グローバルUI状態は必要時のみ導入する。
+
+## Docker 化の扱い
+
+- Dockerfile / `compose.yml` 実装は本 change の範囲外。
+- 次の OpenSpec change で `infra/compose` を中心に導入する。
