@@ -1,6 +1,6 @@
 ## Why
 
-現在は `apps/*` と ルート直下 `backend` / `frontend` が併存しており、実行入口と責務境界が分かりづらい。まず「公式な実行入口を `apps/*` に一本化」し、段階的にルート直下の実体依存を解消する必要がある。
+現在は `apps/*` と ルート直下 `backend` / `frontend` が併存しており、実行入口と責務境界が分かりづらい。まず「公式な実行入口を `apps/*` に一本化」し、以降の backend-first リファクタの前提を整える必要がある。
 
 ## What Changes
 
@@ -8,13 +8,13 @@
 - ルート `package.json` scripts、CI、README の参照を `apps/*` 基準に切り替える。
 - ルート直下 `backend` / `frontend` は互換ラッパー（移行期間）に縮退し、新規実装の追加を禁止する。
 - API/Batch/Frontend の外部契約は変更しない（挙動互換を維持）。
-- 以降の change で安全に物理削除できるよう、参照箇所を棚卸しして明示する。
+- 次 change で `apps/backend/features/*` を正規の feature 所有境界とするため、旧導線参照を棚卸しする。
 
 ### 全体ロードマップ内での位置づけ
 
 - Phase 1（本 change）: 入口統一と互換縮退
-- Phase 2: `packages/common` 分割
-- Phase 3: 境界ルールの強制
+- Phase 2: backend-first feature 再配置（`apps/backend/features/*`）
+- Phase 3: `apps/common` への選択的抽出と境界ルール強制
 - Phase 4: 互換層の除去と最終クリーンアップ
 
 ## Capabilities

@@ -1,19 +1,19 @@
 ## Why
 
-移行期間の互換層（ルート直下 `backend` / `frontend`）を残すと、将来の実装が混在し再び構造が複雑化する。最終段階で旧導線を物理削除し、`apps/*` を唯一の開発・運用導線として確定する必要がある。
+移行期間の互換層（ルート直下 `backend` / `frontend`）を残すと、将来の実装が混在し再び構造が複雑化する。`apps/*` + `apps/common` の新境界に統一した後、旧導線を物理削除して最終形を確定する必要がある。
 
 ## What Changes
 
 - ルート直下 `backend` / `frontend` の互換層を削除し、`apps/*` へ完全統合する。 **BREAKING**
-- CI、README、運用手順から旧パス記載を削除し、`apps/*` 専用へ統一する。
-- 互換 alias / 委譲スクリプトを撤去し、不要コードと設定を整理する。
+- CI、README、運用手順から旧パス記載を削除し、`apps/*` + `apps/common` 専用へ統一する。
+- 一時的な委譲スクリプト・互換 alias を撤去し、不要コードと設定を整理する。
 - API 契約テストを含む全テストを最終実行し、移行完了を検証する。
 
 ### 全体ロードマップ内での位置づけ
 
 - Phase 1: 入口統一と互換縮退
-- Phase 2: package の feature 分割
-- Phase 3: 依存境界の機械的固定
+- Phase 2: backend-first feature 再配置
+- Phase 3: `backend/common` 境界の機械的固定
 - Phase 4（本 change）: 旧導線削除と最終確定
 
 ## Capabilities
