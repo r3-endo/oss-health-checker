@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if ! git diff --quiet -- drizzle; then
-  echo "Detected schema/migration drift under backend/drizzle."
+if ! git diff --quiet -- db/drizzle; then
+  echo "Detected schema/migration drift under db/drizzle."
   echo "Regenerate and commit artifacts with:"
-  echo "  cd backend && bun run db:drizzle:generate"
+  echo "  bun run db:drizzle:generate"
   echo
-  git --no-pager diff --name-status -- drizzle
+  git --no-pager diff --name-status -- db/drizzle
   exit 1
 fi
 
