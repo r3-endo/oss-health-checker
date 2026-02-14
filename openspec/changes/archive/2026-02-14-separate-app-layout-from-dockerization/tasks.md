@@ -7,7 +7,6 @@
 - [x] 1.5 ルート `tsconfig` に path alias（`@common/*`）を追加する
 - [x] 1.6 互換期間の旧コマンド委譲スクリプトを追加する
 - [x] 1.7 `bun run typecheck` `bun run lint` `bun run test` を通す
-- [ ] 1.8 PR-1 を作成する（範囲: テスト/基盤のみ）
 
 ## 2. PR-2: apps 分離と共有コード境界固定
 
@@ -18,7 +17,6 @@
 - [x] 2.5 `apps/backend` と `apps/batch` の import を package alias 参照へ置換する
 - [x] 2.6 app 間直接依存を検出する境界テスト/ルールを更新する
 - [x] 2.7 追加したテストを Green 化する
-- [ ] 2.8 PR-2 を作成する（範囲: apps/packages 移行）
 
 ## 3. PR-3: db/infra 分離と実行系更新
 
@@ -27,7 +25,6 @@
 - [x] 3.3 `infra/` ディレクトリ骨格（compose/env/scripts）を作成する
 - [x] 3.4 CI コマンドと参照パスを新レイアウトへ更新する
 - [x] 3.5 `bun run typecheck` `bun run lint` `bun run test` を通す
-- [ ] 3.6 PR-3 を作成する（範囲: db/infra と実行コマンド）
 
 ## 4. PR-4: ドキュメント確定と最終検証
 
