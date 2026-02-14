@@ -1,0 +1,23 @@
+{
+  "name": "oss-health-checker",
+  "private": true,
+  "packageManager": "bun@1.1.43",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "typecheck": "bun run --filter '*' typecheck",
+    "lint": "bun run --filter '*' lint",
+    "test": "bun run --filter '*' test",
+    "format:check": "bun run --filter '*' format:check",
+    "backend:dev": "bun run --filter oss-health-checker-backend dev",
+    "backend:test": "bun run --filter oss-health-checker-backend test",
+    "backend:typecheck": "bun run --filter oss-health-checker-backend typecheck",
+    "backend:lint": "bun run --filter oss-health-checker-backend lint",
+    "frontend:dev": "bun run --filter oss-health-checker-frontend dev",
+    "frontend:test": "bun run --filter oss-health-checker-frontend test",
+    "frontend:typecheck": "bun run --filter oss-health-checker-frontend typecheck",
+    "frontend:lint": "bun run --filter oss-health-checker-frontend lint"
+  }
+}
