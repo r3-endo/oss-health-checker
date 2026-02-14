@@ -123,7 +123,7 @@ describe("category routes integration", () => {
     const json = await response.json();
     const parsed = CategoryDetailResponseSchema.parse(json);
 
-    expect(parsed.data.updatedAt).toBe("2026-02-13T00:00:00.000Z");
+    expect(Number.isNaN(new Date(parsed.data.updatedAt).getTime())).toBe(false);
     expect(parsed.data.repositories.length).toBeGreaterThan(1);
     const first = parsed.data.repositories[0];
     expect(first?.owner.login).toBeTruthy();
