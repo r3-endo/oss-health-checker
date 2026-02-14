@@ -70,3 +70,14 @@
 - [x] 7.8 ナビゲーション導線（戻る/相互リンク）を追加し、3画面間の往復操作を E2E または統合テストで検証する
 - [x] 7.9 API 契約テストを更新し、`GitHub Health` は Dev Health 専用、`Registry Adoption` は統合 adoption 表示を利用する境界を固定する
 - [x] 7.10 画面分離後の受け入れシナリオ（情報過密回避・目的別導線）を `specs` とテストに反映し、CI で回帰がないことを確認する
+
+## 8. 日次収集運用への切替（表示系 DB read only）
+
+- [x] 8.1 表示 API（`/api/dashboard/repositories` など）が外部 API を呼ばず DB read model のみを参照する契約テストを追加する
+- [x] 8.2 `ecosystem-adoption` に「全 repository 対象の日次収集 use-case」の失敗テストを先に作成する
+- [x] 8.3 `ecosystem-adoption` に「全 repository 対象の日次収集 use-case」を実装し、mapping 済みのみ収集・未マッピングは `not_applicable` として扱う
+- [x] 8.4 日次収集ジョブ（entrypoint）を追加し、npm API 取得結果を `adoption_snapshots` に保存する
+- [x] 8.5 日次収集ジョブの失敗系テストを追加し、provider failure 時に前回成功値保持 + `adoptionFetchStatus="failed"` 永続化を検証する
+- [x] 8.6 毎朝実行の scheduler（GitHub Actions cron など）を整備し、GitHub signals / Adoption signals の日次ジョブ実行を CI 運用へ組み込む
+- [x] 8.7 `fetchedAt` 表示と「毎朝更新」文言を UI に反映する失敗テストを先に作成する
+- [x] 8.8 `fetchedAt` 表示と「毎朝更新」文言を `Dashboard` / `Registry Adoption` 画面に実装する

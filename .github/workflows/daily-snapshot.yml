@@ -2,7 +2,8 @@ name: Daily Snapshot
 
 on:
   schedule:
-    - cron: "0 1 * * *"
+    # Daily at 09:00 JST / 00:00 UTC
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -28,3 +29,15 @@ jobs:
           GITHUB_API_TIMEOUT_MS: "5000"
           CORS_ALLOWED_ORIGINS: http://localhost:5173
         run: bun run snapshots:collect
+      - name: Collect daily adoption snapshots
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_API_BASE_URL: https://api.github.com
+          GITHUB_API_TIMEOUT_MS: "5000"
+          NPM_REGISTRY_API_BASE_URL: https://registry.npmjs.org
+          NPM_DOWNLOADS_API_BASE_URL: https://api.npmjs.org/downloads
+          NPM_REGISTRY_TIMEOUT_MS: "5000"
+          ADOPTION_ENABLED_SOURCES: npm
+          CORS_ALLOWED_ORIGINS: http://localhost:5173
+        run: bun run adoption:snapshots:collect

@@ -62,4 +62,16 @@ export class HttpRegistryAdoptionApiAdapter {
 
     return RegistryAdoptionListResponseSchema.parse(json).data;
   }
+
+  async refreshRepositoryAdoption(repositoryId: string): Promise<void> {
+    const response = await fetch(
+      `${this.baseUrl}/api/repositories/${encodeURIComponent(repositoryId)}/adoption/refresh`,
+      { method: "POST" },
+    );
+    const json = await expectJson(response);
+
+    if (!response.ok) {
+      throw parseError(response.status, json);
+    }
+  }
 }

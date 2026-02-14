@@ -26,6 +26,18 @@ vi.mock(
     }),
   }),
 );
+vi.mock(
+  "../../../../src/features/repositories/hooks/use-request-github-refresh",
+  () => ({
+    useRequestGithubRefresh: () => ({
+      mutate: () => undefined,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+      data: 0,
+    }),
+  }),
+);
 
 describe("RepositoriesPage", () => {
   it("renders GitHub Health header and keeps category tabs", () => {
@@ -35,5 +47,6 @@ describe("RepositoriesPage", () => {
     expect(html).toContain("Backend");
     expect(html).toContain("Frontend");
     expect(html).toContain('href="/"');
+    expect(html).toContain("Request GitHub Data Update");
   });
 });

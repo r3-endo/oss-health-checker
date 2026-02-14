@@ -1,7 +1,11 @@
 import { ApplicationError } from "../errors/application-error.js";
+import type {
+  CategoryRepositoryDataStatus,
+  RepositoryOwner,
+} from "../ports/category-repository-facts-port.js";
 import type { CategoryReadPort } from "../ports/category-read-port.js";
-import type { CategoryRepositoryFactsPort } from "../ports/category-repository-facts-port.js";
 import type { RegistryDataPort } from "../ports/registry-data-port.js";
+import type { RepositorySnapshotReadPort } from "../ports/repository-snapshot-read-port.js";
 import type { CategoryDetail } from "../read-models/category-detail.js";
 
 export type GetCategoryDetailInput = Readonly<{
@@ -15,7 +19,7 @@ export interface GetCategoryDetailUseCase {
 export class GetCategoryDetailService implements GetCategoryDetailUseCase {
   constructor(
     private readonly categoryReadPort: CategoryReadPort,
-    private readonly categoryRepositoryFactsPort: CategoryRepositoryFactsPort,
+    private readonly repositorySnapshotReadPort: RepositorySnapshotReadPort,
     private readonly registryDataPort: RegistryDataPort,
     private readonly now: () => Date = () => new Date(),
   ) {}
@@ -28,28 +32,43 @@ export class GetCategoryDetailService implements GetCategoryDetailUseCase {
 
     const repositoryRefs =
       await this.categoryReadPort.listRepositoriesByCategorySlug(input.slug);
+    const latestSnapshots =
+      await this.repositorySnapshotReadPort.findLatestByRepositoryIds(
+        repositoryRefs.map((repositoryRef) => repositoryRef.repositoryId),
+      );
 
     const repositories = await Promise.all(
       repositoryRefs.map(async (repositoryRef) => {
-        const [facts, registryData] = await Promise.all([
-          this.categoryRepositoryFactsPort.fetchCategoryRepositoryFacts(
-            repositoryRef.owner,
-            repositoryRef.name,
+        const [snapshot, registryData] = await Promise.all([
+          Promise.resolve(
+            latestSnapshots.get(repositoryRef.repositoryId) ?? null,
           ),
           this.registryDataPort.findLatestByRepositoryId(
             repositoryRef.repositoryId,
           ),
         ]);
 
+        const ownerType: RepositoryOwner["type"] = repositoryRef.owner.includes(
+          "-",
+        )
+          ? "Organization"
+          : "User";
+        const dataStatus: CategoryRepositoryDataStatus = snapshot
+          ? "ok"
+          : "pending";
+
         return Object.freeze({
-          owner: facts.owner,
+          owner: {
+            login: repositoryRef.owner,
+            type: ownerType,
+          },
           name: repositoryRef.name,
           github: {
-            openIssues: facts.openIssues,
-            lastCommitToDefaultBranchAt: facts.lastCommitToDefaultBranchAt,
-            defaultBranch: facts.defaultBranch,
-            dataStatus: facts.dataStatus,
-            errorMessage: facts.errorMessage,
+            openIssues: snapshot?.openIssues ?? null,
+            lastCommitToDefaultBranchAt: snapshot?.lastCommitAt ?? null,
+            defaultBranch: null,
+            dataStatus,
+            errorMessage: snapshot ? null : "Snapshot not collected yet",
           },
           registry: registryData
             ? Object.freeze({
@@ -74,10 +93,15 @@ export class GetCategoryDetailService implements GetCategoryDetailUseCase {
       return left.localeCompare(right);
     });
 
+    const latestRecordedAt = [...latestSnapshots.values()]
+      .map((snapshot) => snapshot.recordedAt)
+      .sort()
+      .at(-1);
+
     return Object.freeze({
       slug: category.slug,
       name: category.name,
-      updatedAt: this.now().toISOString(),
+      updatedAt: latestRecordedAt ?? this.now().toISOString(),
       repositories: sortedRepositories,
     });
   }
