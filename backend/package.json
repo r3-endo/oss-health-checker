@@ -5,13 +5,13 @@
   "packageManager": "bun@1.1.43",
   "type": "module",
   "scripts": {
-    "typecheck": "bunx tsc --noEmit",
+    "typecheck": "bunx tsc --noEmit -p tsconfig.json",
     "lint": "bunx eslint . --ext .ts",
     "format": "bunx prettier --write .",
     "format:check": "bunx prettier --check .",
-    "test": "bunx vitest run",
-    "test:boundary-contract": "bunx vitest run tests/contracts/app-layout-boundary.test.ts tests/contracts/feature-ownership-boundary.test.ts tests/contracts/layer-boundary.test.ts",
-    "test:openapi-contract": "bunx vitest run tests/contracts/openapi-route-binding.contract.test.ts",
+    "test": "bunx vitest run --root .. --config backend/vitest.config.ts apps/backend/tests apps/batch/tests apps/common/tests",
+    "test:boundary-contract": "bunx vitest run --root .. --config backend/vitest.config.ts apps/common/tests/contracts/app-layout-boundary.test.ts apps/common/tests/contracts/feature-ownership-boundary.test.ts apps/common/tests/contracts/layer-boundary.test.ts",
+    "test:openapi-contract": "bunx vitest run --root .. --config backend/vitest.config.ts apps/backend/tests/contracts/openapi-route-binding.contract.test.ts",
     "db:drizzle:generate": "cd .. && bunx drizzle-kit generate --config db/drizzle.config.ts",
     "db:drizzle:migrate": "cd .. && bunx drizzle-kit migrate --config db/drizzle.config.ts",
     "check:drizzle-drift": "bun run db:drizzle:generate && bash scripts/check-drizzle-drift.sh"

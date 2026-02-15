@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { buildApp } from "@backend/src/build-app.js";
 import { buildContainer } from "@backend/src/build-container.js";
-import type { AppEnv } from "../../../apps/common/src/shared/config/env.js";
+import type { AppEnv } from "@oss-health-checker/common/shared/config/env.js";
 
 const createTestEnv = (databasePath: string): AppEnv =>
   Object.freeze({
