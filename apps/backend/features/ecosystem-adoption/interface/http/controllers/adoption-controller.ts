@@ -1,7 +1,7 @@
 import type {
   RefreshRepositoryAdoptionInput,
   RefreshRepositoryAdoptionUseCase,
-} from "../../../application/use-cases/refresh-repository-adoption-use-case.js";
+} from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
 
 export class AdoptionController {
   constructor(

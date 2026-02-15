@@ -1,8 +1,8 @@
-import type { ListRepositoriesWithLatestSnapshotUseCase } from "../../../application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import type { RefreshRepositoryInput } from "../../../application/use-cases/refresh-repository-use-case.js";
-import type { RefreshRepositoryUseCase } from "../../../application/use-cases/refresh-repository-use-case.js";
-import type { RegisterRepositoryInput } from "../../../application/use-cases/register-repository-use-case.js";
-import type { RegisterRepositoryUseCase } from "../../../application/use-cases/register-repository-use-case.js";
+import type { ListRepositoriesWithLatestSnapshotUseCase } from "@oss-health-checker/common/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import type { RefreshRepositoryInput } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import type { RefreshRepositoryUseCase } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import type { RegisterRepositoryInput } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
+import type { RegisterRepositoryUseCase } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
 
 export class RepositoryController {
   constructor(

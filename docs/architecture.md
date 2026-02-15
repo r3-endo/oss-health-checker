@@ -9,10 +9,10 @@
 
 ## Repository Layout
 
-- `apps/backend`: API 実行アプリ（エントリポイント）
+- `apps/backend`: API 実行アプリ（エントリポイント） + backend 専用 feature の HTTP interface 層
 - `apps/batch`: 定期収集ジョブ実行アプリ（エントリポイント）
 - `apps/frontend`: UI アプリ
-- `packages/common`: backend/batch 共通の feature 実装と shared 基盤
+- `packages/common`: backend/batch 共通の application・domain・infrastructure 層と shared 基盤。HTTP interface 層は含まない。
 - `db`: migration / drizzle artifacts / sqlite ファイルなど DB 資産
 - `infra`: compose / env / scripts など運用資産
 
@@ -25,8 +25,15 @@
 
 ### `apps/backend/src`
 - `server.ts`: Node サーバ起動エントリ。
-- `index.ts`: `@oss-health-checker/common/shared/bootstrap/build-container` を使って API app を組み立て。
+- `build-container.ts`: DI と adapter の配線（Composition Root）。
+- `build-app.ts`: Hono app への route 配線。
 - `app.ts`: 再エクスポート境界（起動/テスト分離）。
+
+### `apps/backend/features`
+- `development-health/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
+- `ecosystem-adoption/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
+- `dashboard-overview/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
+- `dashboard-overview/application`: dashboard-overview 専用の application 層（丸ごと backend 所有）
 
 ### `apps/batch/src`
 - `collect-daily-snapshots.ts`: development-health の日次収集ジョブ。
@@ -40,13 +47,13 @@
 ### `packages/common/src/shared`
 - `config/env.ts`: 環境変数解決。
 - `infrastructure/db/drizzle/*`: DBハンドル・schema・migration・seed。
-- `bootstrap/build-container.ts`: DI と adapter の配線。
-- `bootstrap/build-app.ts`: Hono app への route 配線。
 
 ## 変更に強くするためのルール
 - 新機能は `features/<feature>/application/use-cases` と `ports` から追加する。
 - `ports` は feature 内に閉じる。全体共通 `ports` ディレクトリは作らない。
 - `interface/http` には業務ルールを置かない。
+- backend 専用の HTTP interface 層は `apps/backend/features/*/interface/http/` に配置する。
+- `packages/common` には cross-app で再利用される application/domain/infrastructure のみを配置する。
 - `infrastructure` の型は controller に露出させない。
 - エラーは `ApplicationError` に正規化し、HTTP変換は feature の `error-mapper.ts` に集約する。
 
