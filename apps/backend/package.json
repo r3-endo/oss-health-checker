@@ -5,6 +5,15 @@
   "type": "module",
   "scripts": {
     "typecheck": "bunx tsc --noEmit -p tsconfig.json",
+    "lint": "bunx eslint . --ext .ts",
+    "format": "bunx prettier --write .",
+    "format:check": "bunx prettier --check .",
+    "test": "bunx vitest run --root ../.. --config apps/backend/vitest.config.ts apps/backend/tests apps/batch/tests apps/common/tests",
+    "test:boundary-contract": "bunx vitest run --root ../.. --config apps/backend/vitest.config.ts apps/common/tests/contracts/app-layout-boundary.test.ts apps/common/tests/contracts/feature-ownership-boundary.test.ts apps/common/tests/contracts/layer-boundary.test.ts",
+    "test:openapi-contract": "bunx vitest run --root ../.. --config apps/backend/vitest.config.ts apps/backend/tests/contracts/openapi-route-binding.contract.test.ts",
+    "db:drizzle:generate": "cd ../.. && bunx drizzle-kit generate --config db/drizzle.config.ts",
+    "db:drizzle:migrate": "cd ../.. && bunx drizzle-kit migrate --config db/drizzle.config.ts",
+    "check:drizzle-drift": "bun run db:drizzle:generate && bash scripts/check-drizzle-drift.sh",
     "dev": "tsx src/server.ts",
     "start": "tsx src/server.ts"
   },
@@ -12,13 +21,21 @@
     "@oss-health-checker/common": "workspace:*",
     "@hono/node-server": "^1.19.9",
     "@hono/zod-openapi": "^1.2.1",
+    "better-sqlite3": "^12.6.2",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.11.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
+    "@typescript-eslint/parser": "^8.55.0",
+    "drizzle-kit": "^0.31.9",
+    "eslint": "^10.0.0",
+    "prettier": "^3.8.1",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

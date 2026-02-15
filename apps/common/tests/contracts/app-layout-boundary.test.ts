@@ -159,12 +159,12 @@ describe("entrypoint consolidation: apps/* is the official entrypoint", () => {
     expect(pkg.scripts).toBeDefined();
   });
 
-  it("root backend/ must not contain source code (only tests, config, docs, scripts)", () => {
-    const backendSrcDir = path.join(repoRoot, "backend/src");
-    if (existsSync(backendSrcDir)) {
-      const tsFiles = collectTsFiles(backendSrcDir);
-      expect(tsFiles).toEqual([]);
-    }
+  it("root backend/ is removed and apps/backend remains the official entrypoint", () => {
+    const appsBackendPkg = path.join(repoRoot, "apps/backend/package.json");
+    const rootBackendDir = path.join(repoRoot, "backend");
+
+    expect(existsSync(appsBackendPkg)).toBe(true);
+    expect(existsSync(rootBackendDir)).toBe(false);
   });
 
   it("root frontend/ is removed and apps/frontend remains the official entrypoint", () => {

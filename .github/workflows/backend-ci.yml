@@ -27,7 +27,7 @@ jobs:
         with:
           bun-version: '1.1.43'
       - run: bun install
-      - run: bun run --filter oss-health-checker-backend format:check
+      - run: bun run --filter oss-health-checker-api format:check
       - run: bun run backend:typecheck
 
   lint:
@@ -68,7 +68,7 @@ jobs:
         with:
           bun-version: '1.1.43'
       - run: bun install
-      - run: bun run --filter oss-health-checker-backend test:openapi-contract
+      - run: bun run --filter oss-health-checker-api test:openapi-contract
 
   drizzle-schema-drift:
     runs-on: ubuntu-latest
