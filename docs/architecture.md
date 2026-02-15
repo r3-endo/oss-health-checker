@@ -12,13 +12,13 @@
 - `apps/backend`: API 実行アプリ（エントリポイント） + backend 専用 feature の HTTP interface 層
 - `apps/batch`: 定期収集ジョブ実行アプリ（エントリポイント）
 - `apps/frontend`: UI アプリ
-- `packages/common`: backend/batch 共通の application・domain・infrastructure 層と shared 基盤。HTTP interface 層は含まない。
+- `apps/common`: backend/batch 共通の application・domain・infrastructure 層と shared 基盤。HTTP interface 層は含まない。
 - `db`: migration / drizzle artifacts / sqlite ファイルなど DB 資産
 - `infra`: compose / env / scripts など運用資産
 
 依存方向ルール:
-- `apps/*` は `packages/*` に依存してよいが、`apps/*` 同士の直接依存は禁止。
-- `packages/common` 内は feature ごとに `interface -> application -> domain` の方向を守る。
+- `apps/*` は `apps/common` に依存してよいが、`apps/*` 同士の直接依存は禁止。
+- `apps/common` 内は feature ごとに `interface -> application -> domain` の方向を守る。
 - `db` と `infra` は実行アプリではなく、コード所有境界として扱う。
 
 ## Backend/Batch 構成（現行コード）
@@ -39,12 +39,12 @@
 - `collect-daily-snapshots.ts`: development-health の日次収集ジョブ。
 - `collect-daily-adoption-snapshots.ts`: ecosystem-adoption の日次収集ジョブ。
 
-### `packages/common/src/features`
+### `apps/common/src/features`
 - `development-health`: GitHub由来の開発健全性シグナル。
 - `ecosystem-adoption`: npm等の採用実態シグナル。
 - `dashboard-overview`: ダッシュボード集約取得。
 
-### `packages/common/src/shared`
+### `apps/common/src/shared`
 - `config/env.ts`: 環境変数解決。
 - `infrastructure/db/drizzle/*`: DBハンドル・schema・migration・seed。
 
@@ -53,9 +53,16 @@
 - `ports` は feature 内に閉じる。全体共通 `ports` ディレクトリは作らない。
 - `interface/http` には業務ルールを置かない。
 - backend 専用の HTTP interface 層は `apps/backend/features/*/interface/http/` に配置する。
-- `packages/common` には cross-app で再利用される application/domain/infrastructure のみを配置する。
+- `apps/common` には cross-app で再利用される application/domain/infrastructure のみを配置する。
 - `infrastructure` の型は controller に露出させない。
 - エラーは `ApplicationError` に正規化し、HTTP変換は feature の `error-mapper.ts` に集約する。
+
+### backend/common 境界の強制基準
+- `apps/batch` は `apps/backend/interface/*` を直接 import してはならない。
+- `apps/common` は `apps/backend/*` を直接 import してはならない。
+- backend 専用 use-case/read-model/port/adapter は `apps/backend/features/*` に配置し、`apps/common` には残さない。
+- `apps/common` へ実装を追加する場合は、batch/backend の双方から利用される証跡（import 実績）が必要。
+- 境界違反は `backend/tests/contracts/feature-ownership-boundary.test.ts` と `backend/tests/contracts/app-layout-boundary.test.ts` で検出し、CI `backend-ci` の `boundary-contract` ジョブで fail させる。
 
 ## Frontend 設計
 
@@ -69,7 +76,7 @@
 
 - ルート直下の `backend/` はテスト・設定・スクリプトのみ残存する互換レイヤー。`backend/src/` への新規実装追加は禁止。
 - ルート直下の `frontend/` は実体コードを保持するが、実行入口は `apps/frontend` 経由に統一。
-- 新規機能は `apps/*` または `packages/*` に実装する。
+- 新規機能は `apps/*` に実装する。
 - 契約テスト `app-layout-boundary.test.ts` が旧導線への実装混入を自動検知する。
 - Phase 4 で `backend/` `frontend/` の物理削除を予定。
 
