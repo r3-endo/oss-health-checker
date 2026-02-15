@@ -75,10 +75,9 @@
 ## 旧導線の扱い（移行期間）
 
 - ルート直下の `backend/` はテスト・設定・スクリプトのみ残存する互換レイヤー。`backend/src/` への新規実装追加は禁止。
-- ルート直下の `frontend/` は実体コードを保持するが、実行入口は `apps/frontend` 経由に統一。
 - 新規機能は `apps/*` に実装する。
 - 契約テスト `app-layout-boundary.test.ts` が旧導線への実装混入を自動検知する。
-- Phase 4 で `backend/` `frontend/` の物理削除を予定。
+- `frontend/` は削除済みで、frontend 実装は `apps/frontend` に統一済み。
 
 ## Docker 化の扱い
 

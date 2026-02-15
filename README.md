@@ -49,7 +49,7 @@ bun run test
 
 - `apps/backend`: API 実行アプリ
 - `apps/batch`: 定期収集ジョブ実行アプリ
-- `apps/frontend`: UI アプリ（現時点はプレースホルダ）
+- `apps/frontend`: UI アプリ
 - `apps/common`: 共有コード
 - `db`: migration / drizzle artifacts など DB 資産
 - `infra`: compose / env / scripts など運用資産の置き場
@@ -60,7 +60,7 @@ bun run test
 
 ## Note
 
-- ルート直下の `backend/` `frontend/` は移行期間の互換レイヤーです。新規実装は `apps/*` に追加してください。
+- ルート直下の `backend/` は移行期間の互換レイヤーです。新規実装は `apps/*` に追加してください。
 - Dockerfile / `compose.yml` の実装は別の OpenSpec change で扱います。
 
 ## MVP Constraints

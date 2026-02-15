@@ -167,10 +167,13 @@ describe("entrypoint consolidation: apps/* is the official entrypoint", () => {
     }
   });
 
-  it("root frontend/ must not be the official entrypoint (apps/frontend takes precedence)", () => {
+  it("root frontend/ is removed and apps/frontend remains the official entrypoint", () => {
     const appsFrontendPkg = path.join(repoRoot, "apps/frontend/package.json");
+    const rootFrontendDir = path.join(repoRoot, "frontend");
+
     // apps/frontend must exist as official entrypoint
     expect(existsSync(appsFrontendPkg)).toBe(true);
+    expect(existsSync(rootFrontendDir)).toBe(false);
   });
 
   it("root package.json scripts reference apps/* packages, not root backend/frontend directly", () => {

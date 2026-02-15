@@ -52,6 +52,26 @@
     "apps/frontend": {
       "name": "oss-health-checker-frontend-app",
       "version": "0.1.0",
+      "dependencies": {
+        "@tanstack/react-query": "^5.90.20",
+        "jotai": "^2.17.1",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "zod": "^4.3.6",
+      },
+      "devDependencies": {
+        "@tailwindcss/vite": "^4.1.18",
+        "@types/react": "^19.2.13",
+        "@types/react-dom": "^19.2.3",
+        "@typescript-eslint/eslint-plugin": "^8.55.0",
+        "@typescript-eslint/parser": "^8.55.0",
+        "eslint": "^10.0.0",
+        "prettier": "^3.8.1",
+        "tailwindcss": "^4.1.18",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1",
+        "vitest": "^4.0.18",
+      },
     },
     "backend": {
       "name": "oss-health-checker-backend",
@@ -75,30 +95,6 @@
         "prettier": "^3.8.1",
         "tsx": "^4.20.6",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.18",
-      },
-    },
-    "frontend": {
-      "name": "oss-health-checker-frontend",
-      "version": "0.1.0",
-      "dependencies": {
-        "@tanstack/react-query": "^5.90.20",
-        "jotai": "^2.17.1",
-        "react": "^19.2.4",
-        "react-dom": "^19.2.4",
-        "zod": "^4.3.6",
-      },
-      "devDependencies": {
-        "@tailwindcss/vite": "^4.1.18",
-        "@types/react": "^19.2.13",
-        "@types/react-dom": "^19.2.3",
-        "@typescript-eslint/eslint-plugin": "^8.55.0",
-        "@typescript-eslint/parser": "^8.55.0",
-        "eslint": "^10.0.0",
-        "prettier": "^3.8.1",
-        "tailwindcss": "^4.1.18",
-        "typescript": "^5.9.3",
-        "vite": "^7.3.1",
         "vitest": "^4.0.18",
       },
     },
@@ -547,8 +543,6 @@
     "oss-health-checker-backend": ["oss-health-checker-backend@workspace:backend"],
 
     "oss-health-checker-batch": ["oss-health-checker-batch@workspace:apps/batch"],
-
-    "oss-health-checker-frontend": ["oss-health-checker-frontend@workspace:frontend"],
 
     "oss-health-checker-frontend-app": ["oss-health-checker-frontend-app@workspace:apps/frontend"],
 
