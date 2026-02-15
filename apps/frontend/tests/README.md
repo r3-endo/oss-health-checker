@@ -1,6 +1,6 @@
 # Frontend Test Layout
 
-`frontend/tests` is organized by architecture boundaries to reduce breakage as features grow.
+`apps/frontend/tests` is organized by architecture boundaries to reduce breakage as features grow.
 
 - `app/`
   - Tests for composition root and app-level providers/factories.
