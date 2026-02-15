@@ -15,15 +15,23 @@ The system MUST separate runnable applications under `apps/` as `apps/frontend`,
 - **THEN** `backend` および `frontend` 直下は正式入口として扱われず、`apps/*` が唯一の実行入口でなければならない
 
 ### Requirement: 共有コードは packages 経由で利用される
-The system MUST place cross-app shared code under `packages/*` and MUST prevent direct app-to-app source dependency.
+The system MUST keep backend feature ownership under `apps/backend/src/features/*`, MUST place only cross-app reusable code under `apps/common/*`, and MUST enforce that apps do not directly depend on each other's internal source modules.
 
 #### Scenario: backend が batch の実装へ直接依存しない
 - **WHEN** `apps/backend` の import 依存を検査する
-- **THEN** `apps/batch` 配下のソースへ直接 import してはならず、共有コードは `packages/*` 経由で参照しなければならない
+- **THEN** `apps/batch` 配下のソースへ直接 import してはならず、共有コードは `apps/common` 経由で参照しなければならない
 
 #### Scenario: batch が backend の実装へ直接依存しない
 - **WHEN** `apps/batch` の import 依存を検査する
-- **THEN** `apps/backend` 配下のソースへ直接 import してはならず、共有コードは `packages/*` 経由で参照しなければならない
+- **THEN** `apps/backend` 配下のソースへ直接 import してはならず、共有コードは `apps/common` 経由で参照しなければならない
+
+#### Scenario: common が backend 実装へ逆依存しない
+- **WHEN** `apps/common` の import 依存を検査する
+- **THEN** `apps/backend` 配下のソースへ直接 import してはならない
+
+#### Scenario: 共通化対象は cross-app 利用時のみ抽出される
+- **WHEN** 開発者が `apps/common` 配下へ実装を追加する
+- **THEN** その実装は複数 app で利用されることが確認されなければならない
 
 ### Requirement: DB 資産と運用資産はアプリコードから分離される
 The system MUST isolate database assets under `db/` and operational assets under `infra/`, and these directories MUST NOT be treated as runnable applications.
@@ -64,4 +72,3 @@ The system MUST update architecture and developer documentation to reflect the n
 #### Scenario: Docker 化が本 change から除外されることが明記される
 - **WHEN** 開発者が本 change の docs を参照する
 - **THEN** Dockerfile や `compose.yml` は次 change の対象であることが明記されていなければならない
-

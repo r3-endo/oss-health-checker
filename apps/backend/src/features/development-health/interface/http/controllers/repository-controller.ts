@@ -1,8 +1,8 @@
-import type { ListRepositoriesWithLatestSnapshotUseCase } from "@backend/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import type { RefreshRepositoryInput } from "@backend/features/development-health/application/use-cases/refresh-repository-use-case.js";
-import type { RefreshRepositoryUseCase } from "@backend/features/development-health/application/use-cases/refresh-repository-use-case.js";
-import type { RegisterRepositoryInput } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
-import type { RegisterRepositoryUseCase } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
+import type { ListRepositoriesWithLatestSnapshotUseCase } from "@backend/src/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import type { RefreshRepositoryInput } from "@backend/src/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import type { RefreshRepositoryUseCase } from "@backend/src/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import type { RegisterRepositoryInput } from "@backend/src/features/development-health/application/use-cases/register-repository-use-case.js";
+import type { RegisterRepositoryUseCase } from "@backend/src/features/development-health/application/use-cases/register-repository-use-case.js";
 
 export class RepositoryController {
   constructor(
