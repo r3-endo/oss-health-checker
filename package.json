@@ -6,7 +6,7 @@
     "apps/backend",
     "apps/batch",
     "apps/frontend",
-    "packages/common",
+    "apps/common",
     "backend",
     "frontend"
   ],
@@ -17,6 +17,7 @@
     "format:check": "bun run --filter '*' format:check",
     "backend:dev": "bun run --filter oss-health-checker-api dev",
     "backend:test": "bun run --filter oss-health-checker-backend test",
+    "backend:boundary-contract": "bun run --filter oss-health-checker-backend test:boundary-contract",
     "backend:typecheck": "bun run --filter oss-health-checker-backend typecheck",
     "backend:lint": "bun run --filter oss-health-checker-backend lint",
     "db:drizzle:generate": "bun run --filter oss-health-checker-backend db:drizzle:generate",

@@ -10,6 +10,7 @@
     "format": "bunx prettier --write .",
     "format:check": "bunx prettier --check .",
     "test": "bunx vitest run",
+    "test:boundary-contract": "bunx vitest run tests/contracts/app-layout-boundary.test.ts tests/contracts/feature-ownership-boundary.test.ts tests/contracts/layer-boundary.test.ts",
     "test:openapi-contract": "bunx vitest run tests/contracts/openapi-route-binding.contract.test.ts",
     "db:drizzle:generate": "cd .. && bunx drizzle-kit generate --config db/drizzle.config.ts",
     "db:drizzle:migrate": "cd .. && bunx drizzle-kit migrate --config db/drizzle.config.ts",

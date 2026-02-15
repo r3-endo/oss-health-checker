@@ -2,11 +2,11 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { UnitOfWorkPort } from "@oss-health-checker/common/features/development-health/application/ports/unit-of-work-port.js";
+import type { UnitOfWorkPort } from "@backend/features/development-health/application/ports/unit-of-work-port.js";
 import type { DrizzleDatabaseHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleUnitOfWorkAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { DrizzleUnitOfWorkAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import {
   repositoriesTable,
   snapshotsTable,

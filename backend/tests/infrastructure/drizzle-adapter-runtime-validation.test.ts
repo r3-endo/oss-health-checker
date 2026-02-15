@@ -8,8 +8,8 @@ import {
   type DrizzleDatabaseHandle,
 } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
-import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
-import { DrizzleSnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
+import { DrizzleRepositoryReadModelAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleSnapshotAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
 
 const insertRepository = (db: DrizzleDatabaseHandle, id = "r1"): void => {
   const now = Date.now();

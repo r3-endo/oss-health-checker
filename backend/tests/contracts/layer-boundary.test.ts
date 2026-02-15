@@ -13,7 +13,7 @@ describe("layer boundary: application must not depend on infrastructure", () => 
   it("application layer files do not import drizzle or infrastructure modules", () => {
     const applicationDir = path.resolve(
       __dirname,
-      "../../../packages/common/src/features/development-health/application",
+      "../../../apps/common/src/features/development-health/application",
     );
     const files = collectTsFiles(applicationDir);
 

@@ -30,8 +30,8 @@ describe("app layout boundary: monorepo structure", () => {
     expect(existsSync(dir)).toBe(true);
   });
 
-  it("packages/common directory exists", () => {
-    const dir = path.join(repoRoot, "packages/common");
+  it("apps/common directory exists", () => {
+    const dir = path.join(repoRoot, "apps/common");
     expect(existsSync(dir)).toBe(true);
   });
 

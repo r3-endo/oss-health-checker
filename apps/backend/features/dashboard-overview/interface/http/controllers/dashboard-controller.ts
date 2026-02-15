@@ -1,4 +1,4 @@
-import type { ListDashboardRepositoriesUseCase } from "../../../application/use-cases/list-dashboard-repositories-use-case.js";
+import type { ListDashboardRepositoriesUseCase } from "@backend/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
 
 export class DashboardController {
   constructor(

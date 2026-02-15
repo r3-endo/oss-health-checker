@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { createDashboardRoutes } from "../../../apps/backend/features/dashboard-overview/interface/http/routes/dashboard-routes.js";
+import { createDashboardRoutes } from "@backend/features/dashboard-overview/interface/http/routes/dashboard-routes.js";
 
 const createContractApp = (): OpenAPIHono => {
   const app = new OpenAPIHono();

@@ -50,7 +50,7 @@ bun run test
 - `apps/backend`: API 実行アプリ
 - `apps/batch`: 定期収集ジョブ実行アプリ
 - `apps/frontend`: UI アプリ（現時点はプレースホルダ）
-- `packages/common`: 共有コード
+- `apps/common`: 共有コード
 - `db`: migration / drizzle artifacts など DB 資産
 - `infra`: compose / env / scripts など運用資産の置き場
 

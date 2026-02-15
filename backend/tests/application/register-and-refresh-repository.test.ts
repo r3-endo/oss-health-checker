@@ -9,9 +9,9 @@ import type {
   TransactionPorts,
   TransactionRepositoryPort,
   TransactionSnapshotPort,
-} from "@oss-health-checker/common/features/development-health/application/ports/unit-of-work-port.js";
-import { RegisterRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
-import { RefreshRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
+} from "@backend/features/development-health/application/ports/unit-of-work-port.js";
+import { RegisterRepositoryService } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
+import { RefreshRepositoryService } from "@backend/features/development-health/application/use-cases/refresh-repository-use-case.js";
 import type { Repository } from "@oss-health-checker/common/features/development-health/domain/models/repository.js";
 import type { RepositorySnapshot } from "@oss-health-checker/common/features/development-health/domain/models/snapshot.js";
 

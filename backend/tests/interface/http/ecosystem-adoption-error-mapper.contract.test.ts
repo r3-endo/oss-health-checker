@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ApplicationError } from "@oss-health-checker/common/features/ecosystem-adoption/application/errors/application-error.js";
-import { mapErrorToHttp } from "../../../../apps/backend/features/ecosystem-adoption/interface/http/error-mapper.js";
+import { mapErrorToHttp } from "@backend/features/ecosystem-adoption/interface/http/error-mapper.js";
 
 const createContext = () =>
   ({

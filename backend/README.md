@@ -14,7 +14,7 @@
 ## 禁止事項
 
 - `backend/src/` への新規 TypeScript ファイル追加は禁止
-- 新規機能の実装はすべて `apps/backend` または `packages/common` で行う
+- 新規機能の実装はすべて `apps/backend` または `apps/common` で行う
 - 契約テスト（`app-layout-boundary.test.ts`）で自動検知される
 
 ## Schema/Migration workflow

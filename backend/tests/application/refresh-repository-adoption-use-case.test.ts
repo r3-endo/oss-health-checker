@@ -5,7 +5,7 @@ import type { AdoptionSnapshotPort } from "@oss-health-checker/common/features/e
 import type { RepositoryPackageMappingPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/repository-package-mapping-port.js";
 import type { RegistryProviderResolverPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-resolver-port.js";
 import { RegistryProviderError } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/registry-provider-port.js";
-import { RefreshRepositoryAdoptionService } from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
+import { RefreshRepositoryAdoptionService } from "@backend/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
 
 const repositoryPort: RepositoryPort = {
   create: vi.fn(),

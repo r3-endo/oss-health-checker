@@ -6,19 +6,19 @@ import {
   RepositoryGatewayError,
   type RepositoryGatewayPort,
 } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
-import { ListRepositoriesWithLatestSnapshotService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import { RefreshRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
-import { RegisterRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
-import { buildApp } from "../../../../apps/backend/src/build-app.js";
+import { ListRepositoriesWithLatestSnapshotService } from "@backend/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import { RefreshRepositoryService } from "@backend/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import { RegisterRepositoryService } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
+import { buildApp } from "@backend/src/build-app.js";
 import type { AppEnv } from "@oss-health-checker/common/shared/config/env.js";
 import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
 import { DrizzleRepositoryAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
-import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleRepositoryReadModelAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 import { DrizzleRepositorySnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
-import { DrizzleSnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
-import { DrizzleUnitOfWorkAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
-import { RepositoryController } from "../../../../apps/backend/features/development-health/interface/http/controllers/repository-controller.js";
+import { DrizzleSnapshotAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
+import { DrizzleUnitOfWorkAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { RepositoryController } from "@backend/features/development-health/interface/http/controllers/repository-controller.js";
 
 type MutableSignals = {
   lastCommitAt: Date;
