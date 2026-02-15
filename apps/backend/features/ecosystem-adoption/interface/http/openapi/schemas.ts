@@ -3,8 +3,8 @@ import {
   ADOPTION_FETCH_STATUSES,
   MAPPING_STATUSES,
   REGISTRY_SOURCES,
-} from "../../../domain/models/adoption.js";
-import { type ApplicationErrorCode } from "../../../application/errors/application-error.js";
+} from "@oss-health-checker/common/features/ecosystem-adoption/domain/models/adoption.js";
+import { type ApplicationErrorCode } from "@oss-health-checker/common/features/ecosystem-adoption/application/errors/application-error.js";
 
 const registrySourceValues = [...REGISTRY_SOURCES] as [
   (typeof REGISTRY_SOURCES)[number],

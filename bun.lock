@@ -10,8 +10,10 @@
       "version": "0.1.0",
       "dependencies": {
         "@hono/node-server": "^1.19.9",
+        "@hono/zod-openapi": "^1.2.1",
         "@oss-health-checker/common": "workspace:*",
         "hono": "^4.11.9",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@types/node": "^25.2.3",
@@ -89,10 +91,8 @@
       "version": "0.1.0",
       "dependencies": {
         "@hono/node-server": "^1.19.9",
-        "@hono/zod-openapi": "^1.2.1",
         "better-sqlite3": "^12.6.2",
         "drizzle-orm": "^0.45.1",
-        "hono": "^4.11.9",
         "zod": "^4.3.6",
       },
       "devDependencies": {

@@ -11,7 +11,7 @@ import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/fe
 import { DrizzleRepositoryPackageMappingAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
 import { DrizzleAdoptionSnapshotAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
 import { DrizzleRepositoryAdoptionReadAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-adoption-read-adapter.js";
-import { ListDashboardRepositoriesService } from "@oss-health-checker/common/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
+import { ListDashboardRepositoriesService } from "../../../apps/backend/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
 
 describe("dashboard overview integration", () => {
   let tempDir: string;

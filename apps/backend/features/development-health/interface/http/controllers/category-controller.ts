@@ -1,5 +1,5 @@
-import type { GetCategoryDetailUseCase } from "../../../application/use-cases/get-category-detail-use-case.js";
-import type { ListCategorySummariesUseCase } from "../../../application/use-cases/list-category-summaries-use-case.js";
+import type { GetCategoryDetailUseCase } from "@oss-health-checker/common/features/development-health/application/use-cases/get-category-detail-use-case.js";
+import type { ListCategorySummariesUseCase } from "@oss-health-checker/common/features/development-health/application/use-cases/list-category-summaries-use-case.js";
 
 export class CategoryController {
   constructor(

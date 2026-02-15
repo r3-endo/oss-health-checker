@@ -1,5 +1,5 @@
 import { z } from "@hono/zod-openapi";
-import { CATEGORY_SLUGS } from "../../../domain/models/category.js";
+import { CATEGORY_SLUGS } from "@oss-health-checker/common/features/development-health/domain/models/category.js";
 
 export const CategorySlugSchema = z.enum(CATEGORY_SLUGS);
 

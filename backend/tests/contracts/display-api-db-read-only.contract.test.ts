@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildApp } from "@oss-health-checker/common/shared/bootstrap/build-app.js";
-import { buildContainer } from "@oss-health-checker/common/shared/bootstrap/build-container.js";
-import type { AppEnv } from "@oss-health-checker/common/shared/config/env.js";
+import { buildApp } from "../../../apps/backend/src/build-app.js";
+import { buildContainer } from "../../../apps/backend/src/build-container.js";
+import type { AppEnv } from "../../../packages/common/src/shared/config/env.js";
 
 const createTestEnv = (databasePath: string): AppEnv =>
   Object.freeze({

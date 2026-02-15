@@ -1,6 +1,6 @@
-import { ApplicationError } from "../../../development-health/application/errors/application-error.js";
-import type { RepositoryReadModelPort } from "../../../development-health/application/ports/repository-read-model-port.js";
-import type { RepositoryAdoptionReadPort } from "../../../ecosystem-adoption/application/ports/repository-adoption-read-port.js";
+import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
+import type { RepositoryReadModelPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-read-model-port.js";
+import type { RepositoryAdoptionReadPort } from "@oss-health-checker/common/features/ecosystem-adoption/application/ports/repository-adoption-read-port.js";
 import type { DashboardRepositoryRow } from "../read-models/dashboard-repository-row.js";
 
 export interface ListDashboardRepositoriesUseCase {

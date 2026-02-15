@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { ApplicationError } from "../../application/errors/application-error.js";
+import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
 
 type ErrorMappingOptions = Readonly<{
   notFoundCodeOverride?: string;

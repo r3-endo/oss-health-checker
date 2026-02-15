@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { ApplicationError } from "../../application/errors/application-error.js";
+import { ApplicationError } from "@oss-health-checker/common/features/ecosystem-adoption/application/errors/application-error.js";
 
 type HttpStatus = 400 | 404 | 429 | 500 | 502;
 

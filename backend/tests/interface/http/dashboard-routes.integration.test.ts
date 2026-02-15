@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildApp } from "@oss-health-checker/common/shared/bootstrap/build-app.js";
+import { buildApp } from "../../../../apps/backend/src/build-app.js";
 
 describe("dashboard routes integration", () => {
   it("returns dashboard repositories payload", async () => {
