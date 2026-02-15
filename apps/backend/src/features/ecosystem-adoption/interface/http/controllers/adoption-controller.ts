@@ -1,7 +1,7 @@
 import type {
   RefreshRepositoryAdoptionInput,
   RefreshRepositoryAdoptionUseCase,
-} from "@backend/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
+} from "@backend/src/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
 
 export class AdoptionController {
   constructor(

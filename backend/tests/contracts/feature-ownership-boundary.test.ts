@@ -86,27 +86,32 @@ const backendOnlyCommonCandidates = [
 ];
 
 describe("feature ownership boundary", () => {
-  describe("1.1 apps/backend/features/* is the feature ownership boundary", () => {
-    it("apps/backend/features/development-health directory exists", () => {
+  describe("1.1 apps/backend/src/features/* is the feature ownership boundary", () => {
+    it("legacy apps/backend/features directory does not exist", () => {
+      const legacyDir = path.join(repoRoot, "apps/backend/features");
+      expect(existsSync(legacyDir)).toBe(false);
+    });
+
+    it("apps/backend/src/features/development-health directory exists", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/development-health",
+        "apps/backend/src/features/development-health",
       );
       expect(existsSync(dir)).toBe(true);
     });
 
-    it("apps/backend/features/ecosystem-adoption directory exists", () => {
+    it("apps/backend/src/features/ecosystem-adoption directory exists", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/ecosystem-adoption",
+        "apps/backend/src/features/ecosystem-adoption",
       );
       expect(existsSync(dir)).toBe(true);
     });
 
-    it("apps/backend/features/dashboard-overview directory exists", () => {
+    it("apps/backend/src/features/dashboard-overview directory exists", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/dashboard-overview",
+        "apps/backend/src/features/dashboard-overview",
       );
       expect(existsSync(dir)).toBe(true);
     });
@@ -114,7 +119,7 @@ describe("feature ownership boundary", () => {
     it("development-health feature contains at least one .ts file", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/development-health",
+        "apps/backend/src/features/development-health",
       );
       if (!existsSync(dir)) {
         // Feature directory doesn't exist yet - will fail in directory check above
@@ -128,7 +133,7 @@ describe("feature ownership boundary", () => {
     it("ecosystem-adoption feature contains at least one .ts file", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/ecosystem-adoption",
+        "apps/backend/src/features/ecosystem-adoption",
       );
       if (!existsSync(dir)) {
         // Feature directory doesn't exist yet - will fail in directory check above
@@ -142,7 +147,7 @@ describe("feature ownership boundary", () => {
     it("dashboard-overview feature contains at least one .ts file", () => {
       const dir = path.join(
         repoRoot,
-        "apps/backend/features/dashboard-overview",
+        "apps/backend/src/features/dashboard-overview",
       );
       if (!existsSync(dir)) {
         // Feature directory doesn't exist yet - will fail in directory check above

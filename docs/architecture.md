@@ -9,7 +9,7 @@
 
 ## Repository Layout
 
-- `apps/backend`: API 実行アプリ（エントリポイント） + backend 専用 feature の HTTP interface 層
+- `apps/backend`: API 実行アプリ（エントリポイント） + backend 専用 feature 実装（`src/features`）
 - `apps/batch`: 定期収集ジョブ実行アプリ（エントリポイント）
 - `apps/frontend`: UI アプリ
 - `apps/common`: backend/batch 共通の application・domain・infrastructure 層と shared 基盤。HTTP interface 層は含まない。
@@ -29,7 +29,7 @@
 - `build-app.ts`: Hono app への route 配線。
 - `app.ts`: 再エクスポート境界（起動/テスト分離）。
 
-### `apps/backend/features`
+### `apps/backend/src/features`
 - `development-health/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
 - `ecosystem-adoption/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
 - `dashboard-overview/interface/http`: HTTP controllers, routes, OpenAPI schemas, error-mapper
@@ -52,7 +52,7 @@
 - 新機能は `features/<feature>/application/use-cases` と `ports` から追加する。
 - `ports` は feature 内に閉じる。全体共通 `ports` ディレクトリは作らない。
 - `interface/http` には業務ルールを置かない。
-- backend 専用の HTTP interface 層は `apps/backend/features/*/interface/http/` に配置する。
+- backend 専用の HTTP interface 層は `apps/backend/src/features/*/interface/http/` に配置する。
 - `apps/common` には cross-app で再利用される application/domain/infrastructure のみを配置する。
 - `infrastructure` の型は controller に露出させない。
 - エラーは `ApplicationError` に正規化し、HTTP変換は feature の `error-mapper.ts` に集約する。
@@ -60,7 +60,7 @@
 ### backend/common 境界の強制基準
 - `apps/batch` は `apps/backend/interface/*` を直接 import してはならない。
 - `apps/common` は `apps/backend/*` を直接 import してはならない。
-- backend 専用 use-case/read-model/port/adapter は `apps/backend/features/*` に配置し、`apps/common` には残さない。
+- backend 専用 use-case/read-model/port/adapter は `apps/backend/src/features/*` に配置し、`apps/common` には残さない。
 - `apps/common` へ実装を追加する場合は、batch/backend の双方から利用される証跡（import 実績）が必要。
 - 境界違反は `backend/tests/contracts/feature-ownership-boundary.test.ts` と `backend/tests/contracts/app-layout-boundary.test.ts` で検出し、CI `backend-ci` の `boundary-contract` ジョブで fail させる。
 

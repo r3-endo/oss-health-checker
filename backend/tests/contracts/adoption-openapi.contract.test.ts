@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RepositoryAdoptionSchema } from "@backend/features/ecosystem-adoption/interface/http/openapi/schemas.js";
+import { RepositoryAdoptionSchema } from "@backend/src/features/ecosystem-adoption/interface/http/openapi/schemas.js";
 
 describe("adoption openapi truth table contract", () => {
   it("accepts mapped/succeeded, mapped/failed and not_mapped/not_applicable", () => {
