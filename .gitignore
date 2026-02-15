@@ -48,6 +48,8 @@ frontend/.env.*
 backend/*.db
 backend/local.db-shm
 backend/local.db-wal
+apps/batch/local.db-shm
+apps/batch/local.db-wal
 frontend/*.db
 
 # Misc
