@@ -156,10 +156,7 @@ describe("feature ownership boundary", () => {
 
   describe("1.2 apps/common/* is for cross-app reuse only", () => {
     it("apps/common/src/features must not contain HTTP controllers", () => {
-      const controllersDir = path.join(
-        repoRoot,
-        "apps/common/src/features",
-      );
+      const controllersDir = path.join(repoRoot, "apps/common/src/features");
       if (!existsSync(controllersDir)) {
         // No features directory yet - pass vacuously
         return;
@@ -322,7 +319,9 @@ describe("feature ownership boundary", () => {
         }
         if (!hasSharedImport) {
           const relativePath = path.relative(batchDir, file);
-          violations.push(`${relativePath}: missing @oss-health-checker/common import`);
+          violations.push(
+            `${relativePath}: missing @oss-health-checker/common import`,
+          );
         }
       }
 
