@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "typecheck": "bunx tsc --noEmit -p tsconfig.json",
     "dev": "tsx src/server.ts",
     "start": "tsx src/server.ts"
   },
