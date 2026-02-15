@@ -2,21 +2,21 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { RegistryDataPort } from "@oss-health-checker/common/features/development-health/application/ports/registry-data-port.js";
-import { GetCategoryDetailService } from "@oss-health-checker/common/features/development-health/application/use-cases/get-category-detail-use-case.js";
-import { ListCategorySummariesService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-category-summaries-use-case.js";
-import { buildApp } from "../../../../apps/backend/src/build-app.js";
+import type { RegistryDataPort } from "@backend/features/development-health/application/ports/registry-data-port.js";
+import { GetCategoryDetailService } from "@backend/features/development-health/application/use-cases/get-category-detail-use-case.js";
+import { ListCategorySummariesService } from "@backend/features/development-health/application/use-cases/list-category-summaries-use-case.js";
+import { buildApp } from "@backend/src/build-app.js";
 import type { AppEnv } from "@oss-health-checker/common/shared/config/env.js";
 import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
 import { seedCategoryBase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/seed-category-base.js";
-import { DrizzleCategoryReadAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-category-read-adapter.js";
-import { DrizzleRepositorySnapshotReadAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
-import { CategoryController } from "../../../../apps/backend/features/development-health/interface/http/controllers/category-controller.js";
+import { DrizzleCategoryReadAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-category-read-adapter.js";
+import { DrizzleRepositorySnapshotReadAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
+import { CategoryController } from "@backend/features/development-health/interface/http/controllers/category-controller.js";
 import {
   CategoryDetailResponseSchema,
   ListCategoriesResponseSchema,
-} from "../../../../apps/backend/features/development-health/interface/http/openapi/category-schemas.js";
+} from "@backend/features/development-health/interface/http/openapi/category-schemas.js";
 
 const createTestEnv = (databasePath: string): AppEnv =>
   Object.freeze({

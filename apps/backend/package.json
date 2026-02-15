@@ -11,6 +11,7 @@
     "@oss-health-checker/common": "workspace:*",
     "@hono/node-server": "^1.19.9",
     "@hono/zod-openapi": "^1.2.1",
+    "drizzle-orm": "^0.45.1",
     "hono": "^4.11.9",
     "zod": "^4.3.6"
   },

@@ -15,12 +15,12 @@ import {
   repositoriesTable,
   repositoryCategoriesTable,
 } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/schema.js";
-import { RegisterRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
-import { DrizzleUnitOfWorkAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { RegisterRepositoryService } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
+import { DrizzleUnitOfWorkAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
 import { eq } from "drizzle-orm";
 import type { RepositoryGatewayPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-gateway-port.js";
-import { ListRepositoriesWithLatestSnapshotService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { ListRepositoriesWithLatestSnapshotService } from "@backend/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import { DrizzleRepositoryReadModelAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 
 const createGateway = (): RepositoryGatewayPort => ({
   fetchSignals: async () => ({

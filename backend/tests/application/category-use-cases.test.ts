@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
-import type { CategoryReadPort } from "@oss-health-checker/common/features/development-health/application/ports/category-read-port.js";
-import type { RegistryDataPort } from "@oss-health-checker/common/features/development-health/application/ports/registry-data-port.js";
-import type { RepositorySnapshotReadPort } from "@oss-health-checker/common/features/development-health/application/ports/repository-snapshot-read-port.js";
-import { GetCategoryDetailService } from "@oss-health-checker/common/features/development-health/application/use-cases/get-category-detail-use-case.js";
-import { ListCategorySummariesService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-category-summaries-use-case.js";
+import type { CategoryReadPort } from "@backend/features/development-health/application/ports/category-read-port.js";
+import type { RegistryDataPort } from "@backend/features/development-health/application/ports/registry-data-port.js";
+import type { RepositorySnapshotReadPort } from "@backend/features/development-health/application/ports/repository-snapshot-read-port.js";
+import { GetCategoryDetailService } from "@backend/features/development-health/application/use-cases/get-category-detail-use-case.js";
+import { ListCategorySummariesService } from "@backend/features/development-health/application/use-cases/list-category-summaries-use-case.js";
 
 const stubRegistryDataPort: RegistryDataPort = {
   findLatestByRepositoryId: async () => null,

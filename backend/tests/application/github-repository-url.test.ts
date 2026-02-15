@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseGitHubRepositoryUrl } from "@oss-health-checker/common/features/development-health/application/services/github-repository-url.js";
+import { parseGitHubRepositoryUrl } from "@backend/features/development-health/application/services/github-repository-url.js";
 
 describe("parseGitHubRepositoryUrl", () => {
   it("parses standard GitHub URL", () => {

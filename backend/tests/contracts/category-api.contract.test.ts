@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { ApplicationError } from "../../../packages/common/src/features/development-health/application/errors/application-error.js";
-import { createCategoryRoutes } from "../../../apps/backend/features/development-health/interface/http/routes/category-routes.js";
+import { ApplicationError } from "../../../apps/common/src/features/development-health/application/errors/application-error.js";
+import { createCategoryRoutes } from "@backend/features/development-health/interface/http/routes/category-routes.js";
 import {
   CategorySummarySchema,
   CategoryDetailSchema,
@@ -11,7 +11,7 @@ import {
   RepositoryViewSchema,
   CategoryRepositoryGitHubSchema,
   CategorySlugSchema,
-} from "../../../apps/backend/features/development-health/interface/http/openapi/category-schemas.js";
+} from "@backend/features/development-health/interface/http/openapi/category-schemas.js";
 
 const createContractApp = (): OpenAPIHono => {
   const app = new OpenAPIHono();

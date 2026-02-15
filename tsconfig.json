@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@common/*": ["./packages/common/*"]
+      "@common/*": ["./apps/common/*"]
     },
     "baseUrl": "."
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildApp } from "../../../../apps/backend/src/build-app.js";
+import { buildApp } from "@backend/src/build-app.js";
 
 describe("adoption routes integration", () => {
   it("exposes adoption refresh route", async () => {

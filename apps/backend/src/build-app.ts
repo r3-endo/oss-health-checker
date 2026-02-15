@@ -2,11 +2,11 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import type { AppContainer } from "./build-container.js";
-import { createCategoryRoutes } from "../features/development-health/interface/http/routes/category-routes.js";
-import { createRepositoryRoutes } from "../features/development-health/interface/http/routes/repository-routes.js";
-import { mapErrorToHttp } from "../features/development-health/interface/http/error-mapper.js";
-import { createAdoptionRoutes } from "../features/ecosystem-adoption/interface/http/routes/adoption-routes.js";
-import { createDashboardRoutes } from "../features/dashboard-overview/interface/http/routes/dashboard-routes.js";
+import { createCategoryRoutes } from "@backend/features/development-health/interface/http/routes/category-routes.js";
+import { createRepositoryRoutes } from "@backend/features/development-health/interface/http/routes/repository-routes.js";
+import { mapErrorToHttp } from "@backend/features/development-health/interface/http/error-mapper.js";
+import { createAdoptionRoutes } from "@backend/features/ecosystem-adoption/interface/http/routes/adoption-routes.js";
+import { createDashboardRoutes } from "@backend/features/dashboard-overview/interface/http/routes/dashboard-routes.js";
 
 export const buildApp = (container: AppContainer): OpenAPIHono => {
   const app = new OpenAPIHono();

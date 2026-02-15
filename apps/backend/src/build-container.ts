@@ -1,26 +1,26 @@
-import { ListRepositoriesWithLatestSnapshotService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
-import { GetCategoryDetailService } from "@oss-health-checker/common/features/development-health/application/use-cases/get-category-detail-use-case.js";
-import { ListCategorySummariesService } from "@oss-health-checker/common/features/development-health/application/use-cases/list-category-summaries-use-case.js";
-import { RefreshRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/refresh-repository-use-case.js";
-import { RegisterRepositoryService } from "@oss-health-checker/common/features/development-health/application/use-cases/register-repository-use-case.js";
-import { RefreshRepositoryAdoptionService } from "@oss-health-checker/common/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
-import { ListDashboardRepositoriesService } from "../features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
+import { ListRepositoriesWithLatestSnapshotService } from "@backend/features/development-health/application/use-cases/list-repositories-with-latest-snapshot-use-case.js";
+import { GetCategoryDetailService } from "@backend/features/development-health/application/use-cases/get-category-detail-use-case.js";
+import { ListCategorySummariesService } from "@backend/features/development-health/application/use-cases/list-category-summaries-use-case.js";
+import { RefreshRepositoryService } from "@backend/features/development-health/application/use-cases/refresh-repository-use-case.js";
+import { RegisterRepositoryService } from "@backend/features/development-health/application/use-cases/register-repository-use-case.js";
+import { RefreshRepositoryAdoptionService } from "@backend/features/ecosystem-adoption/application/use-cases/refresh-repository-adoption-use-case.js";
+import { ListDashboardRepositoriesService } from "@backend/features/dashboard-overview/application/use-cases/list-dashboard-repositories-use-case.js";
 import type { AppEnv } from "@oss-health-checker/common/shared/config/env.js";
 import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
 import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
 import { seedCategoryBase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/seed-category-base.js";
 import { GitHubRestRepositoryGateway } from "@oss-health-checker/common/features/development-health/infrastructure/gateways/github-rest-repository-gateway.js";
-import { DrizzleCategoryReadAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-category-read-adapter.js";
+import { DrizzleCategoryReadAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-category-read-adapter.js";
 import { DrizzleRepositoryAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-adapter.js";
-import { DrizzleRepositoryReadModelAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
+import { DrizzleRepositoryReadModelAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-read-model-adapter.js";
 import { DrizzleRepositorySnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-adapter.js";
-import { DrizzleRepositorySnapshotReadAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
-import { DrizzleSnapshotAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
-import { DrizzleUnitOfWorkAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
-import { DrizzleRegistryDataAdapter } from "@oss-health-checker/common/features/development-health/infrastructure/repositories/drizzle-registry-data-adapter.js";
-import { CategoryController } from "../features/development-health/interface/http/controllers/category-controller.js";
-import { RepositoryController } from "../features/development-health/interface/http/controllers/repository-controller.js";
-import { AdoptionController } from "../features/ecosystem-adoption/interface/http/controllers/adoption-controller.js";
+import { DrizzleRepositorySnapshotReadAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-repository-snapshot-read-adapter.js";
+import { DrizzleSnapshotAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-snapshot-adapter.js";
+import { DrizzleUnitOfWorkAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
+import { DrizzleRegistryDataAdapter } from "@backend/features/development-health/infrastructure/repositories/drizzle-registry-data-adapter.js";
+import { CategoryController } from "@backend/features/development-health/interface/http/controllers/category-controller.js";
+import { RepositoryController } from "@backend/features/development-health/interface/http/controllers/repository-controller.js";
+import { AdoptionController } from "@backend/features/ecosystem-adoption/interface/http/controllers/adoption-controller.js";
 import { DrizzleRepositoryPackageMappingAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-package-mapping-adapter.js";
 import { DrizzleAdoptionSnapshotAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-adoption-snapshot-adapter.js";
 import { NpmRegistryProviderAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/providers/npm/npm-registry-provider-adapter.js";
@@ -29,8 +29,8 @@ import {
   REGISTRY_SOURCES,
   type RegistrySource,
 } from "@oss-health-checker/common/features/ecosystem-adoption/domain/models/adoption.js";
-import { DrizzleRepositoryAdoptionReadAdapter } from "@oss-health-checker/common/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-adoption-read-adapter.js";
-import { DashboardController } from "../features/dashboard-overview/interface/http/controllers/dashboard-controller.js";
+import { DrizzleRepositoryAdoptionReadAdapter } from "@backend/features/ecosystem-adoption/infrastructure/repositories/drizzle-repository-adoption-read-adapter.js";
+import { DashboardController } from "@backend/features/dashboard-overview/interface/http/controllers/dashboard-controller.js";
 
 export type AppContainer = Readonly<{
   categoryController: CategoryController;
