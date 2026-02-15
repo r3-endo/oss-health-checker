@@ -6,7 +6,6 @@ on:
       - 'apps/backend/**'
       - 'apps/batch/**'
       - 'apps/common/**'
-      - 'backend/**'
       - 'db/**'
       - '.github/workflows/backend-ci.yml'
   push:
@@ -16,7 +15,6 @@ on:
       - 'apps/backend/**'
       - 'apps/batch/**'
       - 'apps/common/**'
-      - 'backend/**'
       - 'db/**'
       - '.github/workflows/backend-ci.yml'
 

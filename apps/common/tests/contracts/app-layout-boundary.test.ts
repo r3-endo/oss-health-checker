@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
-const repoRoot = path.resolve(__dirname, "../../..");
+const repoRoot = path.resolve(__dirname, "../../../..");
 
 const collectTsFiles = (dir: string): string[] => {
   if (!existsSync(dir)) {
@@ -194,29 +194,40 @@ describe("entrypoint consolidation: apps/* is the official entrypoint", () => {
 });
 
 describe("contract test baseline: existing tests must not be lost", () => {
-  it("backend/tests/contracts directory contains all existing contract tests", () => {
-    const contractsDir = path.join(repoRoot, "backend/tests/contracts");
-    const files = readdirSync(contractsDir).filter((f) =>
+  it("apps/backend/tests/contracts directory contains required backend contract tests", () => {
+    const backendContractsDir = path.join(repoRoot, "apps/backend/tests/contracts");
+    const backendFiles = readdirSync(backendContractsDir).filter((f) =>
       f.endsWith(".test.ts"),
     );
 
-    // As of baseline, there are 8 contract test files (plus the new one being added)
-    // Ensure we don't accidentally lose any during migration
-    expect(files.length).toBeGreaterThanOrEqual(8);
-
-    // List of known contract tests that must exist
-    const requiredTests = [
+    const requiredBackendTests = [
       "adoption-openapi.contract.test.ts",
       "category-api.contract.test.ts",
       "dashboard-overview-openapi.contract.test.ts",
       "display-api-db-read-only.contract.test.ts",
       "github-registry-boundary.contract.test.ts",
-      "layer-boundary.test.ts",
       "openapi-route-binding.contract.test.ts",
     ];
 
-    for (const testFile of requiredTests) {
-      expect(files).toContain(testFile);
+    for (const testFile of requiredBackendTests) {
+      expect(backendFiles).toContain(testFile);
+    }
+  });
+
+  it("apps/common/tests/contracts directory contains required common contract tests", () => {
+    const commonContractsDir = path.join(repoRoot, "apps/common/tests/contracts");
+    const commonFiles = readdirSync(commonContractsDir).filter((f) =>
+      f.endsWith(".test.ts"),
+    );
+
+    const requiredCommonTests = [
+      "app-layout-boundary.test.ts",
+      "feature-ownership-boundary.test.ts",
+      "layer-boundary.test.ts",
+    ];
+
+    for (const testFile of requiredCommonTests) {
+      expect(commonFiles).toContain(testFile);
     }
   });
 });

@@ -3,11 +3,11 @@ import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import type { UnitOfWorkPort } from "@backend/src/features/development-health/application/ports/unit-of-work-port.js";
-import { createDrizzleHandle } from "../../../apps/common/src/shared/infrastructure/db/drizzle/client.js";
-import type { DrizzleDatabaseHandle } from "../../../apps/common/src/shared/infrastructure/db/drizzle/client.js";
-import { migrateDrizzleDatabase } from "../../../apps/common/src/shared/infrastructure/db/drizzle/migrate.js";
+import { createDrizzleHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import type { DrizzleDatabaseHandle } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/client.js";
+import { migrateDrizzleDatabase } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/migrate.js";
 import { DrizzleUnitOfWorkAdapter } from "@backend/src/features/development-health/infrastructure/repositories/drizzle-unit-of-work-adapter.js";
-import { repositoriesTable } from "../../../apps/common/src/shared/infrastructure/db/drizzle/schema.js";
+import { repositoriesTable } from "@oss-health-checker/common/shared/infrastructure/db/drizzle/schema.js";
 import { count } from "drizzle-orm";
 
 describe("backend-ddd-hexagonal-hardening red cases by capability", () => {

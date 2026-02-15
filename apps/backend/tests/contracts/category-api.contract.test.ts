@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { ApplicationError } from "../../../apps/common/src/features/development-health/application/errors/application-error.js";
+import { ApplicationError } from "@oss-health-checker/common/features/development-health/application/errors/application-error.js";
 import { createCategoryRoutes } from "@backend/src/features/development-health/interface/http/routes/category-routes.js";
 import {
   CategorySummarySchema,

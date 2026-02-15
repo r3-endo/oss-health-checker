@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
-const repoRoot = path.resolve(__dirname, "../../..");
+const repoRoot = path.resolve(__dirname, "../../../..");
 const backendDir = path.join(repoRoot, "apps/backend");
 const batchDir = path.join(repoRoot, "apps/batch");
 const commonFeaturesDir = path.join(repoRoot, "apps/common/src/features");

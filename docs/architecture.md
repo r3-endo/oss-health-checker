@@ -62,7 +62,7 @@
 - `apps/common` は `apps/backend/*` を直接 import してはならない。
 - backend 専用 use-case/read-model/port/adapter は `apps/backend/src/features/*` に配置し、`apps/common` には残さない。
 - `apps/common` へ実装を追加する場合は、batch/backend の双方から利用される証跡（import 実績）が必要。
-- 境界違反は `backend/tests/contracts/feature-ownership-boundary.test.ts` と `backend/tests/contracts/app-layout-boundary.test.ts` で検出し、CI `backend-ci` の `boundary-contract` ジョブで fail させる。
+- 境界違反は `apps/common/tests/contracts/feature-ownership-boundary.test.ts` と `apps/common/tests/contracts/app-layout-boundary.test.ts` で検出し、CI `backend-ci` の `boundary-contract` ジョブで fail させる。
 
 ## Frontend 設計
 
